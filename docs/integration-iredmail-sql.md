@@ -39,7 +39,7 @@ transport_maps =
     ...
 ```
 
-`/etc/postfix/mysql/mlmmj.cf`:
+* `/etc/postfix/mysql/mlmmj.cf`:
 
 ```
 user        = vmail
@@ -50,7 +50,7 @@ dbname      = vmail
 query       = SELECT maillists.address FROM maillists,domain WHERE maillists.address='%s' AND maillists.active=1 AND maillists.domain = domain.domain AND domain.active=1
 ```
 
-`/etc/postfix/mysql/transport_maps_mlmmj.cf`:
+* `/etc/postfix/mysql/transport_maps_mlmmj.cf`:
 
 ```
 user        = vmail
