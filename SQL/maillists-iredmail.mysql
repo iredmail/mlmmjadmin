@@ -14,14 +14,3 @@ CREATE TABLE IF NOT EXISTS maillists (
     INDEX (domain),
     INDEX (active)
 ) ENGINE=InnoDB;
-
-CREATE TABLE IF NOT EXISTS settings (
-    id BIGINT(20) UNSIGNED AUTO_INCREMENT,
-    account VARCHAR(255) NOT NULL DEFAULT '',
-    k VARCHAR(255) NOT NULL DEFAULT '',
-    v TEXT,
-    domain VARCHAR(255) NOT NULL DEFAULT '',
-    PRIMARY KEY (id),
-    UNIQUE INDEX (account, k, v(100)),
-    INDEX (domain)
-) ENGINE=InnoDB;
