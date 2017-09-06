@@ -105,24 +105,23 @@ service mlmmj-admin restart
 ## Interactive with curl
 
 ```
-# Create a new mailing list: list01@domain.com with preferences:
-#   - name: The name of this mailing list
-#   - subonlypost: only people who are subscribed to the list are allowed to post to it
+# Create a new mailing list
 curl \
     -X POST \
-    --header 'X-Mlmmj-API-Token: xxxxxxxx' \
-    -d "name=TestMailingList&subonlypost=yes"
-    http://127.0.0.1:7779/list01@domain.com
+    --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
+    -d "owner=postmaster@a.io&only_subscriber_can_post=yes"
+    http://127.0.0.1:7779/list@domain.com
+
+# Update a mailing list
+curl \
+    -X PUT \
+    --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
+    -d "only_subscriber_can_post=no"
+    http://127.0.0.1:7779/list@domain.com
 
 # Delete a mailing list
 curl \
     -X DELETE \
-    --header 'X-Mlmmj-API-Token: xxxxxxxx' \
-    http://127.0.0.1:7779/list01@domain.com
-
-# Update a mailing list
-curl \
-    --header 'X-Mlmmj-API-Token: xxxxxxxx' \
-    -d "closedlist=yes&closedlistsub=yes"
-    http://127.0.0.1:7779/list01@domain.com
+    --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
+    http://127.0.0.1:7779/list@domain.com
 ```
