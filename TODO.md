@@ -41,6 +41,7 @@ Tasks already finished:
 - Archive mailing list directory.
     - Able to archive account data to specified archive directory.
 - Unit tests
+- Add backend `bk_none` to handle mlmmj without SQL/LDAP/... databases.
 
 ## 2.0: Web Interface
 
@@ -61,7 +62,3 @@ API:
 
 - Write scripts to convert archived emails of public mailing list to web pages.
 - Support multiple list addresses.
-
-## 4.0: Better support for non-iRedMail backend
-
-- Add backend `bk_none` to handle mlmmj without SQL/LDAP/... backend.

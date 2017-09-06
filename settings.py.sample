@@ -14,16 +14,17 @@ run_as_user = 'mlmmj'
 pid_file = '/var/run/mlmmj-admin.pid'
 
 # Log level: info, debug.
-log_level = 'debug'
+log_level = 'info'
 
 # Specify the backend used to query existing domains and accounts.
 # Different backends may require different parameters in settings.py, please
 # read its document.
 #
-# For iRedMail:
-#   - bk_iredmail_ldap: for LDAP backends
-#   - bk_iredmail_sql: for SQL backends
-backend = 'bk_iredmail_sql'
+# - If you don't need any SQL/LDAP/... backend, please use backend 'bk_none'.
+# - For iRedMail users:
+#   - use `bk_iredmail_ldap` for LDAP backends (OpenLDAP, OpenBSD ldapd)
+#   - use `bk_iredmail_sql` for SQL backends (MariaDB, MySQL, PostgreSQL)
+backend = 'bk_none'
 
 # A list of API AUTH tokens (secret strings) used for authentication.
 # It's strong recommended to use a long string as auth token, program will log

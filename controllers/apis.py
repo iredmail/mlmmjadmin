@@ -6,7 +6,7 @@ from libs import mlmmj, utils
 import settings
 
 # Load mailing list backend.
-ml_backend = __import__(settings.ml_backend)
+backend = __import__(settings.backend)
 
 
 class MLProfile:
@@ -17,7 +17,7 @@ class MLProfile:
             return api_render((False, 'INVALID_EMAIL'))
 
         # Make sure mailing list account exists
-        if not ml_backend.is_maillist_exists(mail=mail):
+        if not backend.is_maillist_exists(mail=mail):
             return api_render((False, 'NO_SUCH_ACCOUNT'))
 
         if not mlmmj.is_maillist_exists(mail):
@@ -39,7 +39,7 @@ class MLProfile:
         mail = str(mail).lower()
 
         # Create account in backend
-        qr = ml_backend.add_maillist(mail=mail)
+        qr = backend.add_maillist(mail=mail)
         if not qr[0]:
             return api_render(qr)
 
@@ -69,7 +69,7 @@ class MLProfile:
                    data of this account on file system will be removed.
         """
         form = web.input()
-        qr = ml_backend.remove_maillist(mail=mail)
+        qr = backend.remove_maillist(mail=mail)
 
         if not qr[0]:
             return api_render(qr)
