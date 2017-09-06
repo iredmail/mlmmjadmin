@@ -30,16 +30,16 @@ mlmmj_destination_recipient_limit = 1
 
 virtual_alias_maps =
     proxy:mysql:/etc/postfix/mysql/virtual_alias_maps.cf
-    proxy:mysql:/etc/postfix/mysql/mlmmj.cf                 # <- Add this line
+    proxy:mysql:/etc/postfix/mysql/mlmmj_maillists_maps.cf                 # <- Add this line
     ...
 
 transport_maps =
     proxy:mysql:/etc/postfix/mysql/transport_maps_user.cf
-    proxy:mysql:/etc/postfix/mysql/transport_maps_mlmmj.cf  # <- Add this line
+    proxy:mysql:/etc/postfix/mysql/transport_maps_maillist.cf  # <- Add this line
     ...
 ```
 
-* `/etc/postfix/mysql/mlmmj.cf`:
+* `/etc/postfix/mysql/mlmmj_maillists_maps.cf`:
 
 ```
 user        = vmail
@@ -50,7 +50,7 @@ dbname      = vmail
 query       = SELECT maillists.address FROM maillists,domain WHERE maillists.address='%s' AND maillists.active=1 AND maillists.domain = domain.domain AND domain.active=1
 ```
 
-* `/etc/postfix/mysql/transport_maps_mlmmj.cf`:
+* `/etc/postfix/mysql/transport_maps_maillist.cf`:
 
 ```
 user        = vmail
