@@ -1,0 +1,34 @@
+############################################################
+# DO NOT TOUCH THIS LINE.
+from libs.default_settings import *
+############################################################
+
+# Listen address and port
+listen_address = '127.0.0.1'
+listen_port = 7779
+
+# Run as a non-privileged user.
+run_as_user = 'mlmmj'
+
+# Pid file
+pid_file = '/var/run/mlmmj-admin.pid'
+
+# Log level: info, debug.
+log_level = 'debug'
+
+# Specify the backend used to query existing domains and accounts.
+# Different backends may require different parameters in settings.py, please
+# read its document.
+#
+# For iRedMail:
+#   - bk_iredmail_ldap: for LDAP backends
+#   - bk_iredmail_sql: for SQL backends
+backend = 'bk_iredmail_sql'
+
+# A list of API AUTH tokens (secret strings) used for authentication.
+# It's strong recommended to use a long string as auth token, program will log
+# first 8 characters to help you identity the client.
+api_auth_tokens = []
+
+# Load extra config file.
+#from custom_settings import *

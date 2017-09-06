@@ -1,0 +1,7 @@
+#use glob syntax.
+syntax: glob
+*.pyc
+settings.py
+tests/tsettings.py
+tests/.cache
+tests/__pycache__

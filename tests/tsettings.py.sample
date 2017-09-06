@@ -1,0 +1,4 @@
+# URL of iRedAdmin-Pro API endpoint
+url = 'http://u16:8080/api'
+
+api_auth_token = ''

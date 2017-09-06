@@ -1,0 +1,15 @@
+[Unit]
+Description=Mlmmj admin
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/mlmmj-admin.pid
+ExecStart=/usr/bin/python /opt/mlmmj-admin/mlmmj-admin.py
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
