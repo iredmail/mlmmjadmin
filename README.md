@@ -1,10 +1,9 @@
 # Mlmmj Admin
 
-## Summary
+mlmmj-admin is RESTful API server used to manage mlmmj (mailing list manager).
+Check `docs/` directory for more detailed documents.
 
-This program runs as as WSGI server, offers:
-
-* [Work In Progress] RESTful API interface for managing mlmmj mailing list accounts
+* [90% DONE] RESTful API interface for managing mlmmj mailing list accounts
 * [Not started] web interface to allow moderators and end users to manage
   their own subscriptions.
 
@@ -13,8 +12,8 @@ This program runs as as WSGI server, offers:
 * A working mail server with a working mlmmj instance.
     * For iRedMail users, please follow tutorial `docs/iredmail-integration.md`
       to integrate mlmmj.
-    * Mlmmj data will be stored under `/var/spool/mlmmj`, it must be owned by
-      user/group `mlmmj:mlmmj` with permission 0700.
+    * Mlmmj data will be stored under `/var/spool/mlmmj` by default, it must
+      be owned by user/group `mlmmj:mlmmj` with permission 0700.
 * Python 2.6.x or 2.7.x, with extra modules:
     * web.py
 
@@ -30,12 +29,10 @@ mkdir -p /opt/mlmmj-admin
 ```
 
 * Copy files to `/opt/mlmmj-admin`.
-* Copy SysV script:
+* Copy systemd service file (a SysV script is available too):
 
 ```
-cd /opt/mlmmj-admin
-cp rc_scripts/init.debian /etc/init.d/mlmmj-admin
-chmod 0755 /etc/init.d/mlmmj-admin
+cp /opt/mlmmj-admin/rc_scripts/mlmmj-admin.service /lib/systemd/system
 systemctl enable mlmmj-admin
 ```
 
@@ -44,44 +41,66 @@ systemctl enable mlmmj-admin
 ```
 cd /opt/mlmmj-admin/
 cp settings.py.sample settings.py
+chown mlmmj:mlmmj settings.py
 chmod 0400 settings.py
 ```
 
-* Run shell command below to generate a random string, we will use it as auth
-  token which will be used by client:
+* Generate a long string as API auth token, it will be used by your API client.
+  For example:
 
 ```
 $ echo $RANDOM | md5
 43a89b7aa34354089e629ed9f9be0b3b
 ```
 
-Add a new api auth token in config file `settings.py`, parameter
-`api_auth_tokens`. For example:
+* Add this API auth token in config file `settings.py`, parameter `api_auth_tokens`. For example:
 
 ```
-auth_tokens = ['43a89b7aa34354089e629ed9f9be0b3b']
+api_auth_tokens = ['43a89b7aa34354089e629ed9f9be0b3b']
 ```
 
-You can add as many token as you want.
+You can add as many token as you want by different API clients.
 
 * Choose a proper mailing list backend and add required parameters.
 
     * If you set `backend` to `bk_none` in config file, no addition
       config required. Other backend may requires additional parameters.
-    * Backend `bk_iredmail_sql` requires few parameters to connect to
-      `vmail` database on iRedMail server, please open file
-      `backends/bk_iredmail_sql.py` to find the required parameters in
-      the comment lines.
+    * For iRedMail users:
+        - Backend `bk_iredmail_sql` requires few parameters to connect to
+          `vmail` database on iRedMail server, please open file
+          `backends/bk_iredmail_sql.py` to find the required parameters in
+          the comment lines.
+        - [TODO] Backend `bk_iredmail_ldap`
 
-* After you have everything set in config file, it's ok to start `mlmmj-admin`
-  service:
+* [OPTIONAL] Add modular rsyslog config file `/etc/rsyslog.d/mlmmj-admin.conf`
+  to log mlmmj-admin to its own log file.
+
+```
+#
+# For RHEL/CentOS
+#
+mkdir /var/log/mlmmj-admin
+chown root:root /var/log/mlmmj-admin
+chmod 0700 /var/log/mlmmj-admin
+
+#
+# For Debian/Ubuntu
+#
+mkdir /var/log/mlmmj-admin
+chown syslog:adm /var/log/mlmmj-admin
+chmod 0700 /var/log/mlmmj-admin
+
+#
+# For OpenBSD/FreeBSD
+#
+# TODO
+```
+
+* Now ok to start `mlmmj-admin` service:
 
 ```
 service mlmmj-admin restart
 ```
-
-* TODO Log file
-* TODO rsyslog config file
 
 ## Interactive with curl
 

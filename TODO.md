@@ -20,6 +20,9 @@
     * SQL: new table: `maillists`
     * LDAP: use existing `objectClass=mailList`
 
+- Better OpenBSD/FreeBSD support:
+    - syslog
+
 ---
 
 Tasks already finished:
