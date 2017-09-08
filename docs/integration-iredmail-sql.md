@@ -1,13 +1,12 @@
-# Integrate Mlmmj mailing list manager in iRedMail
+# Integrate Mlmmj mailing list manager in iRedMail (SQL backends)
 
 [TOC]
 
-## TODO: LDAP backends
-
 ## SQL backends
 
-Add required SQL tables in database `vmail`. Check file `SQL/*` in mlmmj-admin
-package.
+Add new, required SQL tables to database `vmail`.
+    * For MySQL/MariaDB, import file `SQL/maillists-iredmail.mysql`
+    * __TODO__ For PostgreSQL, import file `SQL/maillists-iredmail.pgsql`
 
 ## Create required systeme account
 
@@ -101,7 +100,7 @@ $policy_bank{'MLMMJ'} = {
     [__TODO__] ALL these managements should be done by calling the mlmmj-admin
     RESTful APIs.
 
-### Create new mailing list
+### Create a new mailing list account
 
 Add a new mailing list in SQL db:
 
@@ -141,7 +140,7 @@ It will write the member email address in a file with the name of the beginning
 letter of the email address getting subscribed in the `<listdir>/subscribers.d/`
 directory. In our case, it's `/var/spool/mlmmj/example.com/alist/subscribed.d/u`.
 
-### Manage mailing list profiles
+### Update mailing list settings
 
 Almost all profiles are controlled by plain text file, please check mlmmj
 official document here: <http://mlmmj.org/docs/tunables/>

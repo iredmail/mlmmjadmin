@@ -2,11 +2,6 @@
 
 ## 1.0: RESTful API
 
-- Manage subscribers with `mlmmj-sub` and `mlmmj-unsub`
-    - require variables to define absolute paths to both commands
-    - add (add and require confirm, add without confirm)
-    - remove subscribers
-
 - Tool scripts (interactive with API):
     * Add new account (must be able to handle all profile parameters)
     * Update profile parameters
@@ -15,6 +10,11 @@
         * Query backend
         * Query file system
 
+- Manage subscribers with `mlmmj-sub` and `mlmmj-unsub`
+    - require variables to define absolute paths to both commands
+    - add (add and require confirm, add without confirm)
+    - remove subscribers
+
 - Design SQL tables and LDAP schema used to store mailing list accounts and
   profiles.
     * SQL: new table: `maillists`
@@ -22,6 +22,7 @@
 
 - Better OpenBSD/FreeBSD support:
     - syslog
+    - rc scripts
 
 ---
 
