@@ -4,8 +4,8 @@ from urllib import urlencode
 import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
 
-from tools import api_headers, api_base_url
 from libs.utils import is_email
+import settings
 
 usage = """Usage:
 
@@ -30,6 +30,16 @@ Samples:
         python maillist_manage.py delete listname@domain.com archive=yes
 """
 
+# Base url of API interface
+api_base_url = 'http://127.0.0.1:{}/api'.format(settings.listen_port)
+
+# Don't verify ssl cert. useful for self-signed ssl cert.
+verify_ssl = False
+
+# Use first auth token
+api_auth_token = settings.api_auth_tokens[0]
+api_headers = {settings.API_AUTH_TOKEN_HEADER_NAME: api_auth_token}
+
 action = sys.argv[1]
 if action not in ['info', 'create', 'update', 'delete']:
     sys.exit('Invalid action: {}, must be one of: info, create, update, delete.'.format(action))
@@ -48,11 +58,12 @@ for arg in args:
         arg_kvs[k] = v
 
 api_url = api_base_url + '/' + mail
+
 if action == 'info':
-    r = requests.get(api_url, headers=api_headers, verify=False)
+    r = requests.get(api_url, headers=api_headers, verify=verify_ssl)
 
 elif action == 'create':
-    r = requests.post(api_url, data=args, headers=api_headers, verify=False)
+    r = requests.post(api_url, data=args, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
         print "Created."
@@ -60,11 +71,16 @@ elif action == 'create':
         print "Error while creating account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'update':
-    pass
+    r = requests.put(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
+    _json = r.json()
+    if _json['_success']:
+        print "Created."
+    else:
+        print "Error while creating account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'delete':
     api_url = api_url + '?' + urlencode(arg_kvs)
-    r = requests.delete(api_url, data=args, headers=api_headers, verify=False)
+    r = requests.delete(api_url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
         if args.get('archive') == 'yes':
