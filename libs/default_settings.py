@@ -33,7 +33,7 @@ MLMMJ_SPOOL_DIR = '/var/spool/mlmmj'
 #
 # If empty, account data will be simply renamed with timestamp appended under
 # same directory (<listname> -> <listname>-<timestamp>).
-MLMMJ_ARCHIVE_DIR = ''
+MLMMJ_ARCHIVE_DIR = '/var/spool/mlmmj-archive'
 
 # Directory which stores skel files (templates in different languages).
 MLMMJ_SKEL_DIR = '/usr/share/mlmmj/text.skel'
@@ -161,6 +161,7 @@ MLMMJ_TEXT_WEB_PARAMS = {'footer': 'footer'}
 
 # Additional web parameters (key == value) used to handle API request easier.
 MLMMJ_OTHER_WEB_PARAMS = {
+    'name': 'name',
     'moderate_subscription': 'moderate_subscription',
     'subscription_moderators': 'subscription_moderators',
     'moderators': 'moderators',
@@ -168,6 +169,8 @@ MLMMJ_OTHER_WEB_PARAMS = {
 
 # Map web parameter name to mlmmj parameter name
 MLMMJ_OTHER_PARAM_MAP = {
+    'name': {'mlmmj_param': 'listname',
+             'type': 'normal'},
     'moderate_subscription': {'mlmmj_param': 'submod',
                               'type': 'boolean'},
     'subscription_moderators': {'mlmmj_param': 'submod',

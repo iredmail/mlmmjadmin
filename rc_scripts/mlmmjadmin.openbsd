@@ -1,0 +1,12 @@
+#!/bin/sh
+
+daemon='python /opt/mlmmj-admin/mlmmj-admin-sysv.py'
+
+. /etc/rc.d/rc.subr
+
+rc_reload=NO
+rc_cmd $1
+
+rc_stop() {
+    kill `cat /var/run/mlmmj-admin.pid`
+}

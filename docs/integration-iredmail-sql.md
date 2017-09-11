@@ -5,8 +5,9 @@
 ## SQL backends
 
 Add new, required SQL tables to database `vmail`.
-    * For MySQL/MariaDB, import file `SQL/maillists-iredmail.mysql`
-    * __TODO__ For PostgreSQL, import file `SQL/maillists-iredmail.pgsql`
+
+* For MySQL/MariaDB, import file `SQL/maillists-iredmail.mysql`
+* __TODO__ For PostgreSQL, import file `SQL/maillists-iredmail.pgsql`
 
 ## Create required systeme account
 

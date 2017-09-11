@@ -2,14 +2,6 @@
 
 ## 1.0: RESTful API
 
-- Tool scripts (interactive with API):
-    * Add new account (must be able to handle all profile parameters)
-    * Update profile parameters
-    * Delete account
-    * List all accounts under given domain name
-        * Query backend
-        * Query file system
-
 - Manage subscribers with `mlmmj-sub` and `mlmmj-unsub`
     - require variables to define absolute paths to both commands
     - add (add and require confirm, add without confirm)
@@ -46,6 +38,11 @@ Tasks already finished:
     - Able to archive account data to specified archive directory.
 - Unit tests
 - Add backend `bk_none` to handle mlmmj without SQL/LDAP/... databases.
+
+- Tool scripts (interactive with API):
+    * Add new account (must be able to handle all profile parameters)
+    * Update profile parameters
+    * Delete account
 
 ## 2.0: Web Interface
 

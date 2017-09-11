@@ -43,6 +43,7 @@ Parameter | Sample Usage | Default Value | Comment
 `subject_prefix` | `subject_prefix=[prefix text]` | | Add a prefix in the `Subject:` line of mails sent to the list. Set to empty value to remove it.
 `custom_headers` | `custom_headers=<header1>:<value1>\n<header2>:<value2>` | | Add custom headers to every mail coming through. Multiple headers must be separated by `\n`. Set empty value to remove it. Note: mlmmj-admin will always add `X-Mailing-List: <mail>` and `Reply-To: <mail>` for each mailing list account.
 `remove_headers` | `remove_headers=Message-ID,Received` | | Remove given mail headers. NOTE: either `header:` or `header` (without `:`) is ok. Note: mlmmj-admin will always remove `DKIM-Signature:` and `Authentication-Results:`.
+`name` | `name=Short description of list` | | Set a short description of the mailing list account.
 `footer` | `footer=footer text` || Append footer text to every email sent to the list.
 
 Additional parameters used to update (`PUT /api/<mail>`) mailing list account:

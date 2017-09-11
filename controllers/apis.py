@@ -23,8 +23,6 @@ class MLProfile:
         if not mlmmj.is_maillist_exists(mail):
             return api_render((False, 'NO_MAILLIST_DIR'))
 
-        (_username, _domain) = mail.split('@', 1)
-
         kvs = {}
         for _param in settings.MLMMJ_WEB_PARAMS:
             qr = mlmmj.get_web_param_value(mail=mail, param=_param)
@@ -37,14 +35,14 @@ class MLProfile:
     def POST(self, mail):
         """Create a new mailing list account."""
         mail = str(mail).lower()
+        form = web.input()
 
         # Create account in backend
-        qr = backend.add_maillist(mail=mail)
+        qr = backend.add_maillist(mail=mail, form=form)
         if not qr[0]:
             return api_render(qr)
 
         # Create account in mlmmj
-        form = web.input()
         qr = mlmmj.add_maillist_from_web_form(mail=mail, form=form)
 
         return api_render(qr)

@@ -13,6 +13,7 @@ import settings
 # API AUTH token name in http request header
 auth_token_name = 'HTTP_' + settings.API_AUTH_TOKEN_HEADER_NAME.replace('-', '_').upper()
 
+
 def is_email(s):
     try:
         s = str(s).strip()
@@ -24,6 +25,7 @@ def is_email(s):
         return True
 
     return False
+
 
 def is_domain(s):
     try:
@@ -38,6 +40,7 @@ def is_domain(s):
         return True
     else:
         return False
+
 
 def get_auth_token():
     _token = web.ctx.env.get(auth_token_name)
@@ -67,5 +70,7 @@ def api_render(data):
 
     elif isinstance(data, bool):
         d = {'_success': data}
+    else:
+        d = {'_success': False, '_msg': 'INVALID_DATA'}
 
     return _render_json(d)

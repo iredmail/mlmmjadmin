@@ -7,6 +7,7 @@ from libs import utils, form_utils
 from libs.logger import logger
 import settings
 
+
 def __get_ml_dir(mail):
     if not utils.is_email(mail):
         return None
@@ -14,6 +15,7 @@ def __get_ml_dir(mail):
     (_username, _domain) = mail.split('@', 1)
 
     return os.path.join(settings.MLMMJ_SPOOL_DIR, _domain, _username)
+
 
 def __remove_ml_sub_dir(mail, dirname):
     if not dirname:
@@ -32,6 +34,7 @@ def __remove_ml_sub_dir(mail, dirname):
 
     return (True, )
 
+
 def __set_file_permission(path):
     _uid = os.getuid()
     _gid = os.getgid()
@@ -41,6 +44,7 @@ def __set_file_permission(path):
         return (True, )
     except Exception, e:
         return (False, repr(e))
+
 
 def __copy_dir_files(src, dest, create_dest=True):
     """Copy all regular files under source directory to dest directory."""
@@ -58,6 +62,7 @@ def __copy_dir_files(src, dest, create_dest=True):
 
     return (True, )
 
+
 def __has_ml_dir(mail, path=None):
     if path:
         _ml_dir = path
@@ -69,11 +74,13 @@ def __has_ml_dir(mail, path=None):
     else:
         return False
 
+
 def __has_param_file(f):
     if os.path.exists(f):
         return True
     else:
         return False
+
 
 def __get_param_file(mail, param):
     """Get path to the file used to control parameter setting.
@@ -91,6 +98,7 @@ def __get_param_file(mail, param):
                         'control',
                         param)
 
+
 def __remove_param_file(mail, param, param_file=None):
     if not param_file:
         param_file = __get_param_file(mail=mail, param=param)
@@ -102,6 +110,7 @@ def __remove_param_file(mail, param, param_file=None):
             return (False, repr(e))
 
     return (True, )
+
 
 def __get_param_type(param):
     """Get parameter type.
@@ -115,6 +124,7 @@ def __get_param_type(param):
 
     return None
 
+
 def __get_boolean_param_value(mail, param):
     _param_file = __get_param_file(mail=mail, param=param)
 
@@ -122,6 +132,7 @@ def __get_boolean_param_value(mail, param):
         return 'yes'
     else:
         return 'no'
+
 
 def __get_list_param_value(mail, param, is_email=False):
     _param_file = __get_param_file(mail=mail, param=param)
@@ -131,7 +142,7 @@ def __get_list_param_value(mail, param, is_email=False):
         try:
             with open(_param_file, 'r') as f:
                 _lines = f.readlines()
-                _lines = [_line.strip() for _line in _lines]    # remove line breaks
+                _lines = [_line.strip() for _line in _lines]  # remove line breaks
                 _values = [_line for _line in _lines if _line]  # remove empty values
 
                 if is_email:
@@ -141,6 +152,7 @@ def __get_list_param_value(mail, param, is_email=False):
 
     _values.sort()
     return _values
+
 
 def __get_other_param_value(mail, param):
     if param in settings.MLMMJ_OTHER_PARAM_MAP:
@@ -155,6 +167,7 @@ def __get_other_param_value(mail, param):
             return __get_list_param_value(mail, param=_mlmmj_param, is_email=_is_email)
 
     return 'INVALID_PARAM'
+
 
 def __get_param_value(mail, param):
     """Get value of given mailing list parameter.
@@ -215,6 +228,7 @@ def __get_param_value(mail, param):
 
     return (True, _ret)
 
+
 def __convert_web_param_value_to_list(value, is_email=False):
     try:
         # Split by ',' and remove empty values
@@ -226,6 +240,7 @@ def __convert_web_param_value_to_list(value, is_email=False):
         v = [str(i).lower() for i in v if utils.is_email(i)]
 
     return v
+
 
 def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of_create=False):
     """Create or remove parameter file for boolean type parameter.
@@ -242,7 +257,8 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
             else:
                 open(param_file, 'w').close()
         except Exception, e:
-            logger.error("[{}] {}, error while updating (boolean) parameter: {} -> {}, {}".format(web.ctx.ip, mail, param, value, e))
+            logger.error("[{}] {}, error while updating (boolean) parameter: {} -> {}, {}".format(
+                web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
         if __has_param_file(param_file):
@@ -265,7 +281,8 @@ def __update_normal_param(mail, param, value, param_file=None):
             with open(param_file, 'w') as f:
                 f.write('{}'.format(value))
         except Exception, e:
-            logger.error("[{}] {}, error while updating (normal) parameter: {} -> {}, {}".format(web.ctx.ip, mail, param, value, e))
+            logger.error("[{}] {}, error while updating (normal) parameter: {} -> {}, {}".format(
+                web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
         if __has_param_file(param_file):
@@ -276,6 +293,7 @@ def __update_normal_param(mail, param, value, param_file=None):
                 return (False, repr(e))
 
     return (True, )
+
 
 def __update_list_param(mail, param, value, param_file=None, is_email=False):
     if not param_file:
@@ -294,7 +312,8 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
 
             logger.info("[{}] {}, updated: {} -> {}".format(web.ctx.ip, mail, param, ', '.join(_values)))
         except Exception, e:
-            logger.error("[{}] {}, error while updating (list) parameter: {} -> {}, {}".format(web.ctx.ip, mail, param, value, e))
+            logger.error("[{}] {}, error while updating (list) parameter: {} -> {}, {}".format(
+                web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
         # TODO: create an empty file or remove it?
@@ -304,10 +323,12 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
 
     return (True, )
 
+
 def __update_text_param(mail, param, value, param_file=None):
     return __update_normal_param(mail=mail, param=param, value=value, param_file=param_file)
 
-def __update_other_param(mail, param, value, param_file=None):
+
+def __update_other_param(mail, param, value):
     """Update parameters which cannot be simply mapped to a mlmmj parameter."""
     if param in settings.MLMMJ_OTHER_PARAM_MAP:
         _v = settings.MLMMJ_OTHER_PARAM_MAP[param]
@@ -321,6 +342,7 @@ def __update_other_param(mail, param, value, param_file=None):
             return __update_list_param(mail=mail, param=_mlmmj_param, value=value, is_email=_is_email)
 
     return (True, )
+
 
 def __update_mlmmj_param(mail, param, value):
     """Update individual parameter of mailing list account."""
@@ -349,6 +371,7 @@ def __update_mlmmj_param(mail, param, value):
         logger.error("[{}] {}, error while updating: {} -> {}".format(web.ctx.ip, mail, param, qr[1]))
         return (False, 'error while updating: {} -> {}'.format(param, qr[1]))
 
+
 def __update_mlmmj_params(mail, **kwargs):
     """Update multiple parameters of mailing list account. Abort if failed to
     update any parameter.
@@ -363,6 +386,7 @@ def __update_mlmmj_params(mail, **kwargs):
 
     return (True, )
 
+
 def __convert_form_to_mlmmj_params(mail, form):
     """Convert variables in web form to (a dict of) mlmmj parameters."""
     # Store key:value of mlmmj parameters
@@ -375,6 +399,7 @@ def __convert_form_to_mlmmj_params(mail, form):
 
     return kvs
 
+
 def __archive_ml(mail):
     _dir = __get_ml_dir(mail=mail)
 
@@ -384,17 +409,22 @@ def __archive_ml(mail):
 
         if settings.MLMMJ_ARCHIVE_DIR:
             # Move to archive directory.
-            _base_dir = _new_dir.lstrip(settings.MLMMJ_SPOOL_DIR)
+            _base_dir = _new_dir.replace(settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_ARCHIVE_DIR)
             _new_dir = os.path.join(settings.MLMMJ_ARCHIVE_DIR, _base_dir)
 
             # Create parent directory
-            _dirname = os.path.dirname(_new_dir)
+            if _new_dir.endswith('/'):
+                _dirname = os.path.dirname(_new_dir)
+            else:
+                _dirname = _new_dir
+
             if not os.path.exists(_dirname):
                 try:
                     os.makedirs(_dirname, mode=settings.MLMMJ_FILE_PERMISSION)
                 except Exception, e:
-                    logger.error("[{}] {}, error while creating directory under archive directory ({}), {}".format(web.ctx.ip, mail, _dirname, repr(e)))
-                    return (False, repr(e))
+                    _msg = "error while creating directory under archive directory ({}), {}".format(_dirname, repr(e))
+                    logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
+                    return (False, _msg)
 
         # If new directory exists, append one more timestamp
         if os.path.exists(_new_dir):
@@ -412,11 +442,13 @@ def __archive_ml(mail):
 
     return (True, )
 
+
 def is_maillist_exists(mail):
     if __has_ml_dir(mail):
         return True
     else:
         return False
+
 
 def get_web_param_value(mail, param):
     """Get mlmmj parameter value of given web parameter name."""
@@ -425,6 +457,7 @@ def get_web_param_value(mail, param):
         return __get_param_value(mail=mail, param=_mlmmj_param)
     else:
         return (False, 'UNSUPPORTED_PARAM')
+
 
 def add_maillist_from_web_form(mail, form):
     """Add a mailing list based on data submited from web form.
@@ -452,6 +485,7 @@ def add_maillist_from_web_form(mail, form):
     qr = create_ml(mail=mail, **kvs)
     return qr
 
+
 def create_ml(mail, **kwargs):
     """Create required directories/files for a new mailing list on file system.
 
@@ -470,8 +504,9 @@ def create_ml(mail, **kwargs):
         try:
             os.makedirs(_ml_dir, mode=settings.MLMMJ_FILE_PERMISSION)
         except Exception, e:
-            logger.error("[{}] {}, error while creating base directory ({}), {}".format(web.ctx.ip, mail, _ml_dir, repr(e)))
-            return (False, repr(e))
+            _msg = "error while creating base directory ({}), {}".format(_ml_dir, repr(e))
+            logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
+            return (False, _msg)
 
     # Create required sub-directories
     for _dir in settings.MLMMJ_DEFAULT_SUB_DIRS:
@@ -480,8 +515,9 @@ def create_ml(mail, **kwargs):
             try:
                 os.makedirs(_sub_dir, mode=settings.MLMMJ_FILE_PERMISSION)
             except Exception, e:
-                logger.error("[{}] {}, error while creating sub-directory ({}), {}".format(web.ctx.ip, mail, _sub_dir, repr(e)))
-                return (False, repr(e))
+                _msg = "error while creating sub-directory ({}), {}".format(_sub_dir, repr(e))
+                logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
+                return (False, _msg)
         else:
             qr = __set_file_permission(_sub_dir)
             if not qr[0]:
@@ -514,6 +550,7 @@ def create_ml(mail, **kwargs):
 
     return (True, )
 
+
 def delete_ml(mail, archive=True):
     """Delete a mailing list account. If archive is True or 'yes', account is
     'removed' by renaming its data directory.
@@ -534,6 +571,7 @@ def delete_ml(mail, archive=True):
         logger.info("[{}] {}, removed (no data on file system).".format(web.ctx.ip, mail))
 
     return (True, )
+
 
 def update_web_form_params(mail, form):
     """Update mailing list profile with web form."""

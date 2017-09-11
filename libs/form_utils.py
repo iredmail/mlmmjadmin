@@ -1,5 +1,6 @@
 import settings
 
+
 def __get_dict_for_boolean_params(form, param):
     kv = {}
 
@@ -12,6 +13,7 @@ def __get_dict_for_boolean_params(form, param):
         kv = {settings.MLMMJ_BOOLEAN_WEB_PARAMS[param]: v}
 
     return kv
+
 
 def __get_dict_for_list_params(mail, form, param):
     kv = {}
@@ -70,6 +72,7 @@ def __get_dict_for_list_params(mail, form, param):
 
     return kv
 
+
 def __get_dict_for_normal_params(form, param):
     kv = {}
 
@@ -81,6 +84,7 @@ def __get_dict_for_normal_params(form, param):
 
     return kv
 
+
 def __get_dict_for_text_params(form, param):
     kv = {}
 
@@ -91,6 +95,7 @@ def __get_dict_for_text_params(form, param):
         kv = {settings.MLMMJ_TEXT_WEB_PARAMS[param]: v}
 
     return kv
+
 
 def get_dict_for_form_param(mail, form, param):
     kv = {}

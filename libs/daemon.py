@@ -61,17 +61,17 @@ WORKDIR = "/"
 MAXFD = 1024
 
 # The standard I/O file descriptors are redirected to /dev/null by default.
-if (hasattr(os, "devnull")):
+if hasattr(os, "devnull"):
     NULL_DEVICE = os.devnull
 else:
     NULL_DEVICE = "/dev/null"
-
 
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
 
 log = logging.getLogger('daemonize')
+
 
 # ---------------------------------------------------------------------------
 # Public classes
@@ -83,6 +83,7 @@ class DaemonError(Exception):
     a daemon. A C{DaemonException} object always contains a single string
     value that contains an error message describing the problem.
     """
+
     def __init__(self, errorMessage):
         """
         Create a new C{DaemonException}.
@@ -99,6 +100,7 @@ class DaemonError(Exception):
         @return: a string representing the exception
         """
         return self.errorMessage
+
 
 # ---------------------------------------------------------------------------
 # Public functions
@@ -176,6 +178,7 @@ def _fork():
     except OSError, e:
         raise DaemonError('Cannot fork: {} [{}]'.format(e.strerror, e.errno))
 
+
 def _redirectFileDescriptors():
     import resource  # POSIX resource information
     maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
@@ -208,12 +211,12 @@ def _redirectFileDescriptors():
     os.dup2(0, 1)
     os.dup2(0, 2)
 
+
 # ---------------------------------------------------------------------------
 # Main program (for testing)
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-
     log = logging.getLogger('daemon')
     hdlr = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s', '%T')
@@ -227,6 +230,7 @@ if __name__ == '__main__':
     log.debug('Daemon is sleeping for 10 seconds')
 
     import time
+
     time.sleep(10)
 
     log.debug('Daemon exiting')

@@ -22,7 +22,7 @@
         Used to detect whether given mailing list account (email address)
         exists in your backend.
 
-    - `def add_maillist(mail, conn=None):`
+    - `def add_maillist(mail, form, conn=None):`
 
         Add required SQL/LDAP/... data in your backend to create a mailing list
         account.

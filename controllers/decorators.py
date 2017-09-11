@@ -3,12 +3,14 @@ import settings
 from libs.utils import get_auth_token, api_render
 from libs.logger import logger
 
+
 def _is_allowed_client(ip):
     if settings.RESTRICT_ACCESS:
         if ip not in settings.ACCEPTED_CLIENTS:
             return False
 
     return True
+
 
 def api_acl(func):
     def proxyfunc(self, *args, **kw):

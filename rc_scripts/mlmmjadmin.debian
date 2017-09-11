@@ -13,7 +13,7 @@
 ### END INIT INFO
 
 PROG='mlmmj-admin'
-BINPATH='/opt/mlmmj-admin/server.py'
+BINPATH='/opt/mlmmj-admin/mlmmj-admin-sysv.py'
 PIDFILE='/var/run/mlmmj-admin.pid'
 
 check_status() {

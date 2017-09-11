@@ -7,8 +7,9 @@ from libs.default_settings import *
 listen_address = '127.0.0.1'
 listen_port = 7779
 
-# Run as a non-privileged user.
+# Run as a non-privileged user/group.
 run_as_user = 'mlmmj'
+run_as_group = 'mlmmj'
 
 # Pid file
 pid_file = '/var/run/mlmmj-admin.pid'

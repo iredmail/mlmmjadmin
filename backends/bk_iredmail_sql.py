@@ -27,7 +27,8 @@ class MYSQLWrap(object):
         except:
             pass
 
-    def connect(self):
+    @staticmethod
+    def __connect():
         conn = web.database(
             dbn='mysql',
             host=settings.iredmail_sql_db_server,
@@ -44,13 +45,12 @@ class MYSQLWrap(object):
     def __init__(self):
         import MySQLdb
         try:
-            self.conn = self.connect()
+            self.conn = self.__connect()
         except (AttributeError, MySQLdb.OperationalError):
             # Reconnect if error raised: MySQL server has gone away.
-            self.conn = self.connect()
+            self.conn = self.__connect()
         except Exception, e:
             logger.error("SQL error: {}".format(e))
-            return False
 
 
 class PGSQLWrap(object):
@@ -74,7 +74,6 @@ class PGSQLWrap(object):
             self.conn.supports_multiple_insert = True
         except Exception, e:
             logger.error("SQL error: {}".format(e))
-            return False
 
 
 if settings.iredmail_sql_db_type == 'mysql':
@@ -168,6 +167,7 @@ def is_email_exists(mail, conn=None):
         logger.error("SQL error: {}".format(e))
         return True
 
+
 def is_maillist_exists(mail, conn=None):
     # Return True if mailing list account is invalid or exist.
     mail = str(mail).lower()
@@ -194,7 +194,8 @@ def is_maillist_exists(mail, conn=None):
         logger.error("SQL error: {}".format(e))
         return True
 
-def add_maillist(mail, conn=None):
+
+def add_maillist(mail, form, conn=None):
     """Add required SQL records to add a mailing list account."""
     mail = str(mail).lower()
     (_, domain) = mail.split('@', 1)
@@ -212,9 +213,12 @@ def add_maillist(mail, conn=None):
     if is_email_exists(mail=mail):
         return (False, 'ALREADY_EXISTS')
 
+    name = form.get('name', '')
+
     try:
         conn.insert('maillists',
                     address=mail,
+                    name=name,
                     domain=domain)
 
         logger.info('[{}] {}, created.'.format(web.ctx.ip, mail))
@@ -222,6 +226,7 @@ def add_maillist(mail, conn=None):
     except Exception, e:
         logger.error('[{}] {}, error while creating: {}'.format(web.ctx.ip, mail, e))
         return (False, repr(e))
+
 
 def remove_maillist(mail, conn=None):
     """Remove required SQL records to remove a mailing list account."""

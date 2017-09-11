@@ -14,13 +14,19 @@ sys.path.insert(0, rootdir)
 sys.path.insert(0, os.path.join(rootdir, 'backends'))
 
 import settings
-from libs import __version__
+from libs import __version__, daemon
 from libs.logger import logger
 from controllers.urls import urls
 
 web.config.debug = settings.DEBUG
 
 os.umask(0077)
+
+# Run this program as daemon.
+try:
+    daemon.daemonize(noClose=True)
+except Exception, e:
+    logger.error('Error in daemon.daemonize: ' + str(e))
 
 # Write pid number into pid file.
 with open(settings.pid_file, 'w') as f:
