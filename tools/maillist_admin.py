@@ -66,7 +66,7 @@ if action == 'info':
         for (k, v) in _json['_data'].items():
             print '{}={}'.format(k, v)
     else:
-        print "Error while creating account {}: {}".format(mail, _json['_msg'])
+        print "Error while querying account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'create':
     r = requests.post(api_url, data=args, headers=api_headers, verify=verify_ssl)
@@ -80,16 +80,16 @@ elif action == 'update':
     r = requests.put(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
-        print "Created."
+        print "Updated."
     else:
-        print "Error while creating account {}: {}".format(mail, _json['_msg'])
+        print "Error while updating account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'delete':
     api_url = api_url + '?' + urlencode(arg_kvs)
     r = requests.delete(api_url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
-        if args.get('archive') == 'yes':
+        if arg_kvs.get('archive') == 'yes':
             print "Removed {} (archived).".format(mail)
         else:
             print "Removed {} (without archive).".format(mail)

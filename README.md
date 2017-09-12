@@ -15,7 +15,8 @@ Check `docs/` directory for more detailed documents.
     * Mlmmj data will be stored under `/var/spool/mlmmj` by default, it must
       be owned by user/group `mlmmj:mlmmj` with permission 0700.
 * Python 2.6.x or 2.7.x, with extra modules:
-    * web.py
+    * `web.py
+    * `requests`: required by `tools/maillist_admin.py`.
 
 ## Setup mlmmj-admin
 
