@@ -73,8 +73,7 @@ You can add as many token as you want by different API clients.
           the comment lines.
         - [TODO] Backend `bk_iredmail_ldap`
 
-* [OPTIONAL] Add modular rsyslog config file `/etc/rsyslog.d/mlmmj-admin.conf`
-  to log mlmmj-admin to its own log file.
+* Create directory used to store mlmmj-admin log file:
 
 ```
 #
@@ -82,20 +81,42 @@ You can add as many token as you want by different API clients.
 #
 mkdir /var/log/mlmmj-admin
 chown root:root /var/log/mlmmj-admin
-chmod 0700 /var/log/mlmmj-admin
+chmod 0755 /var/log/mlmmj-admin
 
 #
 # For Debian/Ubuntu
 #
 mkdir /var/log/mlmmj-admin
 chown syslog:adm /var/log/mlmmj-admin
-chmod 0700 /var/log/mlmmj-admin
+chmod 0755 /var/log/mlmmj-admin
 
 #
 # For OpenBSD/FreeBSD
 #
-# TODO
+mkdir /var/log/mlmmj-admin
+chown root:wheel /var/log/mlmmj-admin
+chmod 0755 /var/log/mlmmj-admin
 ```
+
+* Update syslog config file to log mlmmj-admin to dedicated log file:
+
+For Linux
+
+```
+cp /opt/mlmmj-admin/samples/rsyslog/mlmmj-admin.conf /etc/rsyslog.d/
+service rsyslog restart
+```
+
+For OpenBSD, please append below lines in `/etc/syslog.conf`:
+
+```
+!mlmmj-admin
+local5.*            /var/log/mlmmj-admin/mlmmj-admin.log
+```
+
+---
+[TODO] For FreeBSD
+---
 
 * Now ok to start `mlmmj-admin` service:
 

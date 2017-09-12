@@ -1,3 +1,6 @@
+# TODO list all mailing list accounts
+#   - if `backend` is `bk_none`, list all accounts under mlmmj spool directory.
+#   - if `backend` is not `bk_none`, query from backend.
 import sys
 import os
 from urllib import urlencode
@@ -89,7 +92,7 @@ elif action == 'delete':
     r = requests.delete(api_url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
-        if arg_kvs.get('archive') == 'yes':
+        if arg_kvs.get('archive') in ['yes', None]:
             print "Removed {} (archived).".format(mail)
         else:
             print "Removed {} (without archive).".format(mail)

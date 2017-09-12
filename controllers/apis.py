@@ -81,6 +81,15 @@ class MLProfile:
 
     @api_acl
     def PUT(self, mail):
+        """
+        Update a mailing list account.
+
+        curl -X PUT -d "name='new name'&disable_subscription=yes" https://<server>/api/mail
+        """
         form = web.input()
+        qr = backend.update_maillist(mail=mail, form=form)
+        if not qr[0]:
+            return api_render(qr)
+
         qr = mlmmj.update_web_form_params(mail=mail, form=form)
         return api_render(qr)

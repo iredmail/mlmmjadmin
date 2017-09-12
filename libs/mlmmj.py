@@ -147,11 +147,52 @@ def __get_list_param_value(mail, param, is_email=False):
 
                 if is_email:
                     _values = [str(i).lower() for i in _values]
+        except OSError:
+            # No such file.
+            pass
         except Exception, e:
             logger.error('Error while getting (list) parameter value: {} -> {}'.format(param, e))
 
     _values.sort()
     return _values
+
+
+def __get_normal_param_value(mail, param, param_file=None):
+    # Only first line is used by mlmmj.
+    if not param_file:
+        param_file = __get_param_file(mail=mail, param=param)
+
+    try:
+        with open(param_file, 'r') as f:
+            value = f.readline()
+            return value
+    except OSError:
+        # No such file.
+        return ''
+    except Exception, e:
+        logger.error("[{}] {}, error while getting parameter value: {}, {}".format(web.ctx.ip, mail, param, e))
+        return ''
+
+    return ''
+
+
+def __get_text_param_value(mail, param, param_file=None):
+    # Full content is used by mlmmj.
+    if not param_file:
+        param_file = __get_param_file(mail=mail, param=param)
+
+    try:
+        with open(param_file, 'r') as f:
+            value = f.readlines()
+            return value
+    except OSError:
+        # No such file.
+        return ''
+    except Exception, e:
+        logger.error("[{}] {}, error while getting parameter value: {}, {}".format(web.ctx.ip, mail, param, e))
+        return ''
+
+    return ''
 
 
 def __get_other_param_value(mail, param):
@@ -165,6 +206,10 @@ def __get_other_param_value(mail, param):
             return __get_boolean_param_value(mail=mail, param=_mlmmj_param)
         elif _param_type == 'list':
             return __get_list_param_value(mail, param=_mlmmj_param, is_email=_is_email)
+        elif _param_type == 'normal':
+            return __get_normal_param_value(mail, param=_mlmmj_param)
+        elif _param_type == 'text':
+            return __get_text_param_value(mail, param=_mlmmj_param)
 
     return 'INVALID_PARAM'
 
@@ -229,19 +274,6 @@ def __get_param_value(mail, param):
     return (True, _ret)
 
 
-def __convert_web_param_value_to_list(value, is_email=False):
-    try:
-        # Split by ',' and remove empty values
-        v = [i for i in value.strip(' ').split(',') if i]
-    except:
-        v = []
-
-    if v and is_email:
-        v = [str(i).lower() for i in v if utils.is_email(i)]
-
-    return v
-
-
 def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of_create=False):
     """Create or remove parameter file for boolean type parameter.
 
@@ -271,15 +303,22 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
     return (True, )
 
 
-def __update_normal_param(mail, param, value, param_file=None):
+def __update_normal_param(mail, param, value, param_file=None, is_email=False):
     # Only first line is used by mlmmj.
     if not param_file:
         param_file = __get_param_file(mail=mail, param=param)
 
     if value:
+        if is_email:
+            value = str(value).lower()
+            if not utils.is_email(value):
+                return (False, 'INVALID_EMAIL')
+
         try:
+            value = value.encode('utf-8')
+
             with open(param_file, 'w') as f:
-                f.write('{}'.format(value))
+                f.write(value)
         except Exception, e:
             logger.error("[{}] {}, error while updating (normal) parameter: {} -> {}, {}".format(
                 web.ctx.ip, mail, param, value, e))
@@ -328,7 +367,7 @@ def __update_text_param(mail, param, value, param_file=None):
     return __update_normal_param(mail=mail, param=param, value=value, param_file=param_file)
 
 
-def __update_other_param(mail, param, value):
+def __update_other_param(mail, param, value, param_file=None):
     """Update parameters which cannot be simply mapped to a mlmmj parameter."""
     if param in settings.MLMMJ_OTHER_PARAM_MAP:
         _v = settings.MLMMJ_OTHER_PARAM_MAP[param]
@@ -337,9 +376,28 @@ def __update_other_param(mail, param, value):
         _is_email = _v.get('is_email', False)
 
         if _param_type == 'boolean':
-            return __update_boolean_param(mail=mail, param=_mlmmj_param, value=value, touch_instead_of_create=True)
+            return __update_boolean_param(mail=mail,
+                                          param=_mlmmj_param,
+                                          param_file=param_file,
+                                          value=value,
+                                          touch_instead_of_create=True)
         elif _param_type == 'list':
-            return __update_list_param(mail=mail, param=_mlmmj_param, value=value, is_email=_is_email)
+            return __update_list_param(mail=mail,
+                                       param=_mlmmj_param,
+                                       param_file=param_file,
+                                       value=value,
+                                       is_email=_is_email)
+        elif _param_type == 'normal':
+            return __update_normal_param(mail=mail,
+                                         param=_mlmmj_param,
+                                         param_file=param_file,
+                                         value=value,
+                                         is_email=_is_email)
+        elif _param_type == 'text':
+            return __update_text_param(mail=mail,
+                                       param=_mlmmj_param,
+                                       param_file=param_file,
+                                       value=value)
 
     return (True, )
 
@@ -364,12 +422,7 @@ def __update_mlmmj_param(mail, param, value):
         return (False, 'INVALID_PARAM_TYPE')
 
     qr = _update_func(mail=mail, param=param, value=value, param_file=_param_file)
-    if qr[0]:
-        logger.info("[{}] {}, updated: {} -> {}".format(web.ctx.ip, mail, param, value))
-        return qr
-    else:
-        logger.error("[{}] {}, error while updating: {} -> {}".format(web.ctx.ip, mail, param, qr[1]))
-        return (False, 'error while updating: {} -> {}'.format(param, qr[1]))
+    return qr
 
 
 def __update_mlmmj_params(mail, **kwargs):
@@ -385,6 +438,19 @@ def __update_mlmmj_params(mail, **kwargs):
                 return qr
 
     return (True, )
+
+
+def __convert_web_param_value_to_list(value, is_email=False):
+    try:
+        # Split by ',' and remove empty values
+        v = [i for i in value.strip(' ').split(',') if i]
+    except:
+        v = []
+
+    if v and is_email:
+        v = [str(i).lower() for i in v if utils.is_email(i)]
+
+    return v
 
 
 def __convert_form_to_mlmmj_params(mail, form):

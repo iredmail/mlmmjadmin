@@ -31,3 +31,8 @@
 
         Remove related SQL/LDAP/... data in your backend to remove a mailing list
         account.
+
+    - `def update_maillist(mail, form, conn=None):`
+
+        Remove related SQL/LDAP/... data in your backend to remove a mailing list
+        account.

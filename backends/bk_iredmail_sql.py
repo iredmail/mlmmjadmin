@@ -248,3 +248,34 @@ def remove_maillist(mail, conn=None):
     except Exception, e:
         logger.error("SQL error: {}".format(e))
         return (False, repr(e))
+
+
+def update_maillist(mail, form, conn=None):
+    """
+    Update mailing list account.
+
+    Current only parameter `name` is stored in backend.
+    """
+    mail = str(mail).lower()
+
+    if not utils.is_email(mail):
+        return (False, 'INVALID_EMAIL')
+
+    if 'name' not in form:
+        return (True, )
+
+    if not conn:
+        _wrap = SQLWrap()
+        conn = _wrap.conn
+
+    name = form.get('name', '')
+
+    try:
+        conn.update('maillists',
+                    vars={'mail': mail},
+                    name=name,
+                    where='address=$mail')
+
+        return (True, )
+    except Exception, e:
+        return (False, repr(e))

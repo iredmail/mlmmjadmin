@@ -169,7 +169,7 @@ MLMMJ_OTHER_WEB_PARAMS = {
 
 # Map web parameter name to mlmmj parameter name
 MLMMJ_OTHER_PARAM_MAP = {
-    'name': {'mlmmj_param': 'listname',
+    'name': {'mlmmj_param': 'name',
              'type': 'normal'},
     'moderate_subscription': {'mlmmj_param': 'submod',
                               'type': 'boolean'},
