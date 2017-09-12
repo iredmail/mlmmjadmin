@@ -61,6 +61,12 @@ api_url = api_base_url + '/' + mail
 
 if action == 'info':
     r = requests.get(api_url, headers=api_headers, verify=verify_ssl)
+    _json = r.json()
+    if _json['_success']:
+        for (k, v) in _json['_data'].items():
+            print '{}={}'.format(k, v)
+    else:
+        print "Error while creating account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'create':
     r = requests.post(api_url, data=args, headers=api_headers, verify=verify_ssl)
