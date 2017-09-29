@@ -1,3 +1,8 @@
+-- Column used to limit number of mailing lists a domain admin can create
+ALTER TABLE domain ADD COLUMN maillists INT(10) NOT NULL DEFAULT 0;
+ALTER TABLE domain ADD INDEX (`maillists`);
+
+-- Table used to store mailing list accounts
 CREATE TABLE IF NOT EXISTS maillists (
     id BIGINT(20) UNSIGNED AUTO_INCREMENT,
     address VARCHAR(255) NOT NULL DEFAULT '',

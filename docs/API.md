@@ -69,11 +69,7 @@ TODO `remove_removed_header` | `remove_removed_header=<header1>:,<header2>:,<hea
 > NOTE: Parameters used by `DELETE` http method must be appended to the URL.
 > For example:
 >
-> `/api/<mail>?param=value`
->
 > `/api/<mail>?param=value&param2=value2&param3=value3`
-
-Parameters used to delete (`DELETE /api/<mail>`) mailing list account:
 
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---

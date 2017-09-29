@@ -2,6 +2,10 @@
 
 ## 1.0: RESTful API
 
+- API:
+    - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
+    - Add API endpoint to verify whether given email address is already a member
+
 - Manage subscribers with `mlmmj-sub` and `mlmmj-unsub`
     - require variables to define absolute paths to both commands
     - add (add and require confirm, add without confirm)
@@ -9,7 +13,15 @@
 
 - Design SQL tables and LDAP schema used to store mailing list accounts and
   profiles.
-    * SQL: new table: `maillists`
+    * SQL:
+        * table: `maillists`. Used to store email address and name of mailing
+          list accounts.
+            * column: `description`. Add short summary/description text to
+              introduce the mailing list to subscriber on the subscription page.
+        * table: `subscription_verify`. Used to store emails of subscriber
+          which are still waiting for email verification.
+            * column: `expired`. waiting for how long to remove this
+              verification record.
     * LDAP: use existing `objectClass=mailList`
 
 - Better OpenBSD/FreeBSD support:
