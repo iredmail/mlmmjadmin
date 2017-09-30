@@ -12,25 +12,25 @@ import settings
 
 usage = """Usage:
 
-    python maillist_manage.py <info|create|update|delete> <mail> [<param1>=<value1> <param2>=<value2> ...]
+    python maillist_admin.py <info|create|update|delete> <mail> [<param1>=<value1> <param2>=<value2> ...]
 
 Samples:
 
     *) Get settings of an existing mailing list account
 
-        python maillist_manage.py info listname@domain.com
+        python maillist_admin.py info listname@domain.com
 
     *) Create a new mailing list account with additional setting:
 
-        python maillist_manage.py create listname@domain.com only_subscriber_can_post=yes disable_archive=no
+        python maillist_admin.py create listname@domain.com only_subscriber_can_post=yes disable_archive=no
 
     *) Update an existing mailing list account
 
-        python maillist_manage.py update listname@domain.com only_moderator_can_post=yes disable_subscription=yes
+        python maillist_admin.py update listname@domain.com only_moderator_can_post=yes disable_subscription=yes
 
     *) Delete an existing mailing list account
 
-        python maillist_manage.py delete listname@domain.com archive=yes
+        python maillist_admin.py delete listname@domain.com archive=yes
 """
 
 # Base url of API interface

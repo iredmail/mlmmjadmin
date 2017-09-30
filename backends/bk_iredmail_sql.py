@@ -2,7 +2,8 @@
 #
 # Required Python modules:
 #
-#   - MySQLdb
+#   - `MySQLdb` for MySQL or MariaDB backends
+#   - `psycopg2` for PostgreSQL backend
 #
 # Required parameters in settings.py
 #
@@ -29,14 +30,13 @@ class MYSQLWrap(object):
 
     @staticmethod
     def __connect():
-        conn = web.database(
-            dbn='mysql',
-            host=settings.iredmail_sql_db_server,
-            port=int(settings.iredmail_sql_db_port),
-            db=settings.iredmail_sql_db_name,
-            user=settings.iredmail_sql_db_user,
-            pw=settings.iredmail_sql_db_password,
-            charset='utf8')
+        conn = web.database(dbn='mysql',
+                            host=settings.iredmail_sql_db_server,
+                            port=int(settings.iredmail_sql_db_port),
+                            db=settings.iredmail_sql_db_name,
+                            user=settings.iredmail_sql_db_user,
+                            pw=settings.iredmail_sql_db_password,
+                            charset='utf8')
 
         conn.supports_multiple_insert = True
 
@@ -63,14 +63,12 @@ class PGSQLWrap(object):
     def __init__(self):
         # Initial DB connection and cursor.
         try:
-            self.conn = web.database(
-                dbn='postgres',
-                host=settings.iredmail_sql_db_server,
-                port=int(settings.iredmail_sql_db_port),
-                db=settings.iredmail_sql_db_name,
-                user=settings.iredmail_sql_db_user,
-                pw=settings.iredmail_sql_db_password,
-            )
+            self.conn = web.database(dbn='postgres',
+                                     host=settings.iredmail_sql_db_server,
+                                     port=int(settings.iredmail_sql_db_port),
+                                     db=settings.iredmail_sql_db_name,
+                                     user=settings.iredmail_sql_db_user,
+                                     pw=settings.iredmail_sql_db_password)
             self.conn.supports_multiple_insert = True
         except Exception, e:
             logger.error("SQL error: {}".format(e))

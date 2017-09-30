@@ -315,6 +315,9 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
                 return (False, 'INVALID_EMAIL')
 
         try:
+            if isinstance(value, int):
+                value = str(value)
+
             value = value.encode('utf-8')
 
             with open(param_file, 'w') as f:

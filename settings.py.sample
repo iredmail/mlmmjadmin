@@ -21,10 +21,16 @@ log_level = 'info'
 # Different backends may require different parameters in settings.py, please
 # read its document.
 #
-# - If you don't need any SQL/LDAP/... backend, please use backend 'bk_none'.
-# - For iRedMail users:
-#   - use `bk_iredmail_ldap` for LDAP backends (OpenLDAP, OpenBSD ldapd)
-#   - use `bk_iredmail_sql` for SQL backends (MariaDB, MySQL, PostgreSQL)
+# Available backends:
+#
+#   - bk_none: just manage data under mlmmj spool directory. no interactive
+#              between SQL/LDAP database.
+#   - bk_iredmail_ldap: for LDAP backends (OpenLDAP, OpenBSD ldapd)
+#   - bk_iredmail_sql: for SQL backends (MySQL, MariaDB, PostgreSQL)
+#
+# WARNING: For iRedMail users, if you don't have iRedAdmin-Pro, please enable
+# proper backend below so that mlmmj-admin will store mailing list accounts in
+# SQL/LDAP database.
 backend = 'bk_none'
 
 # A list of API AUTH tokens (secret strings) used for authentication.
