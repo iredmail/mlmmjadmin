@@ -63,6 +63,7 @@ TODO `add_custom_header` | `add_custom_header=<header1>:<value1>\r<header2>:<val
 TODO `remove_custom_header` | `remove_custom_header=<header1>,<header2>,<header3>` | | Remove existing custom headers
 TODO `add_removed_header` | `add_removed_header=<header1>:,<header2>:,<header3>:` | | Add new headers you want to remove
 TODO `remove_removed_header` | `remove_removed_header=<header1>:,<header2>:,<header3>:` | | Remove existing headers you want to remove
+TODO `change_email` | `change_email=<mail>` || Change mailing list address to a new one.
 
 ## Parameters used to delete mailing list account
 
