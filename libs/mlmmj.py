@@ -536,6 +536,15 @@ def add_maillist_from_web_form(mail, form):
     """
     # Store key:value of mlmmj parameters
     kvs = {}
+
+    # Add empty values for 'remove_headers', 'custom_headers'. This will
+    # trigger form process functions to add pre-defined default values.
+    if 'remove_headers' not in form:
+        form['remove_headers'] = ''
+
+    if 'custom_headers' not in form:
+        form['custom_headers'] = ''
+
     kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
 
     # Add (missing) default settings

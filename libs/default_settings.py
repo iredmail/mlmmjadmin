@@ -251,7 +251,9 @@ MLMMJ_DEFAULT_SUB_DIRS = [
 
 # Headers we need to always add to every email.
 # Available place holders:
-#   - %(mail)s  - will be replaced by full email address of mailing list
+#   - %(mail)s - will be replaced by full email address of mailing list
+#   - %(domain)s - will be replaced by domain name of mailing list email address
+#   - %(listname)s - will be replaced by username part of mailing list email address
 MLMMJ_DEFAULT_CUSTOM_HEADERS = {
     'X-Mailing-List': '%(mail)s',
     'Reply-To': '%(mail)s',

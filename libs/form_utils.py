@@ -18,6 +18,9 @@ def __get_dict_for_boolean_params(form, param):
 def __get_dict_for_list_params(mail, form, param):
     kv = {}
 
+    mail = str(mail).lower()
+    (listname, domain) = mail.split('@', 1)
+
     _separator = ','
     # customer_headers: Split multiple values by '\n'
     if param == 'custom_headers':
@@ -31,41 +34,38 @@ def __get_dict_for_list_params(mail, form, param):
         _values = [i.strip() for i in _values if i]
         _values.sort()
 
-        if not _values:
-            return kv
+    if param == 'custom_headers':
+        # Remove invalid header
+        _values = [v for v in _values if ':' in v]
 
-        if param == 'custom_headers':
-            # Remove invalid header
-            _values = [v for v in _values if ':' in v]
+        # Add default custom headers
+        _new = []
+        _default_custom_header_names = [v.lower() for v in settings.MLMMJ_DEFAULT_CUSTOM_HEADERS.keys()]
+        for v in _values:
+            (_header, _v) = v.split(':')
+            if _header.lower() not in _default_custom_header_names:
+                _new.append(v)
 
-            # Add default custom headers
-            _new = []
-            _default_custom_header_names = [v.lower() for v in settings.MLMMJ_DEFAULT_CUSTOM_HEADERS.keys()]
-            for v in _values:
-                (_header, _v) = v.split(':')
-                if _header.lower() not in _default_custom_header_names:
-                    _new.append(v)
+        _default_custom_headers = dict(settings.MLMMJ_DEFAULT_CUSTOM_HEADERS)
+        for (k, v) in _default_custom_headers.items():
+            # for placeholder support
+            v = v % {'mail': mail, 'domain': domain, 'listname': listname}
+            _new.append('{}: {}'.format(k, v))
 
-            _default_custom_headers = dict(settings.MLMMJ_DEFAULT_CUSTOM_HEADERS)
-            for (k, v) in _default_custom_headers.items():
-                # for placeholder support
-                v = v % {'mail': mail}
-                _new.append('{}: {}'.format(k, v))
+        _values = _new
 
-            _values = _new
+    if param == 'remove_headers':
+        # Make sure header ends with ':'
+        for (_index, v) in enumerate(_values):
+            if not v.endswith(':'):
+                _values[_index] = v + ':'
 
-        if param == 'remove_headers':
-            # Make sure header ends with ':'
-            for (_index, v) in enumerate(_values):
-                if not v.endswith(':'):
-                    _values[_index] = v + ':'
-
-            # Remove default headers
-            _values_lower = [v.lower() for v in _values]
-            _default_removed_headers = list(settings.MLMMJ_DEFAULT_REMOVED_HEADERS)
-            for v in _default_removed_headers:
-                if v.lower() not in _values_lower:
-                    _values.append(v)
+        # Remove default headers
+        _values_lower = [v.lower() for v in _values]
+        _default_removed_headers = list(settings.MLMMJ_DEFAULT_REMOVED_HEADERS)
+        for v in _default_removed_headers:
+            if v.lower() not in _values_lower:
+                _values.append(v)
 
     if _values:
         kv = {settings.MLMMJ_LIST_WEB_PARAMS[param]: _values}
