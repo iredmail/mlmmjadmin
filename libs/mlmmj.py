@@ -478,26 +478,24 @@ def __archive_ml(mail):
 
         if settings.MLMMJ_ARCHIVE_DIR:
             # Move to archive directory.
-            _base_dir = _new_dir.replace(settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_ARCHIVE_DIR)
-            _new_dir = os.path.join(settings.MLMMJ_ARCHIVE_DIR, _base_dir)
+            __base_dir = _new_dir.replace(settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_ARCHIVE_DIR)
+            _new_dir = os.path.join(settings.MLMMJ_ARCHIVE_DIR, __base_dir)
 
             # Create parent directory
             if _new_dir.endswith('/'):
-                _dirname = os.path.dirname(_new_dir)
-            else:
-                _dirname = _new_dir
-
-            if not os.path.exists(_dirname):
-                try:
-                    os.makedirs(_dirname, mode=settings.MLMMJ_FILE_PERMISSION)
-                except Exception, e:
-                    _msg = "error while creating directory under archive directory ({}), {}".format(_dirname, repr(e))
-                    logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
-                    return (False, _msg)
+                _new_dir = os.path.dirname(_new_dir)
 
         # If new directory exists, append one more timestamp
         if os.path.exists(_new_dir):
             _new_dir = _new_dir + _timestamp
+
+        # Create archive directory
+        try:
+            os.makedirs(_new_dir, mode=settings.MLMMJ_FILE_PERMISSION)
+        except Exception, e:
+            _msg = "error while creating directory under archive directory ({}), {}".format(_new_dir, repr(e))
+            logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
+            return (False, _msg)
 
         try:
             os.rename(_dir, _new_dir)
