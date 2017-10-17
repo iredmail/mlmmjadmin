@@ -147,7 +147,7 @@ def __get_list_param_value(mail, param, is_email=False):
 
                 if is_email:
                     _values = [str(i).lower() for i in _values]
-        except OSError:
+        except IOError:
             # No such file.
             pass
         except Exception, e:
@@ -166,7 +166,7 @@ def __get_normal_param_value(mail, param, param_file=None):
         with open(param_file, 'r') as f:
             value = f.readline()
             return value
-    except OSError:
+    except IOError:
         # No such file.
         return ''
     except Exception, e:
@@ -185,7 +185,7 @@ def __get_text_param_value(mail, param, param_file=None):
         with open(param_file, 'r') as f:
             value = f.readlines()
             return value
-    except OSError:
+    except IOError:
         # No such file.
         return ''
     except Exception, e:

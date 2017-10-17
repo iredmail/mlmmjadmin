@@ -128,6 +128,10 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
 
     'disable_archive': 'noarchive',
     #'tocc': 'tocc',
+    #
+    # Custom parameters which are not supported by mlmmj itself
+    #
+    'enable_newsletter_subscription': 'enable_newsletter_subscription',
 }
 
 MLMMJ_LIST_WEB_PARAMS = {
@@ -224,7 +228,12 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     'notify_owner_when_sub_unsub': 'no',
     'notify_poster_when_moderated': 'no',
     'disable_archive': 'no',
+    # Retrieving old posts
+    'disable_retrieving_old_posts': 'yes',
     'only_subscriber_can_get_old_posts': 'yes',
+    # different subscription types
+    'disable_digest_subscription': 'yes',
+    'disable_nomail_subscription': 'yes',
 }
 
 # Ignore values submitted from API client, always set certain parameters to

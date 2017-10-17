@@ -48,7 +48,7 @@ def api_acl(func):
         logger.debug('[{}] API AUTH TOKEN: {:.8}...'.format(client_ip, _auth_token))
 
     if _auth_token not in settings.api_auth_tokens:
-        logger.error('[{}] Blocked request with invalid auth token: %s.'.format(client_ip, _auth_token))
+        logger.error('[{}] Blocked request with invalid auth token: {}.'.format(client_ip, _auth_token))
         return invalid_auth_token
 
     return proxyfunc
