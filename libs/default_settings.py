@@ -264,8 +264,14 @@ MLMMJ_DEFAULT_SUB_DIRS = [
 #   - %(domain)s - will be replaced by domain name of mailing list email address
 #   - %(listname)s - will be replaced by username part of mailing list email address
 MLMMJ_DEFAULT_CUSTOM_HEADERS = {
+    'Precedence': 'list',
     'X-Mailing-List': '%(mail)s',
     'Reply-To': '%(mail)s',
+    'List-Id': '%(mail)s',
+    #'List-Owner': '<mailto:%(listname)s-owner@%(domain)s>',
+    #'List-Post': '<mailto:%(mail)s>',
+    #'List-Subscribe': '<mailto:%(listname)s-subscribe@%(domain)s>',
+    'List-Unsubscribe': '<mailto:%(listname)s-unsubscribe@%(domain)s>',
 }
 
 # Headers we need to remove from received emails.
