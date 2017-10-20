@@ -2,7 +2,8 @@
 import settings
 
 domain = 'api-test.com'
-ml = 'test-list@' + domain
+listname = 'test-list'
+ml = listname + '@' + domain
 
 # urls
 url_ml = '/api/' + ml
@@ -43,10 +44,11 @@ params_create_ml = {
     'relay_host': '192.168.1.1',
     'smtp_helo': 'test.domain.com',
     'smtp_port': '2525',
-    'footer': """Here is specified in bytes how big a mail can be and still be
-prepared for sending in memory. It's greatly reducing the amount of write
-system calls to prepare it in memory before sending it, but can also lead to
-denial of service attacks. Default is 16k (16384 bytes).""",
+    'footer_text': """Here is specified in bytes how big a mail can be and\n
+still be prepared for sending in memory. It is greatly reducing the amount of\n
+write system calls to prepare it in memory before sending it, but can also\n
+lead to denial of service attacks. Default is 16k (16384 bytes).""",
+    'footer_html': '<p>This is footer in html format.</p>',
 }
 
 params_create_verify = dict(params_create_ml)
@@ -61,7 +63,7 @@ params_create_verify['owner'] = ['1@x.io', '2@x.io', '3@x.io']
 _default_custom_headers = dict(settings.MLMMJ_DEFAULT_CUSTOM_HEADERS)
 for (k, v) in _default_custom_headers.items():
     # for placeholder support
-    v = v % {'mail': ml}
+    v = v % {'mail': ml, 'listname': listname, 'domain': domain}
     params_create_verify['custom_headers'].append('{}: {}'.format(k, v))
 
 params_update_ml = {
@@ -74,7 +76,7 @@ params_update_ml = {
     'moderate_non_subscriber_post': 'yes',
     'notify_owner_when_sub_unsub': 'yes',
     'notify_poster_when_moderated': 'yes',
-    'subject_prefix': '[test-prefix] ',
+    'subject_prefix': '[updated-prefix] ',
     'disable_archive': 'yes',
     'disable_digest_subscription': 'no',
     'disable_digest_text': 'no',
@@ -88,4 +90,6 @@ params_update_ml = {
     'disable_notify_when_subscriber_only': 'no',
     'disable_notify_when_moderator_only': 'no',
     'moderate_subscription': 'no',
+    'footer_text': 'This if updated footer in plain text.',
+    'footer_html': """<p>This is updated footer in html format.</p>""",
 }

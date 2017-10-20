@@ -1,5 +1,5 @@
 # encoding: utf-8
-from . import get, put
+from . import get, put, debug
 from utils import create_ml, remove_ml
 import data
 
@@ -44,6 +44,10 @@ def test_update_ml():
 
     _data = _json['_data']
     for k in params:
+        if params[k] != _data[k]:
+            debug(_data)
+            debug(k, params[k], _data[k])
+
         assert params[k] == _data[k]
 
 

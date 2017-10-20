@@ -29,7 +29,6 @@ def create_ml(_remove_ml=False):
     # Create a new one
     params = data.params_create_ml
     _json = post(url=url, data=params)
-    # print _json
     assert _json['_success'] is True
 
     _json = get(url=url)

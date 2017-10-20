@@ -161,7 +161,9 @@ MLMMJ_NORMAL_WEB_PARAMS = {
     #'verp': 'verp',
 }
 
-MLMMJ_TEXT_WEB_PARAMS = {'footer': 'footer'}
+# mlmmj's built-in footer support is very bad, so we don't support parameter
+# 'footer', see `footer_text` and `footer_html` below.
+MLMMJ_TEXT_WEB_PARAMS = {}
 
 # Additional web parameters (key == value) used to handle API request easier.
 MLMMJ_OTHER_WEB_PARAMS = {
@@ -169,6 +171,8 @@ MLMMJ_OTHER_WEB_PARAMS = {
     'moderate_subscription': 'moderate_subscription',
     'subscription_moderators': 'subscription_moderators',
     'moderators': 'moderators',
+    'footer_text': 'footer_text',
+    'footer_html': 'footer_html',
 }
 
 # Map web parameter name to mlmmj parameter name
@@ -183,6 +187,14 @@ MLMMJ_OTHER_PARAM_MAP = {
     'moderators': {'mlmmj_param': 'moderators',
                    'type': 'list',
                    'is_email': True},
+    # mlmmj's built-in footer support is very bad, we use 'altermime' to handle
+    # the footer. And we will generate two files for this purpose:
+    #   - control/footer-text: footer in plain text
+    #   - control/footer-html: footer in html
+    'footer_text': {'mlmmj_param': 'footer_text',
+                    'type': 'text'},
+    'footer_html': {'mlmmj_param': 'footer_html',
+                    'type': 'text'},
 }
 
 # All web parameters
