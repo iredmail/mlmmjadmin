@@ -2,11 +2,6 @@
 
 ## 1.0: RESTful API
 
-- Handle footer with altermime:
-    - Don't use file `control/footer`
-    - Generate `control/amime-footer-text` and `control/amime-footer-html`
-    - API should read `control/amime-footer-text` as footer
-
 - API:
     - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
     - Add API endpoint to verify whether given email address is already a member
@@ -55,11 +50,13 @@ Tasks already finished:
     - Able to archive account data to specified archive directory.
 - Unit tests
 - Add backend `bk_none` to handle mlmmj without SQL/LDAP/... databases.
+- Correctly handle footer text (in both plain text and html formats).
 
-- Tool scripts (interactive with API):
+- script `tools/maillist_admin.py` (interactive with API):
     * Add new account (must be able to handle all profile parameters)
     * Update profile parameters
     * Delete account
+- script `samples/bin/mlmmj-amime-receive`: Call altermime for handling footer.
 
 ## 2.0: Web Interface
 
