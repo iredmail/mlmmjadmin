@@ -8,9 +8,6 @@ else
     export ROOTDIR="$(pwd)"
 fi
 
-# Make sure custom config file exists.
-touch ${ROOTDIR}/tsettings.py
-
 modules="
     test-mlmmj.py
     test-cleanup.py
