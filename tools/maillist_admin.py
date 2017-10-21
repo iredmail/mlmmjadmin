@@ -33,6 +33,10 @@ Samples:
         python maillist_admin.py delete listname@domain.com archive=yes
 """
 
+if len(sys.argv) < 3:
+    print usage
+    sys.exit()
+
 # Base url of API interface
 api_base_url = 'http://127.0.0.1:{}/api'.format(settings.listen_port)
 

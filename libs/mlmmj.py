@@ -288,18 +288,33 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
                 open(param_file, 'a').close()
             else:
                 open(param_file, 'w').close()
+
+            if param == 'modonlypost':
+                # Create 'control/moderated' also
+                _f = __get_param_file(mail=mail, param='moderated')
+                open(_f, 'a').close()
+
         except Exception, e:
             logger.error("[{}] {}, error while updating (boolean) parameter: {} -> {}, {}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
-        if __has_param_file(param_file):
-            try:
-                os.remove(param_file)
-            except Exception, e:
-                logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
-                return (False, repr(e))
+        _files = [param_file]
 
+        if param == 'modonlypost':
+            # Remove 'control/moderated' also
+            _f = __get_param_file(mail=mail, param='moderated')
+            _files += [_f]
+
+        for f in _files:
+            if __has_param_file(f):
+                try:
+                    os.remove(f)
+                except Exception, e:
+                    logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, f, e))
+                    return (False, repr(e))
+
+    logger.debug("[{}] {}, updated (boolean) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -334,6 +349,7 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
                 logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
                 return (False, repr(e))
 
+    logger.debug("[{}] {}, updated (normal) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -363,6 +379,7 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
         with open(param_file, 'w'):
             pass
 
+    logger.debug("[{}] {}, updated (list) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -391,6 +408,7 @@ def __update_text_param(mail, param, value, param_file=None):
                 logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
                 return (False, repr(e))
 
+    logger.debug("[{}] {}, updated (text) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -547,7 +565,7 @@ def get_web_param_value(mail, param):
         _mlmmj_param = settings.MLMMJ_WEB_PARAMS[param]
         return __get_param_value(mail=mail, param=_mlmmj_param)
     else:
-        return (False, 'UNSUPPORTED_PARAM')
+        return (False, 'INVALID_PARAM')
 
 
 def add_maillist_from_web_form(mail, form):

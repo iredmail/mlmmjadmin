@@ -12,8 +12,9 @@ Check `docs/` directory for more detailed documents.
 * A working mail server with a working mlmmj instance.
     * For iRedMail users, please follow tutorial `docs/integration-iredmail-*.md`
       to integrate mlmmj.
-    * Mlmmj data will be stored under `/var/spool/mlmmj` by default, it must
-      be owned by user/group `mlmmj:mlmmj` with permission 0700.
+    * Mlmmj data will be stored under `/var/spool/mlmmj`, it must be owned by
+      user/group `mlmmj:mlmmj` with permission 0700. if you want to change it,
+      please override it with setting `MLMMJ_SPOOL_DIR =` in its config file.
 * Python 2.6.x or 2.7.x, with extra modules:
     * `web.py
     * `requests`: required by `tools/maillist_admin.py`.
@@ -33,8 +34,8 @@ mkdir -p /opt/mlmmj-admin
 * Copy systemd service file (a SysV script is available too):
 
 ```
-cp /opt/mlmmj-admin/rc_scripts/mlmmj-admin.service /lib/systemd/system
-systemctl enable mlmmj-admin
+cp /opt/mlmmj-admin/rc_scripts/mlmmjadmin.service /lib/systemd/system
+systemctl enable mlmmjadmin
 ```
 
 * Generate a config file by copying `settings.py.sample`:
@@ -110,7 +111,7 @@ service rsyslog restart
 For OpenBSD, please append below lines in `/etc/syslog.conf`:
 
 ```
-!mlmmj-admin
+!!mlmmj-admin
 local5.*            /var/log/mlmmj-admin/mlmmj-admin.log
 ```
 
@@ -118,10 +119,10 @@ local5.*            /var/log/mlmmj-admin/mlmmj-admin.log
 [TODO] For FreeBSD
 ---
 
-* Now ok to start `mlmmj-admin` service:
+* Now ok to start `mlmmjadmin` service:
 
 ```
-service mlmmj-admin restart
+service mlmmjadmin restart
 ```
 
 ## Interactive with curl
@@ -147,3 +148,11 @@ curl \
     --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
     http://127.0.0.1:7779/list@domain.com
 ```
+
+## Tips
+
+mlmmj will log its operaions in 2 files under mailing list directory:
+
+* `mlmmj.operation.log`: mlmmj logs mail sending, rejecting, subscription, etc
+  in this file.
+* `mlmmj-maintd.lastrun.log`: mlmmj logs maintenance related task info in this file.
