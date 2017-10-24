@@ -143,7 +143,6 @@ MLMMJ_LIST_WEB_PARAMS = {
     #'listaddress': 'listaddress',
     'owner': 'owner',
     'owners': 'owner',  # this is an alias to 'owner'
-    'moderators': 'moderators',
 }
 
 MLMMJ_NORMAL_WEB_PARAMS = {
@@ -167,10 +166,16 @@ MLMMJ_NORMAL_WEB_PARAMS = {
 # 'footer', see `footer_text` and `footer_html` below.
 MLMMJ_TEXT_WEB_PARAMS = {}
 
-# Additional web parameters (key == value) used to handle API request easier.
+# Define additional parameters used to manage mlmmj easier.
+# Notes:
+#   - these parameter names are not officially supported by mlmmj
+#     (not listed on website: http://mlmmj.org/docs/tunables/)
+#   - parameter name is same as value. We define the mapping in
+#     MLMMJ_OTHER_PARAM_MAP below.
 MLMMJ_OTHER_WEB_PARAMS = {
     'name': 'name',
     'moderate_subscription': 'moderate_subscription',
+    'moderators': 'moderators',
     'subscription_moderators': 'subscription_moderators',
     'footer_text': 'footer_text',
     'footer_html': 'footer_html',
@@ -185,13 +190,14 @@ MLMMJ_OTHER_PARAM_MAP = {
     'subscription_moderators': {'mlmmj_param': 'submod',
                                 'type': 'list',
                                 'is_email': True},
-    #'moderators': {'mlmmj_param': 'moderators',
-    #               'type': 'list',
-    #               'is_email': True},
+    'moderators': {'mlmmj_param': 'moderators',
+                   'type': 'list',
+                   'is_email': True},
     # mlmmj's built-in footer support is very bad, we use 'altermime' to handle
     # the footer. And we will generate two files for this purpose:
-    #   - control/footer-text: footer in plain text
-    #   - control/footer-html: footer in html
+    #   - control/footer_text: footer in plain text
+    #   - control/footer_html: footer in html
+    # FYI: http://mlmmj.org/docs/readme-footers/
     'footer_text': {'mlmmj_param': 'footer_text',
                     'type': 'text'},
     'footer_html': {'mlmmj_param': 'footer_html',
@@ -245,13 +251,13 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     'disable_retrieving_old_posts': 'yes',
     'only_subscriber_can_get_old_posts': 'yes',
     # different subscription types
-    'disable_digest_subscription': 'yes',
-    'disable_nomail_subscription': 'yes',
+    #'disable_digest_subscription': 'yes',
+    #'disable_nomail_subscription': 'yes',
     # notification about postings being denied
-    'disable_notify_when_missing_listaddress': 'yes',
-    'disable_notify_when_access_denied': 'yes',
-    'disable_notify_when_subscriber_only': 'yes',
-    'disable_notify_when_moderator_only': 'yes',
+    #'disable_notify_when_missing_listaddress': 'yes',
+    #'disable_notify_when_access_denied': 'yes',
+    #'disable_notify_when_subscriber_only': 'yes',
+    #'disable_notify_when_moderator_only': 'yes',
 }
 
 # Ignore values submitted from API client, always set certain parameters to
