@@ -151,15 +151,6 @@ def is_email_exists(mail, conn=None):
         if qr:
             return True
 
-        # Check `maillists`
-        qr = conn.select('maillists',
-                         vars={'mail': mail},
-                         what='address',
-                         where='address=$mail',
-                         limit=1)
-        if qr:
-            return True
-
         return False
     except Exception, e:
         logger.error("SQL error: {}".format(e))
@@ -217,7 +208,15 @@ def add_maillist(mail, form, conn=None):
         conn.insert('maillists',
                     address=mail,
                     name=name,
-                    domain=domain)
+                    domain=domain,
+                    active=1)
+
+        conn.insert('forwardings',
+                    address=mail,
+                    domain=domain,
+                    forwarding=mail,
+                    dest_domain=domain,
+                    active=1)
 
         logger.info('[{}] {}, created.'.format(web.ctx.ip, mail))
         return (True, )
@@ -242,6 +241,10 @@ def remove_maillist(mail, conn=None):
                     vars={'mail': mail},
                     where='address=$mail')
 
+        conn.delete('forwardings',
+                    vars={'mail': mail},
+                    where='address=$mail')
+
         return (True, )
     except Exception, e:
         logger.error("SQL error: {}".format(e))
@@ -252,7 +255,9 @@ def update_maillist(mail, form, conn=None):
     """
     Update mailing list account.
 
-    Current only parameter `name` is stored in backend.
+    Parameters stored in backend:
+
+    @name
     """
     mail = str(mail).lower()
 
