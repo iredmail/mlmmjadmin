@@ -142,6 +142,8 @@ MLMMJ_LIST_WEB_PARAMS = {
     # `listaddress` is not required and should be hiden
     #'listaddress': 'listaddress',
     'owner': 'owner',
+    'owners': 'owner',  # this is an alias to 'owner'
+    'moderators': 'moderators',
 }
 
 MLMMJ_NORMAL_WEB_PARAMS = {
@@ -170,7 +172,6 @@ MLMMJ_OTHER_WEB_PARAMS = {
     'name': 'name',
     'moderate_subscription': 'moderate_subscription',
     'subscription_moderators': 'subscription_moderators',
-    'moderators': 'moderators',
     'footer_text': 'footer_text',
     'footer_html': 'footer_html',
 }
@@ -184,9 +185,9 @@ MLMMJ_OTHER_PARAM_MAP = {
     'subscription_moderators': {'mlmmj_param': 'submod',
                                 'type': 'list',
                                 'is_email': True},
-    'moderators': {'mlmmj_param': 'moderators',
-                   'type': 'list',
-                   'is_email': True},
+    #'moderators': {'mlmmj_param': 'moderators',
+    #               'type': 'list',
+    #               'is_email': True},
     # mlmmj's built-in footer support is very bad, we use 'altermime' to handle
     # the footer. And we will generate two files for this purpose:
     #   - control/footer-text: footer in plain text
@@ -246,6 +247,11 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     # different subscription types
     'disable_digest_subscription': 'yes',
     'disable_nomail_subscription': 'yes',
+    # notification about postings being denied
+    'disable_notify_when_missing_listaddress': 'yes',
+    'disable_notify_when_access_denied': 'yes',
+    'disable_notify_when_subscriber_only': 'yes',
+    'disable_notify_when_moderator_only': 'yes',
 }
 
 # Ignore values submitted from API client, always set certain parameters to

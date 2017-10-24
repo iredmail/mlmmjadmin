@@ -289,7 +289,7 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
             else:
                 open(param_file, 'w').close()
 
-            if param == 'modonlypost':
+            if param in ['modonlypost', 'submod']:
                 # Create 'control/moderated' also
                 _f = __get_param_file(mail=mail, param='moderated')
                 open(_f, 'a').close()
@@ -301,10 +301,11 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
     else:
         _files = [param_file]
 
-        if param == 'modonlypost':
-            # Remove 'control/moderated' also
-            _f = __get_param_file(mail=mail, param='moderated')
-            _files += [_f]
+        # TODO some other files requires 'control/moderated'
+        #if param in ['modonlypost', 'submod']:
+        #    # Remove 'control/moderated' also
+        #    _f = __get_param_file(mail=mail, param='moderated')
+        #    _files += [_f]
 
         for f in _files:
             if __has_param_file(f):
@@ -314,7 +315,7 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
                     logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, f, e))
                     return (False, repr(e))
 
-    logger.debug("[{}] {}, updated (boolean) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{}] {}, updated (boolean) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -349,7 +350,7 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
                 logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
                 return (False, repr(e))
 
-    logger.debug("[{}] {}, updated (normal) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{}] {}, updated (normal) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -374,12 +375,15 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
-        # TODO: create an empty file or remove it?
-        # Create an empty file
-        with open(param_file, 'w'):
-            pass
+        # remove it
+        if __has_param_file(param_file):
+            try:
+                os.remove(param_file)
+            except Exception, e:
+                logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
+                return (False, repr(e))
 
-    logger.debug("[{}] {}, updated (list) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{}] {}, updated (list) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -408,7 +412,7 @@ def __update_text_param(mail, param, value, param_file=None):
                 logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
                 return (False, repr(e))
 
-    logger.debug("[{}] {}, updated (text) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{}] {}, updated (text) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -488,7 +492,7 @@ def __update_mlmmj_params(mail, **kwargs):
 def __convert_web_param_value_to_list(value, is_email=False):
     try:
         # Split by ',' and remove empty values
-        v = [i for i in value.strip(' ').split(',') if i]
+        v = [i for i in value.replace(' ', '').split(',') if i]
     except:
         v = []
 

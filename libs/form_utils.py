@@ -67,8 +67,8 @@ def __get_dict_for_list_params(mail, form, param):
             if v.lower() not in _values_lower:
                 _values.append(v)
 
-    if _values:
-        kv = {settings.MLMMJ_LIST_WEB_PARAMS[param]: _values}
+    # Always return a dict even value is empty.
+    kv = {settings.MLMMJ_LIST_WEB_PARAMS[param]: _values}
 
     return kv
 
@@ -76,11 +76,10 @@ def __get_dict_for_list_params(mail, form, param):
 def __get_dict_for_normal_params(form, param):
     kv = {}
 
-    if param in form:
-        v = form.get(param, '')
+    v = form.get(param, '')
 
-        # Always return a dict even value is empty.
-        kv = {settings.MLMMJ_NORMAL_WEB_PARAMS[param]: v}
+    # Always return a dict even value is empty.
+    kv = {settings.MLMMJ_NORMAL_WEB_PARAMS[param]: v}
 
     return kv
 
@@ -88,11 +87,10 @@ def __get_dict_for_normal_params(form, param):
 def __get_dict_for_text_params(form, param):
     kv = {}
 
-    if param in form:
-        v = form.get(param, '')
+    v = form.get(param, '')
 
-        # Always return a dict even value is empty.
-        kv = {settings.MLMMJ_TEXT_WEB_PARAMS[param]: v}
+    # Always return a dict even value is empty.
+    kv = {settings.MLMMJ_TEXT_WEB_PARAMS[param]: v}
 
     return kv
 
