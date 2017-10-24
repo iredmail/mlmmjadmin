@@ -289,7 +289,7 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
             else:
                 open(param_file, 'w').close()
 
-            if param in ['modonlypost', 'submod']:
+            if param in ['modonlypost']:
                 # Create 'control/moderated' also
                 _f = __get_param_file(mail=mail, param='moderated')
                 open(_f, 'a').close()
@@ -580,6 +580,10 @@ def add_maillist_from_web_form(mail, form):
     """
     # Store key:value of mlmmj parameters
     kvs = {}
+
+    # Always set 'owner' to 'postmaster@<domain>'
+    domain = mail.split('@', 1)[-1]
+    form['owner'] = 'postmaster@' + domain
 
     # Add empty values for 'remove_headers', 'custom_headers'. This will
     # trigger form process functions to add pre-defined default values.
