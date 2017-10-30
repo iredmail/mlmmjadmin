@@ -250,6 +250,8 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     # Retrieving old posts
     'disable_retrieving_old_posts': 'yes',
     'only_subscriber_can_get_old_posts': 'yes',
+    # moderate subscription
+    'moderate_subscription': 'yes',
     # different subscription types
     #'disable_digest_subscription': 'yes',
     #'disable_nomail_subscription': 'yes',
