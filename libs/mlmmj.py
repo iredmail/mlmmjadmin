@@ -593,6 +593,8 @@ def add_maillist_from_web_form(mail, form):
     if 'custom_headers' not in form:
         form['custom_headers'] = ''
 
+    kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
+
     # Add (missing) default settings
     _form = settings.MLMMJ_DEFAULT_PROFILE_SETTINGS
     for param in _form:
