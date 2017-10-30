@@ -593,8 +593,6 @@ def add_maillist_from_web_form(mail, form):
     if 'custom_headers' not in form:
         form['custom_headers'] = ''
 
-    kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
-
     # Add (missing) default settings
     _form = settings.MLMMJ_DEFAULT_PROFILE_SETTINGS
     for param in _form:
@@ -703,6 +701,30 @@ def update_web_form_params(mail, form):
     """Update mailing list profile with web form."""
     kvs = {}
     kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
+
+    # Both 'moderate_subscription' and 'subscription_moderators' use same
+    # mlmmj parameter name 'submod'
+    if 'moderate_subscription' in form and 'subscription_moderators' in form:
+        _mod = form.get('moderate_subscription')
+        _moderators = form.get('subscription_moderators')
+
+        if _mod == 'yes':
+            if _moderators:
+                # If there's some moderators, it will create 'submod' file
+                # with emails of moderators. If file 'submod' presents, it
+                # means moderation subscription is enabled. So we should remove
+                # 'moderate_subscription' parameter here to avoid improper
+                # file removal or re-creation (with empty content)
+                kvs.pop('moderate_subscription')
+            else:
+                # If no subscription moderators, use an empty 'submod' file
+                # and use mailing list owners as subscription moderators.
+                kvs.pop('subscription_moderators')
+        else:
+            # remove 'subscription_moderators' and let mlmmj-admin remove
+            # 'submod' directly.
+            kvs.pop('subscription_moderators')
+
     qr = __update_mlmmj_params(mail=mail, **kvs)
 
     return qr
