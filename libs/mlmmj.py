@@ -301,12 +301,6 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
     else:
         _files = [param_file]
 
-        # TODO some other files requires 'control/moderated'
-        #if param in ['modonlypost', 'submod']:
-        #    # Remove 'control/moderated' also
-        #    _f = __get_param_file(mail=mail, param='moderated')
-        #    _files += [_f]
-
         for f in _files:
             if __has_param_file(f):
                 try:
@@ -504,6 +498,35 @@ def __convert_web_param_value_to_list(value, is_email=False):
 
 def __convert_form_to_mlmmj_params(mail, form):
     """Convert variables in web form to (a dict of) mlmmj parameters."""
+    # Both 'moderate_subscription' and 'subscription_moderators' use same
+    # mlmmj parameter name 'submod'
+    if 'moderate_subscription' in form and 'subscription_moderators' in form:
+        _mod = form.get('moderate_subscription')
+        _moderators = form.get('subscription_moderators')
+
+        if _mod == 'yes':
+            if _moderators:
+                # If there's some moderators, it will create 'submod' file
+                # with emails of moderators. If file 'submod' presents, it
+                # means moderation subscription is enabled. So we should remove
+                # 'moderate_subscription' parameter here to avoid improper
+                # file removal or re-creation (with empty content)
+                form.pop('moderate_subscription')
+            else:
+                # If no subscription moderators, use an empty 'submod' file
+                # and use mailing list owners as subscription moderators.
+                form.pop('subscription_moderators')
+        else:
+            # remove 'subscription_moderators' and let mlmmj-admin remove
+            # 'submod' directly.
+            form.pop('subscription_moderators')
+
+    # solve conflict of 'only_moderator_can_post' and 'only_subscriber_can_post'
+    # 'only_moderator_can_post' should has higher priority
+    if 'only_moderator_can_post' in form and 'only_subscriber_can_post' in form:
+        if form.get('only_moderator_can_post') == 'yes':
+            form['only_subscriber_can_post'] = 'no'
+
     # Store key:value of mlmmj parameters
     kvs = {}
 
@@ -578,12 +601,10 @@ def add_maillist_from_web_form(mail, form):
     @mail - mail address of mailing list account
     @form - a dict of web form input
     """
-    # Store key:value of mlmmj parameters
-    kvs = {}
-
-    # Always set 'owner' to 'postmaster@<domain>'
     domain = mail.split('@', 1)[-1]
-    form['owner'] = 'postmaster@' + domain
+
+    # Store mlmmj parameters
+    kvs = {}
 
     # Add empty values for 'remove_headers', 'custom_headers'. This will
     # trigger form process functions to add pre-defined default values.
@@ -594,6 +615,14 @@ def add_maillist_from_web_form(mail, form):
         form['custom_headers'] = ''
 
     kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
+
+    # Set 'owner' to 'postmaster@<domain>'
+    if 'owner' not in form:
+        form['owner'] = 'postmaster@' + domain
+
+    # Set 'owner' to 'postmaster@<domain>'
+    if 'moderators' not in form:
+        form['moderators'] = 'postmaster@' + domain
 
     # Add (missing) default settings
     _form = settings.MLMMJ_DEFAULT_PROFILE_SETTINGS
@@ -703,29 +732,6 @@ def update_web_form_params(mail, form):
     """Update mailing list profile with web form."""
     kvs = {}
     kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
-
-    # Both 'moderate_subscription' and 'subscription_moderators' use same
-    # mlmmj parameter name 'submod'
-    if 'moderate_subscription' in form and 'subscription_moderators' in form:
-        _mod = form.get('moderate_subscription')
-        _moderators = form.get('subscription_moderators')
-
-        if _mod == 'yes':
-            if _moderators:
-                # If there's some moderators, it will create 'submod' file
-                # with emails of moderators. If file 'submod' presents, it
-                # means moderation subscription is enabled. So we should remove
-                # 'moderate_subscription' parameter here to avoid improper
-                # file removal or re-creation (with empty content)
-                kvs.pop('moderate_subscription')
-            else:
-                # If no subscription moderators, use an empty 'submod' file
-                # and use mailing list owners as subscription moderators.
-                kvs.pop('subscription_moderators')
-        else:
-            # remove 'subscription_moderators' and let mlmmj-admin remove
-            # 'submod' directly.
-            kvs.pop('subscription_moderators')
 
     qr = __update_mlmmj_params(mail=mail, **kvs)
 
