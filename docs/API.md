@@ -40,6 +40,7 @@ Parameter | Sample Usage | Default Value | Comment
 `subscription_moderators` | `subscription_moderators=<mail1>,<mail2>,<mail3>` | | Specify subscription moderators. Note: if `subscription_moderators` is given, `moderate_subscription` will be set to `yes` automatically. If no valid moderators are given, subscription will be moderated by owner(s).
 `owner` | `owner=<mail1>,<mail2>,<mail3>` | | Define owner(s) of the mailing list. Owners will get mails sent to `<listname>+owner@<domain.com>`.
 `moderators` | `moderators=<mail1>,<mail2>` | | Specify moderators of the mailing list. Set to empty value will remove all existing moderators.
+`maxmailsize` | `maxmailsize=10240` | | Specify max mail message size in __bytes__.
 `subject_prefix` | `subject_prefix=[prefix text]` | | Add a prefix in the `Subject:` line of mails sent to the list. Set to empty value to remove it.
 `custom_headers` | `custom_headers=<header1>:<value1>\n<header2>:<value2>` | | Add custom headers to every mail coming through. Multiple headers must be separated by `\n`. Set empty value to remove it. Note: mlmmj-admin will always add `X-Mailing-List: <mail>` and `Reply-To: <mail>` for each mailing list account.
 `remove_headers` | `remove_headers=Message-ID,Received` | | Remove given mail headers. NOTE: either `header:` or `header` (without `:`) is ok. Note: mlmmj-admin will always remove `DKIM-Signature:` and `Authentication-Results:`.
