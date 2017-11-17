@@ -389,11 +389,15 @@ def __update_text_param(mail, param, value, param_file=None):
         try:
             if isinstance(value, int):
                 value = str(value)
+            else:
+                value = value.strip()
 
             value = value.encode('utf-8')
 
+            # Footer text/html must ends with an empty line, otherwise
+            # the characters will be a mess.
             with open(param_file, 'w') as f:
-                f.write(value)
+                f.write(value + '\n')
         except Exception, e:
             logger.error("[{}] {}, error while updating (normal) parameter: {} -> {}, {}".format(
                 web.ctx.ip, mail, param, value, e))
