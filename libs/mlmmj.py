@@ -614,8 +614,6 @@ def add_maillist_from_web_form(mail, form):
     if 'custom_headers' not in form:
         form['custom_headers'] = ''
 
-    kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
-
     # Set 'owner' to 'postmaster@<domain>'
     if 'owner' not in form:
         form['owner'] = 'postmaster@' + domain
@@ -623,6 +621,8 @@ def add_maillist_from_web_form(mail, form):
     # Set 'owner' to 'postmaster@<domain>'
     if 'moderators' not in form:
         form['moderators'] = 'postmaster@' + domain
+
+    kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
 
     # Add (missing) default settings
     _form = settings.MLMMJ_DEFAULT_PROFILE_SETTINGS
@@ -732,7 +732,4 @@ def update_web_form_params(mail, form):
     """Update mailing list profile with web form."""
     kvs = {}
     kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
-
-    qr = __update_mlmmj_params(mail=mail, **kvs)
-
-    return qr
+    return __update_mlmmj_params(mail=mail, **kvs)
