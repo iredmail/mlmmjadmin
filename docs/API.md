@@ -8,7 +8,7 @@ Replace `<mail>` by real email address of the mailing list account.
 
 HTTP Method | URI | Comment
 ---|---|---
-GET     | `/api/<mail>` | Get profile of an existing mailing list account.
+GET     | `/api/<mail>` | Get profile of an existing mailing list account. It returns all profile parameters by default, if you just want few of them, specify `params` for this purpose, multiple parameters must be separated by comma. For example, `/api/<mail>?params=close_list,archive`.
 POST    | `/api/<mail>` | Create a new mailing list account.
 DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.

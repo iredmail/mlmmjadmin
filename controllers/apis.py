@@ -23,8 +23,20 @@ class MLProfile:
         if not mlmmj.is_maillist_exists(mail):
             return api_render((False, 'NO_MAILLIST_DIR'))
 
+        # Get specified profile parameters.
+        # If parameters are given, get values of them instead of all profile
+        # parameters.
+        form = web.input(_unicode=False)
+        _web_params = form.get('params', '').lower().strip().replace(' ', '').split(',')
+        _web_params = [p for p in _web_params if p in settings.MLMMJ_WEB_PARAMS]
+
+        if _web_params:
+            web_params = _web_params
+        else:
+            web_params = settings.MLMMJ_WEB_PARAMS
+
         kvs = {}
-        for _param in settings.MLMMJ_WEB_PARAMS:
+        for _param in web_params:
             qr = mlmmj.get_web_param_value(mail=mail, param=_param)
             if qr[0]:
                 kvs[_param] = qr[1]['value']
