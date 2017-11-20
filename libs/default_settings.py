@@ -108,10 +108,7 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
     # Note: only owner can send to such address.
     'disable_retrieving_subscribers': 'nolistsubsemail',
 
-    'nomaxmailsizedenymails': 'nomaxmailsizedenymails',
-    #'nomodonlydenymails': 'nomodonlydenymails',
-
-    'notify_poster_when_moderated': 'notifymod',
+    'notify_sender_when_moderated': 'notifymod',
     'notify_owner_when_sub_unsub': 'notifysub',
     'disable_send_copy_to_sender': 'notmetoo',
 
@@ -125,6 +122,7 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
     'disable_notify_when_access_denied': 'noaccessdenymails',
     'disable_notify_when_subscriber_only': 'nosubonlydenymails',
     'disable_notify_when_moderator_only': 'nomodonlydenymails',
+    'disable_notify_when_exceeding_max_mail_size': 'nomaxmailsizedenymails',
 
     'disable_archive': 'noarchive',
     #'tocc': 'tocc',
@@ -245,7 +243,7 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     'only_moderator_can_post': 'no',
     'moderate_non_subscriber_post': 'no',
     'notify_owner_when_sub_unsub': 'no',
-    'notify_poster_when_moderated': 'no',
+    'notify_sender_when_moderated': 'no',
     'disable_archive': 'no',
     # Retrieving old posts
     'disable_retrieving_old_posts': 'yes',
