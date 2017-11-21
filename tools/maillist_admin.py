@@ -18,19 +18,35 @@ Samples:
 
     *) Get settings of an existing mailing list account
 
-        python maillist_admin.py info listname@domain.com
+        python maillist_admin.py info list@domain.com
 
     *) Create a new mailing list account with additional setting:
 
-        python maillist_admin.py create listname@domain.com only_subscriber_can_post=yes disable_archive=no
+        python maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no
 
     *) Update an existing mailing list account
 
-        python maillist_admin.py update listname@domain.com only_moderator_can_post=yes disable_subscription=yes
+        python maillist_admin.py update list@domain.com only_moderator_can_post=yes disable_subscription=yes
 
     *) Delete an existing mailing list account
 
-        python maillist_admin.py delete listname@domain.com archive=yes
+        python maillist_admin.py delete list@domain.com archive=yes
+
+    *) Get all subscribers:
+
+        python maillist_admin.py subscribers list@domain.com
+
+    *) Get subscribers which subscribed to `normal` version:
+
+        python maillist_admin.py subscribers_normal list@domain.com
+
+    *) Get subscribers which subscribed to `digest` version:
+
+        python maillist_admin.py subscribers_digest list@domain.com
+
+    *) Get subscribers which subscribed to `nomail` version:
+
+        python maillist_admin.py subscribers_nomail list@domain.com
 """
 
 if len(sys.argv) < 3:
@@ -48,7 +64,11 @@ api_auth_token = settings.api_auth_tokens[0]
 api_headers = {settings.API_AUTH_TOKEN_HEADER_NAME: api_auth_token}
 
 action = sys.argv[1]
-if action not in ['info', 'create', 'update', 'delete']:
+if action not in ['info', 'create', 'update', 'delete',
+                  'subscribers',
+                  'subscribers_normal',
+                  'subscribers_digest',
+                  'subscribers_nomail']:
     sys.exit('Invalid action: {}, must be one of: info, create, update, delete.'.format(action))
 
 mail = sys.argv[2]
@@ -102,3 +122,12 @@ elif action == 'delete':
             print "Removed {} (without archive).".format(mail)
     else:
         print "Error while removing account {}: {}".format(mail, _json['_msg'])
+elif action in ['subscribers_normal', 'subscribers_nomail', 'subscribers_digest']:
+    url = api_url + '/' + action.replace('_', '/') + '?combined=yes'
+    r = requests.get(url, headers=api_headers, verify=verify_ssl)
+    _json = r.json()
+    if _json['_success']:
+        for i in _json['_data']:
+            print i
+    else:
+        print "Error while querying account {}: {}".format(mail, _json['_msg'])

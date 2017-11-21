@@ -8,13 +8,34 @@ from libs.logger import logger
 import settings
 
 
+subscription_versions = ['normal', 'nomail', 'digest']
+
 def __get_ml_dir(mail):
+    """Get absolute path of the root directory of mailing list account."""
     if not utils.is_email(mail):
         return None
 
+    mail = str(mail).lower()
     (_username, _domain) = mail.split('@', 1)
 
     return os.path.join(settings.MLMMJ_SPOOL_DIR, _domain, _username)
+
+
+def __get_ml_subscribers_dir(mail, subscription):
+    """
+    Get absolute path of the directory used to store subscribers which
+    subscribed to given subscription version.
+
+    @mail -- mail address of mailing list account
+    @subscription -- subscription version: normal, nomail, digest.
+    """
+    if subscription == 'digest':
+        return os.path.join(__get_ml_dir(mail=mail), 'digesters.d')
+    elif subscription == 'nomail':
+        return os.path.join(__get_ml_dir(mail=mail), 'nomailsubs.d')
+    else:
+        # subscription == 'normal'
+        return os.path.join(__get_ml_dir(mail=mail), 'subscribers.d')
 
 
 def __remove_ml_sub_dir(mail, dirname):
@@ -115,7 +136,7 @@ def __remove_param_file(mail, param, param_file=None):
 def __get_param_type(param):
     """Get parameter type.
 
-    Param type must be one of: boolean, list, normal, text, or None (no such
+    Possible param type must be one of: boolean, list, normal, text, or None (no such
     param).
     """
     for (_type, _param_dict) in settings.MLMMJ_PARAM_TYPES.items():
@@ -737,3 +758,35 @@ def update_web_form_params(mail, form):
     kvs = {}
     kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
     return __update_mlmmj_params(mail=mail, **kvs)
+
+
+def get_subscribers(mail, subscription, combined=False):
+    """Get subscribers of given subscription version.
+
+    @mail -- mail address of mailing list account
+    @subscription -- subscription version: normal, nomail, digest.
+    @combined -- combine all subscribers into a list. Defaults to a dict with
+                 beginning letter as key.
+    """
+    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+
+    # Make sure directory exists
+    try:
+        fns = os.listdir(_dir)
+    except Exception, e:
+        return (False, repr(e))
+
+    if combined:
+        subscribers = set()
+        for fn in fns:
+            _addresses = [str(i).lower().strip() for i in open(os.path.join(_dir, fn)).readlines()]
+            subscribers.update(_addresses)
+
+        subscribers = list(subscribers)
+    else:
+        subscribers = {}
+        for fn in fns:
+            _addresses = [str(i).lower().strip() for i in open(os.path.join(_dir, fn)).readlines()]
+            subscribers[fn] = list(set(_addresses))
+
+    return (True, subscribers)

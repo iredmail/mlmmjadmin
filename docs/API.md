@@ -12,6 +12,8 @@ GET     | `/api/<mail>` | Get profile of an existing mailing list account. It re
 POST    | `/api/<mail>` | Create a new mailing list account.
 DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.
+GET     | `/api/<mail>/subscribers` | Get subscribers of all subscription versions.
+GET     | `/api/<mail>/subscribers/(normal|nomail|digest)` | Get subscribers of given subscription versions (`normal`, `nomail`, `digest`). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
 
 ## Parameters used to create or update mailing list account
 
