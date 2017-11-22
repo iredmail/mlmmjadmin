@@ -783,10 +783,12 @@ def get_subscribers(mail, subscription, combined=False):
             subscribers.update(_addresses)
 
         subscribers = list(subscribers)
+        subscribers.sort()
     else:
         subscribers = {}
         for fn in fns:
             _addresses = [str(i).lower().strip() for i in open(os.path.join(_dir, fn)).readlines()]
             subscribers[fn] = list(set(_addresses))
+            subscribers[fn].sort()
 
     return (True, subscribers)
