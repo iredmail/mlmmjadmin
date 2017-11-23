@@ -19,9 +19,6 @@ class Subscribers(object):
         @mail -- email address of the mailing list account
         @version -- possible subscription versions: normal, digest, nomail.
         """
-        if subscription not in mlmmj.subscription_versions:
-            return api_render((False, 'INVALID_SUBSCRIPTION_VERSION'))
-
         # Get extra parameters.
         form = web.input(_unicode=False)
 
@@ -41,3 +38,16 @@ class Subscribers(object):
         @version -- possible subscription versions: normal, digest, nomail.
         """
         pass
+
+
+class RemoveSubscriber(object):
+    @api_acl
+    def DELETE(self, mail, subscription, subscriber):
+        """
+        Remove single subscriber from given subscription version.
+
+        @mail -- email address of the mailing list account
+        @subscription -- possible subscription versions: normal, digest, nomail.
+        """
+        qr = mlmmj.remove_subscriber(mail=mail, subscriber=subscriber, subscription=subscription)
+        return api_render(qr)

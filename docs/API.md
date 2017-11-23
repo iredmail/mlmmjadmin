@@ -4,7 +4,8 @@
 
 ## API Endpoints
 
-Replace `<mail>` by real email address of the mailing list account.
+* Replace `<mail>` by real email address of the mailing list account.
+* Replace `<subscriber>` by real email address of the subscriber.
 
 HTTP Method | URI | Comment
 ---|---|---
@@ -14,6 +15,7 @@ DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.
 GET     | `/api/<mail>/subscribers` | Get subscribers of all subscription versions.
 GET     | `/api/<mail>/subscribers/(normal|nomail|digest)` | Get subscribers of given subscription versions (`normal`, `nomail`, `digest`). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
+DELETE | `/api/<mail>/remove_subscriber/(normal|nomail|digest)/<subscriber>` | Remove single subscriber from mailing list.
 
 ## Parameters used to create or update mailing list account
 

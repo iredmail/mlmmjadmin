@@ -604,6 +604,33 @@ def __archive_ml(mail):
     return (True, )
 
 
+def __remove_line_in_file(f, line):
+    """
+    Remove line from given file.
+
+    @f -- path to file
+    @line -- the content of a line you want to remove
+    """
+    if not os.path.exists(f):
+        return (True, )
+
+    try:
+        with open(f, 'r') as nf:
+            lines = nf.readlines()
+
+        for l in lines:
+            if l.strip() == line:
+                lines.remove(l)
+                with open(f, 'w') as nf:
+                    nf.write(''.join(lines))
+
+                break
+
+        return (True, )
+    except Exception, e:
+        return (False, repr(e))
+
+
 def is_maillist_exists(mail):
     if __has_ml_dir(mail):
         return True
@@ -792,3 +819,21 @@ def get_subscribers(mail, subscription, combined=False):
             subscribers[fn].sort()
 
     return (True, subscribers)
+
+
+def remove_subscriber(mail, subscriber, subscription='normal'):
+    """Remove single subscriber from given subscription version.
+
+    @mail -- mail address of mailing list account
+    @subscriber -- mail address of subscriber
+    @subscription -- subscription version: normal, nomail, digest.
+    """
+    mail = mail.lower()
+    subscriber = subscriber.lower()
+
+    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+
+    # Get file stores the subscriber.
+    path = os.path.join(_dir, subscriber[0])
+
+    return __remove_line_in_file(f=path, line=subscriber)
