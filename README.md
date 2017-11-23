@@ -61,7 +61,7 @@ $ echo $RANDOM | md5
 api_auth_tokens = ['43a89b7aa34354089e629ed9f9be0b3b']
 ```
 
-You can add as many token as you want by different API clients.
+You can add as many token as you want for different API clients.
 
 * Choose a proper mailing list backend and add required parameters.
 
@@ -148,6 +148,38 @@ curl \
     --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
     http://127.0.0.1:7779/list@domain.com
 ```
+
+## Manage mailing lists from command line
+
+Script `tools/maillist_admin.py` supports basic management from command line.
+
+* Get settings of an existing mailing list account
+
+    python maillist_admin.py info list@domain.com
+
+* Create a new mailing list account with additional setting:
+
+    python maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no
+
+* Update an existing mailing list account
+
+    python maillist_admin.py update list@domain.com only_moderator_can_post=yes disable_subscription=yes
+
+* Delete an existing mailing list account
+
+    python maillist_admin.py delete list@domain.com archive=yes
+
+* Get subscribers which subscribed to `normal` version:
+
+    python maillist_admin.py subscribers_normal list@domain.com
+
+* Get subscribers which subscribed to `digest` version:
+
+    python maillist_admin.py subscribers_digest list@domain.com
+
+* Get subscribers which subscribed to `nomail` version:
+
+    python maillist_admin.py subscribers_nomail list@domain.com
 
 ## Tips
 
