@@ -155,31 +155,31 @@ Script `tools/maillist_admin.py` supports basic management from command line.
 
 * Get settings of an existing mailing list account
 
-    python maillist_admin.py info list@domain.com
+```python maillist_admin.py info list@domain.com```
 
 * Create a new mailing list account with additional setting:
 
-    python maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no
+```python maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no```
 
 * Update an existing mailing list account
 
-    python maillist_admin.py update list@domain.com only_moderator_can_post=yes disable_subscription=yes
+```python maillist_admin.py update list@domain.com only_moderator_can_post=yes disable_subscription=yes```
 
 * Delete an existing mailing list account
 
-    python maillist_admin.py delete list@domain.com archive=yes
+```python maillist_admin.py delete list@domain.com archive=yes```
 
 * Get subscribers which subscribed to `normal` version:
 
-    python maillist_admin.py subscribers_normal list@domain.com
+```python maillist_admin.py subscribers_normal list@domain.com```
 
 * Get subscribers which subscribed to `digest` version:
 
-    python maillist_admin.py subscribers_digest list@domain.com
+```python maillist_admin.py subscribers_digest list@domain.com```
 
 * Get subscribers which subscribed to `nomail` version:
 
-    python maillist_admin.py subscribers_nomail list@domain.com
+```python maillist_admin.py subscribers_nomail list@domain.com```
 
 ## Tips
 

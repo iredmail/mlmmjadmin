@@ -32,10 +32,6 @@ Samples:
 
         python maillist_admin.py delete list@domain.com archive=yes
 
-    *) Get all subscribers:
-
-        python maillist_admin.py subscribers list@domain.com
-
     *) Get subscribers which subscribed to `normal` version:
 
         python maillist_admin.py subscribers_normal list@domain.com
