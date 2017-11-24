@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS maillists (
     address VARCHAR(255) NOT NULL DEFAULT '',
     domain VARCHAR(255) NOT NULL DEFAULT '',
     name VARCHAR(255) NOT NULL DEFAULT '',
+    -- a server-wide unique id (a 36-characters string) for each mailing list
+    mlid VARCHAR(36) NOT NULL DEFAULT '',
     settings TEXT,
     created DATETIME NOT NULL DEFAULT '1970-01-01 01:01:01',
     modified DATETIME NOT NULL DEFAULT '1970-01-01 01:01:01',
@@ -19,6 +21,7 @@ CREATE TABLE IF NOT EXISTS maillists (
     active TINYINT(1) NOT NULL DEFAULT 1,
     PRIMARY KEY (id),
     UNIQUE INDEX (address),
+    UNIQUE INDEX (mlid),
     INDEX (domain),
     INDEX (active)
 ) ENGINE=InnoDB;

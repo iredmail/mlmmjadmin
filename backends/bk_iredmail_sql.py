@@ -15,6 +15,7 @@
 #                           Read+write privilege is required.
 #   - iredmail_sql_db_password: SQL user password.
 
+import uuid
 import web
 from libs import utils
 from libs.logger import logger
@@ -158,7 +159,7 @@ def is_email_exists(mail, conn=None):
 
 
 def is_maillist_exists(mail, conn=None):
-    # Return True if mailing list account is invalid or exist.
+    """Return True if mailing list account is invalid or exist."""
     mail = str(mail).lower()
 
     if not utils.is_email(mail):
@@ -184,6 +185,54 @@ def is_maillist_exists(mail, conn=None):
         return True
 
 
+def __generate_mlid():
+    """Generate an server-wide unique uuid as mailing list id."""
+    return str(uuid.uuid4())
+
+def __is_mlid_exists(mlid, conn=None):
+    """Return True if mailing list id exists."""
+    mlid = str(mlid).lower()
+
+    if not conn:
+        _wrap = SQLWrap()
+        conn = _wrap.conn
+
+    try:
+        qr = conn.select('maillists',
+                         vars={'mlid': mlid},
+                         what='mlid',
+                         where='mlid=$mlid',
+                         limit=1)
+        if qr:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def __get_new_mlid(conn=None):
+    mlid = __generate_mlid()
+
+    if not conn:
+        _wrap = SQLWrap()
+        conn = _wrap.conn
+
+    _counter = 0
+    while True:
+        # Try 20 times.
+        if _counter >= 20:
+            raise ValueError("Cannot get an unique mailing list id after tried 20 times.")
+
+        if not __is_mlid_exists(mlid=mlid, conn=conn):
+            break
+        else:
+            _counter += 1
+            mlid = __generate_mlid()
+
+    return mlid
+
+
 def add_maillist(mail, form, conn=None):
     """Add required SQL records to add a mailing list account."""
     mail = str(mail).lower()
@@ -205,10 +254,12 @@ def add_maillist(mail, form, conn=None):
     name = form.get('name', '')
 
     try:
+        mlid = __get_new_mlid(conn=conn)
         conn.insert('maillists',
                     address=mail,
                     name=name,
                     domain=domain,
+                    mlid=mlid,
                     active=1)
 
         conn.insert('forwardings',
