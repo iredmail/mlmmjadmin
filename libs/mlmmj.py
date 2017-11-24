@@ -857,7 +857,7 @@ def remove_subscriber(mail, subscriber, subscription='normal'):
     # Get file stores the subscriber.
     path = os.path.join(_dir, subscriber[0])
 
-    return __remove_lines_in_file(f=path, line=[subscriber])
+    return __remove_lines_in_file(f=path, lines=[subscriber])
 
 
 def remove_subscribers(mail, subscribers, subscription='normal'):
