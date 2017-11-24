@@ -14,4 +14,6 @@ urls = [
     '/api/({})/subscribers/(normal|nomail|digest)$'.format(e), 'controllers.subscriber.Subscribers',
     # Remove single subscriber
     '/api/({})/remove_subscriber/(normal|nomail|digest)/({})$'.format(e, e), 'controllers.subscriber.RemoveSubscriber',
+    # Remove multiple subscribers
+    '/api/({})/remove_subscribers/(normal|nomail|digest)$'.format(e), 'controllers.subscriber.RemoveSubscribers',
 ]

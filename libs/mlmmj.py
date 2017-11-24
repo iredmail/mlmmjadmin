@@ -627,8 +627,12 @@ def __remove_lines_in_file(f, lines):
                 for line in lines:
                     if _l == line:
                         file_lines.remove(l)
-                        with open(f, 'w') as nf:
-                            nf.write(''.join(file_lines))
+                        if file_lines:
+                            with open(f, 'w') as nf:
+                                nf.write(''.join(file_lines))
+                        else:
+                            # Remove file
+                            os.remove(f)
 
                         break
         else:
@@ -636,8 +640,12 @@ def __remove_lines_in_file(f, lines):
             given_lines = [l.strip().lower() for l in lines]
 
             filtered_lines = set(stripped_file_lines) - set(given_lines)
-            with open(f, 'w') as nf:
-                nf.write(''.join(filtered_lines))
+            if filtered_lines:
+                with open(f, 'w') as nf:
+                    nf.write(''.join(filtered_lines))
+            else:
+                # Remove file
+                os.remove(f)
 
         return (True, )
     except Exception, e:
@@ -850,3 +858,36 @@ def remove_subscriber(mail, subscriber, subscription='normal'):
     path = os.path.join(_dir, subscriber[0])
 
     return __remove_lines_in_file(f=path, line=[subscriber])
+
+
+def remove_subscribers(mail, subscribers, subscription='normal'):
+    """Remove single subscriber from given subscription version.
+
+    @mail -- mail address of mailing list account
+    @subscribers -- a list/tuple/set of subscribers' email addresses
+    @subscription -- subscription version: normal, nomail, digest.
+    """
+    mail = mail.lower()
+    subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
+
+    if not subscribers:
+        return (True, )
+
+    grouped_subscribers = {}
+    for i in subscribers:
+        letter = i[0]
+
+        if letter in grouped_subscribers:
+            grouped_subscribers[letter].append(i)
+        else:
+            grouped_subscribers[letter] = [i]
+
+    # Get file stores the subscriber.
+    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+    for letter in grouped_subscribers:
+        path = os.path.join(_dir, letter)
+        qr = __remove_lines_in_file(f=path, lines=grouped_subscribers[letter])
+        if not qr[0]:
+            return qr
+
+    return (True, )
