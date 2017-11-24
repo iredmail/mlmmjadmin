@@ -604,27 +604,40 @@ def __archive_ml(mail):
     return (True, )
 
 
-def __remove_line_in_file(f, line):
+def __remove_lines_in_file(f, lines):
     """
     Remove line from given file.
 
     @f -- path to file
-    @line -- the content of a line you want to remove
+    @lines -- a list/dict/tuple of lines you want to remove
     """
+    if not lines:
+        return (True, )
+
     if not os.path.exists(f):
         return (True, )
 
     try:
-        with open(f, 'r') as nf:
-            lines = nf.readlines()
+        with open(f, 'r') as _f:
+            file_lines = _f.readlines()
 
-        for l in lines:
-            if l.strip() == line:
-                lines.remove(l)
-                with open(f, 'w') as nf:
-                    nf.write(''.join(lines))
+        if len(lines) == 1:
+            for l in file_lines:
+                _l = l.strip()
+                for line in lines:
+                    if _l == line:
+                        file_lines.remove(l)
+                        with open(f, 'w') as nf:
+                            nf.write(''.join(file_lines))
 
-                break
+                        break
+        else:
+            stripped_file_lines = [l.strip().lower() for l in file_lines]
+            given_lines = [l.strip().lower() for l in lines]
+
+            filtered_lines = set(stripped_file_lines) - set(given_lines)
+            with open(f, 'w') as nf:
+                nf.write(''.join(filtered_lines))
 
         return (True, )
     except Exception, e:
@@ -836,4 +849,4 @@ def remove_subscriber(mail, subscriber, subscription='normal'):
     # Get file stores the subscriber.
     path = os.path.join(_dir, subscriber[0])
 
-    return __remove_line_in_file(f=path, line=subscriber)
+    return __remove_lines_in_file(f=path, line=[subscriber])
