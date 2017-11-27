@@ -77,6 +77,7 @@ TODO `change_email` | `change_email=<mail>` || Change mailing list address to a 
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---
 `subscribers` | `subscribers=<mail>,<mail2>,<mail3>` | | Add multiple subscribers from mailing list. Multiple subscribers must be separated by comma.
+`require_confirm` | `require_confirm=yes` | `yes` | Send an email to subscriber for confirm. Subscriber will be added as member after confirmed.
 
 ## Parameters used to remove subscribers
 

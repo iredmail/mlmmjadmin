@@ -86,8 +86,17 @@ class AddSubscribers(object):
                         be separated by comma.
         """
         form = web.input()
+
+        require_confirm = True
+        if form.get('require_confirm') != 'yes':
+            require_confirm = False
+
         subscribers = form.get('subscribers', '').replace(' ', '').split(',')
         subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
 
-        qr = mlmmj.add_subscribers(mail=mail, subscribers=subscribers, subscription=subscription)
+        qr = mlmmj.add_subscribers(mail=mail,
+                                   subscribers=subscribers,
+                                   subscription=subscription,
+                                   require_confirm=require_confirm)
+
         return api_render(qr)

@@ -42,6 +42,12 @@ MLMMJ_SKEL_DIR = '/usr/share/mlmmj/text.skel'
 MLMMJ_FILE_PERMISSION = 0700
 
 #
+# Absolute path to mlmmj commands. If empty, will try /usr/bin and
+# /usr/local/bin automatically.
+#
+CMD_MLMMJ_SUB = ''
+
+#
 # Mapping of web form parameter names and mlmmj parameter names
 #
 # Mlmmj control mailing list profiles with multiple plain text files, for a

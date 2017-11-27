@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+import subprocess
 import web
 
 from libs import utils, form_utils
@@ -683,6 +684,56 @@ def __add_lines_in_file(f, lines, sort_before_saving=True):
         return (False, repr(e))
 
 
+def __add_subscribers_with_confirm(mail,
+                                   subscribers,
+                                   subscription='normal'):
+    """
+    Add subscribers with confirm.
+
+    @mail -- mail address of mailing list
+    @subscribers -- a list/tuple/set of subscribers' mail addresses
+    @subscription -- subscription version (normal, digest, nomail)
+    """
+    _dir = __get_ml_dir(mail)
+
+    # Get absolute path of command `mlmmj-sub`
+    _cmd_mlmmj_sub = settings.CMD_MLMMJ_SUB
+    if not _cmd_mlmmj_sub:
+        if os.path.exists('/usr/bin/mlmmj-sub'):
+            _cmd_mlmmj_sub = '/usr/bin/mlmmj-sub'
+        elif os.path.exists('/usr/local/bin/mlmmj-sub'):
+            _cmd_mlmmj_sub = '/usr/local/bin/mlmmj-sub'
+        else:
+            return (False, 'SUB_COMMAND_NOT_FOUND')
+
+    # mlmmj-sub arguments
+    #
+    # -L: Full path to list directory
+    # -a: Email address to subscribe
+    # -C: Request mail confirmation
+    # -d: Subscribe to `digest` version of the list
+    # -n: Subscribe to nomail version of the list
+    _cmd = [_cmd_mlmmj_sub, '-L', _dir, '-C']
+
+    if subscription == 'digest':
+        _cmd.append('-d')
+    elif subscription == 'nomail':
+        _cmd.append('-n')
+
+    _error = {}
+    for addr in subscribers:
+        try:
+            _new_cmd = _cmd[:] + ['-a', addr]
+            subprocess.Popen(_new_cmd, stdout=subprocess.PIPE)
+        except Exception, e:
+            _error[addr] = repr(e)
+
+    if not _error:
+        return (True, )
+    else:
+        return (False, repr(_error))
+
+
 def is_maillist_exists(mail):
     if __has_ml_dir(mail):
         return True
@@ -925,7 +976,7 @@ def remove_subscribers(mail, subscribers, subscription='normal'):
     return (True, )
 
 
-def add_subscribers(mail, subscribers, subscription='normal'):
+def add_subscribers(mail, subscribers, subscription='normal', require_confirm=True):
     """
     Add subscribers to given subscription version.
 
@@ -939,22 +990,29 @@ def add_subscribers(mail, subscribers, subscription='normal'):
     if not subscribers:
         return (True, )
 
-    grouped_subscribers = {}
-    for i in subscribers:
-        letter = i[0]
-
-        if letter in grouped_subscribers:
-            grouped_subscribers[letter].append(i)
-        else:
-            grouped_subscribers[letter] = [i]
-
-    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
-    for letter in grouped_subscribers:
-        # Get file stores the subscriber.
-        path = os.path.join(_dir, letter)
-
-        qr = __add_lines_in_file(f=path, lines=grouped_subscribers[letter])
+    if require_confirm:
+        qr = __add_subscribers_with_confirm(mail=mail,
+                                            subscribers=subscribers,
+                                            subscription=subscription)
         if not qr[0]:
             return qr
+    else:
+        grouped_subscribers = {}
+        for i in subscribers:
+            letter = i[0]
+
+            if letter in grouped_subscribers:
+                grouped_subscribers[letter].append(i)
+            else:
+                grouped_subscribers[letter] = [i]
+
+        _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+        for letter in grouped_subscribers:
+            # Get file stores the subscriber.
+            path = os.path.join(_dir, letter)
+
+            qr = __add_lines_in_file(f=path, lines=grouped_subscribers[letter])
+            if not qr[0]:
+                return qr
 
     return (True, )
