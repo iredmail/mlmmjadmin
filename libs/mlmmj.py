@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+import glob
 import subprocess
 import web
 
@@ -720,9 +721,18 @@ def __add_subscribers_with_confirm(mail,
     elif subscription == 'nomail':
         _cmd.append('-n')
 
+    # Directory used to store subscription confirm notifications
+    _subconf_dir = os.path.join(_dir, 'subconf')
+
     _error = {}
     for addr in subscribers:
         try:
+            # Remove confirm file generated before this request
+            _old_conf_files = glob.glob(os.path.join(_subconf_dir, '????????????????-' + addr.replace('@', '=')))
+            for _f in _old_conf_files:
+                os.remove(_f)
+
+            # Send new confirm
             _new_cmd = _cmd[:] + ['-a', addr]
             subprocess.Popen(_new_cmd, stdout=subprocess.PIPE)
         except Exception, e:
