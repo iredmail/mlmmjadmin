@@ -9,11 +9,12 @@ urls = [
     # Subscribers
     #
     # Get subscribers in all subscription versions
-    '/api/({})/subscribers$'.format(e), 'controllers.subscriber.Subscribers',
+    #'/api/({})/subscribers$'.format(e), 'controllers.subscriber.Subscribers',
     # Get subscribers in particular subscription version
     '/api/({})/subscribers/(normal|nomail|digest)$'.format(e), 'controllers.subscriber.Subscribers',
     # Remove single subscriber
     '/api/({})/remove_subscriber/(normal|nomail|digest)/({})$'.format(e, e), 'controllers.subscriber.RemoveSubscriber',
     # Remove multiple subscribers
     '/api/({})/remove_subscribers/(normal|nomail|digest)$'.format(e), 'controllers.subscriber.RemoveSubscribers',
+    '/api/({})/add_subscribers/(normal|nomail|digest)$'.format(e), 'controllers.subscriber.AddSubscribers',
 ]

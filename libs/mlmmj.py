@@ -652,6 +652,37 @@ def __remove_lines_in_file(f, lines):
         return (False, repr(e))
 
 
+def __add_lines_in_file(f, lines, sort_before_saving=True):
+    """
+    Add lines to given file.
+
+    @f -- path to file
+    @lines -- a list/dict/tuple of lines you want to remove
+    @sort_before_saving -- A switch to sort lines before saving.
+    """
+    if not lines:
+        return (True, )
+
+    file_lines = []
+    try:
+        if os.path.exists(f):
+            with open(f, 'r') as _f:
+                file_lines = _f.readlines()
+
+        lines = [i + '\n' for i in lines]
+        file_lines += lines
+
+        if sort_before_saving:
+            file_lines.sort()
+
+        with open(f, 'w') as nf:
+            nf.write(''.join(file_lines))
+
+        return (True, )
+    except Exception, e:
+        return (False, repr(e))
+
+
 def is_maillist_exists(mail):
     if __has_ml_dir(mail):
         return True
@@ -808,7 +839,7 @@ def update_web_form_params(mail, form):
     return __update_mlmmj_params(mail=mail, **kvs)
 
 
-def get_subscribers(mail, subscription, combined=False):
+def get_subscribers(mail, subscription=None, combined=False):
     """Get subscribers of given subscription version.
 
     @mail -- mail address of mailing list account
@@ -882,11 +913,47 @@ def remove_subscribers(mail, subscribers, subscription='normal'):
         else:
             grouped_subscribers[letter] = [i]
 
-    # Get file stores the subscriber.
     _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
     for letter in grouped_subscribers:
+        # Get file stores the subscriber.
         path = os.path.join(_dir, letter)
+
         qr = __remove_lines_in_file(f=path, lines=grouped_subscribers[letter])
+        if not qr[0]:
+            return qr
+
+    return (True, )
+
+
+def add_subscribers(mail, subscribers, subscription='normal'):
+    """
+    Add subscribers to given subscription version.
+
+    @mail -- mail address of mailing list account
+    @subscribers -- a list/tuple/set of subscribers' email addresses
+    @subscription -- subscription version: normal, nomail, digest.
+    """
+    mail = mail.lower()
+    subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
+
+    if not subscribers:
+        return (True, )
+
+    grouped_subscribers = {}
+    for i in subscribers:
+        letter = i[0]
+
+        if letter in grouped_subscribers:
+            grouped_subscribers[letter].append(i)
+        else:
+            grouped_subscribers[letter] = [i]
+
+    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+    for letter in grouped_subscribers:
+        # Get file stores the subscriber.
+        path = os.path.join(_dir, letter)
+
+        qr = __add_lines_in_file(f=path, lines=grouped_subscribers[letter])
         if not qr[0]:
             return qr
 

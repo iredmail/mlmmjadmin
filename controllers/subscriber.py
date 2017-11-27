@@ -63,9 +63,31 @@ class RemoveSubscribers(object):
         @mail -- email address of the mailing list account
         @subscription -- possible subscription versions: normal, digest, nomail.
         """
-        form = web.input(subscriber=[])
-        subscribers = [str(i).lower() for i in form.get('subscriber', []) if utils.is_email(i)]
-        print 10, 'subscribers:', subscribers
+        form = web.input(subscriber=[], _unicode=False)
+        subscribers = form.get('subscribers', '').replace(' ', '').split(',')
+        subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
 
         qr = mlmmj.remove_subscribers(mail=mail, subscribers=subscribers, subscription=subscription)
+        return api_render(qr)
+
+
+class AddSubscribers(object):
+    @api_acl
+    def POST(self, mail, subscription):
+        """
+        Add multiple subscribers to given subscription version.
+
+        @mail -- email address of the mailing list account
+        @subscription -- possible subscription versions: normal, digest, nomail.
+
+        Available parameters:
+
+        @subscribers -- email address of subscriber. Multiple subscribers must
+                        be separated by comma.
+        """
+        form = web.input()
+        subscribers = form.get('subscribers', '').replace(' ', '').split(',')
+        subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
+
+        qr = mlmmj.add_subscribers(mail=mail, subscribers=subscribers, subscription=subscription)
         return api_render(qr)
