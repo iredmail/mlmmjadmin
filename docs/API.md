@@ -13,9 +13,15 @@ GET     | `/api/<mail>` | Get profile of an existing mailing list account. It re
 POST    | `/api/<mail>` | Create a new mailing list account.
 DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.
-GET     | `/api/<mail>/subscribers/(normal|nomail|digest)` | Get subscribers of given subscription versions (`normal`, `nomail`, `digest`). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
-DELETE | `/api/<mail>/remove_subscriber/(normal|nomail|digest)/<subscriber>` | Remove single subscriber from mailing list.
-POST | `/api/<mail>/remove_subscribers/(normal|nomail|digest)` | Remove multiple subscribers from mailing list.
+GET     | `/api/<mail>/subscribers/normal` | Get subscribers which subscribed to `normal` version (receive all emails). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
+GET     | `/api/<mail>/subscribers/digest` | Get subscribers which subscribed to `digest` version. It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/digest?combined=yes`.
+GET     | `/api/<mail>/subscribers/nomail` | Get subscribers which subscribed to `nomail` version (don't receive any email). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/nomail?combined=yes`.
+DELETE | `/api/<mail>/remove_subscriber/normal/<subscriber>` | Remove single subscriber from `normal` version.
+DELETE | `/api/<mail>/remove_subscriber/digest/<subscriber>` | Remove single subscriber from `digest` version.
+DELETE | `/api/<mail>/remove_subscriber/nomail/<subscriber>` | Remove single subscriber from `nomail` version.
+POST | `/api/<mail>/remove_subscribers/normal` | Remove multiple subscribers from `normal` version.
+POST | `/api/<mail>/remove_subscribers/digest` | Remove multiple subscribers from `digest` version.
+POST | `/api/<mail>/remove_subscribers/nomail` | Remove multiple subscribers from `nomail` version.
 
 ## Parameters used to create or update mailing list account
 
@@ -52,24 +58,6 @@ Parameter | Sample Usage | Default Value | Comment
 `footer_text` | `footer_text=footer in plain text` || Append footer (in plain text format) to every email sent to the list.
 `footer_html` | `footer_text=<p>footer in html</p>` || Append footer (in html format) to every email sent to the list.
 
-Additional parameters used to update (`PUT /api/<mail>`) mailing list account:
-
-Parameter | Sample Usage | Default Value | Comment
----|---|---|---
-TODO `add_owner` | `add_owner=<mail1>,<mail2>,<mail3>` || Add new mailing list owner
-TODO `remove_owner` | `remove_owner=<mail1>,<mail2>,<mail3>` || Remove existing mailing list owner
-TODO `add_subscriber` | `add_subscriber=<mail1>,<mail2>,<mail3>` || Add new subscriber.
-TODO `add_subscriber_without_confirm` | `add_subscriber_without_confirm=<mail1>,<mail2>,<mail3>` || Add new subscriber without asking confirm from subscriber.
-TODO `add_moderator` | `add_moderator=<mail1>,<mail2>,<mail3>` || Add new moderator
-TODO `remove_moderator` | `remove_moderator=<mail1>,<mail2>,<mail3>` || Remove existing moderator 
-TODO `add_subscription_moderator` | `add_subscription_moderator=<mail1>,<mail2>,<mail3>` | | Add new subscription moderators. Note: if `add_subscription_moderator` is given, `moderate_subscription` will be set to `yes` automatically.
-TODO `remove_subscription_moderator` | `remove_subscription_moderator=<mail1>,<mail2>,<mail3>` | | Remove existing subscription moderators.
-TODO `add_custom_header` | `add_custom_header=<header1>:<value1>\r<header2>:<value2>` | | Add new custom headers
-TODO `remove_custom_header` | `remove_custom_header=<header1>,<header2>,<header3>` | | Remove existing custom headers
-TODO `add_removed_header` | `add_removed_header=<header1>:,<header2>:,<header3>:` | | Add new headers you want to remove
-TODO `remove_removed_header` | `remove_removed_header=<header1>:,<header2>:,<header3>:` | | Remove existing headers you want to remove
-TODO `change_email` | `change_email=<mail>` || Change mailing list address to a new one.
-
 ## Parameters used to add subscribers
 
 `POST /api/<mail>/add_subscribers/(normal|nomail|digest)`
@@ -97,3 +85,22 @@ Parameter | Sample Usage | Default Value | Comment
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---
 `archive` | `archive=yes` | `yes` | If set to `yes` (or no such parameter appended in URL), only account in (SQL/LDAP/...) backend will be removed (so that MTA won't accept new emails for this email address), but data on file system will be kept (by renaming the mailing list directory to `<listname>-<timestamp>`. If set to `no`, account in (SQL/LDAP/...) backend AND all data of this account on file system will be removed.
+
+## TODO Additional parameters used to update (`PUT /api/<mail>`) mailing list account:
+
+__TODO__
+
+Parameter | Sample Usage | Default Value | Comment
+---|---|---|---
+`add_owner` | `add_owner=<mail1>,<mail2>,<mail3>` || Add new mailing list owner
+`remove_owner` | `remove_owner=<mail1>,<mail2>,<mail3>` || Remove existing mailing list owner
+`add_moderator` | `add_moderator=<mail1>,<mail2>,<mail3>` || Add new moderator
+`remove_moderator` | `remove_moderator=<mail1>,<mail2>,<mail3>` || Remove existing moderator
+`add_subscription_moderator` | `add_subscription_moderator=<mail1>,<mail2>,<mail3>` | | Add new subscription moderators. Note: if `add_subscription_moderator` is given, `moderate_subscription` will be set to `yes` automatically.
+`remove_subscription_moderator` | `remove_subscription_moderator=<mail1>,<mail2>,<mail3>` | | Remove existing subscription moderators.
+`add_custom_header` | `add_custom_header=<header1>:<value1>\r<header2>:<value2>` | | Add new custom headers
+`remove_custom_header` | `remove_custom_header=<header1>,<header2>,<header3>` | | Remove existing custom headers
+`add_removed_header` | `add_removed_header=<header1>:,<header2>:,<header3>:` | | Add new headers you want to remove
+`remove_removed_header` | `remove_removed_header=<header1>:,<header2>:,<header3>:` | | Remove existing headers you want to remove
+`change_email` | `change_email=<mail>` || Change mailing list address to a new one.
+
