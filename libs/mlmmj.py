@@ -953,7 +953,7 @@ def remove_subscriber(mail, subscriber, subscription='normal'):
 
 
 def remove_subscribers(mail, subscribers, subscription='normal'):
-    """Remove single subscriber from given subscription version.
+    """Remove multiple subscribers from given subscription version.
 
     @mail -- mail address of mailing list account
     @subscribers -- a list/tuple/set of subscribers' email addresses
@@ -982,6 +982,25 @@ def remove_subscribers(mail, subscribers, subscription='normal'):
         qr = __remove_lines_in_file(f=path, lines=grouped_subscribers[letter])
         if not qr[0]:
             return qr
+
+    return (True, )
+
+
+def remove_all_subscribers(mail):
+    """
+    Remove all subscribers.
+
+    :param mail: mail address of mailing list account
+    """
+    mail = mail.lower()
+
+    _dirs = [__get_ml_subscribers_dir(mail=mail, subscription=i) for i in subscription_versions]
+    try:
+        for _dir in _dirs:
+            for fn in os.listdir(_dir):
+                os.remove(os.path.join(_dir, fn))
+    except Exception, e:
+        return (False, repr(e))
 
     return (True, )
 

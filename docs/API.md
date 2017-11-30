@@ -22,6 +22,7 @@ DELETE | `/api/<mail>/remove_subscriber/nomail/<subscriber>` | Remove single sub
 POST | `/api/<mail>/remove_subscribers/normal` | Remove multiple subscribers from `normal` version.
 POST | `/api/<mail>/remove_subscribers/digest` | Remove multiple subscribers from `digest` version.
 POST | `/api/<mail>/remove_subscribers/nomail` | Remove multiple subscribers from `nomail` version.
+DELETE | `/api/<mail>/remove_subscribers/ALL` | Remove all subscribers from all subscription versions. Note: `ALL` is in upper cases.
 
 ## Parameters used to create or update mailing list account
 
@@ -67,7 +68,7 @@ Parameter | Sample Usage | Default Value | Comment
 `subscribers` | `subscribers=<mail>,<mail2>,<mail3>` | | Add multiple subscribers from mailing list. Multiple subscribers must be separated by comma.
 `require_confirm` | `require_confirm=yes` | `yes` | Send an email to subscriber for confirm. Subscriber will be added as member after confirmed.
 
-## Parameters used to remove subscribers
+## Parameters used to remove multiple subscribers
 
 `POST /api/<mail>/remove_subscribers/(normal|nomail|digest)`
 

@@ -68,7 +68,23 @@ class RemoveSubscribers(object):
         subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
 
         qr = mlmmj.remove_subscribers(mail=mail, subscribers=subscribers, subscription=subscription)
+
         return api_render(qr)
+
+    @api_acl
+    def DELETE(self, mail, subscription):
+        """
+        Remove ALL subscribers from all subscription versions.
+
+        :param mail: email address of the mailing list account
+        :param subscription: 'ALL'. Remove all subscribers in all subscription
+                             versions.
+        """
+        if subscription == 'ALL':
+            qr = mlmmj.remove_all_subscribers(mail=mail)
+            return api_render(qr)
+        else:
+            return api_render(True)
 
 
 class AddSubscribers(object):
