@@ -6,26 +6,11 @@
     - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
     - Add API endpoint to verify whether given email address is already a member
 
-- Manage subscribers with `mlmmj-sub` and `mlmmj-unsub`
-    - require variables to define absolute paths to both commands
-    - add (add and require confirm, add without confirm)
-    - remove subscribers
-
 - Design SQL tables and LDAP schema used to store mailing list accounts and
   profiles.
-    * SQL:
-        * table: `maillists`. Used to store email address and name of mailing
-          list accounts.
-            * column: `description`. Add short summary/description text to
-              introduce the mailing list to subscriber on the subscription page.
-        * table: `subscription_verify`. Used to store emails of subscriber
-          which are still waiting for email verification.
-            * column: `expired`. waiting for how long to remove this
-              verification record.
-    * LDAP: use existing `objectClass=mailList`
+    * LDAP: use existing `objectClass=mailList`?
 
-- Better OpenBSD/FreeBSD support:
-    - syslog
+- Better FreeBSD support:
     - rc scripts
 
 ---
@@ -50,12 +35,14 @@ Tasks already finished:
     - Able to archive account data to specified archive directory.
 - Unit tests
 - Add backend `bk_none` to handle mlmmj without SQL/LDAP/... databases.
-- Correctly handle footer text (in both plain text and html formats).
+- Correctly handle footer in both plain text and html formats.
 
 - script `tools/maillist_admin.py` (interactive with API):
     * Add new account (must be able to handle all profile parameters)
     * Update profile parameters
     * Delete account
+    * List subscribers in different subscription version
+
 - script `samples/bin/mlmmj-amime-receive`: Call altermime for handling footer.
 
 ## 2.0: Web Interface
