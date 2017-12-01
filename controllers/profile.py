@@ -6,7 +6,7 @@ from libs import mlmmj
 import settings
 
 # Load mailing list backend.
-backend = __import__(settings.backend)
+backend = __import__(settings.backend_api)
 
 
 class Profile(object):
@@ -18,7 +18,7 @@ class Profile(object):
             return api_render((False, 'NO_SUCH_ACCOUNT'))
 
         if not mlmmj.is_maillist_exists(mail):
-            return api_render((False, 'NO_MAILLIST_DIR'))
+            return api_render((False, 'NO_SUCH_ACCOUNT'))
 
         # Get specified profile parameters.
         # If parameters are given, get values of them instead of all profile

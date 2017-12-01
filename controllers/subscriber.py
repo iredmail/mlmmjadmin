@@ -3,10 +3,6 @@ import web
 from controllers.decorators import api_acl
 from libs.utils import api_render
 from libs import mlmmj, utils
-import settings
-
-# Load mailing list backend.
-backend = __import__(settings.backend)
 
 
 class Subscribers(object):
@@ -30,14 +26,33 @@ class Subscribers(object):
         return api_render(qr)
 
     @api_acl
-    def PUT(self, mail, subscription):
+    def POST(self, mail, subscription):
         """
-        Add new subscribers in specified subscription version.
+        Add multiple subscribers to given subscription version.
 
         @mail -- email address of the mailing list account
-        @version -- possible subscription versions: normal, digest, nomail.
+        @subscription -- possible subscription versions: normal, digest, nomail.
+
+        Available parameters:
+
+        @subscribers -- email address of subscriber. Multiple subscribers must
+                        be separated by comma.
         """
-        pass
+        form = web.input()
+
+        require_confirm = True
+        if form.get('require_confirm') != 'yes':
+            require_confirm = False
+
+        subscribers = form.get('subscribers', '').replace(' ', '').split(',')
+        subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
+
+        qr = mlmmj.add_subscribers(mail=mail,
+                                   subscribers=subscribers,
+                                   subscription=subscription,
+                                   require_confirm=require_confirm)
+
+        return api_render(qr)
 
 
 class RemoveSubscriber(object):
@@ -85,34 +100,3 @@ class RemoveSubscribers(object):
             return api_render(qr)
         else:
             return api_render(True)
-
-
-class AddSubscribers(object):
-    @api_acl
-    def POST(self, mail, subscription):
-        """
-        Add multiple subscribers to given subscription version.
-
-        @mail -- email address of the mailing list account
-        @subscription -- possible subscription versions: normal, digest, nomail.
-
-        Available parameters:
-
-        @subscribers -- email address of subscriber. Multiple subscribers must
-                        be separated by comma.
-        """
-        form = web.input()
-
-        require_confirm = True
-        if form.get('require_confirm') != 'yes':
-            require_confirm = False
-
-        subscribers = form.get('subscribers', '').replace(' ', '').split(',')
-        subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
-
-        qr = mlmmj.add_subscribers(mail=mail,
-                                   subscribers=subscribers,
-                                   subscription=subscription,
-                                   require_confirm=require_confirm)
-
-        return api_render(qr)

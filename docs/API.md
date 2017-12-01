@@ -61,7 +61,7 @@ Parameter | Sample Usage | Default Value | Comment
 
 ## Parameters used to add subscribers
 
-`POST /api/<mail>/add_subscribers/(normal|nomail|digest)`
+`POST /api/<mail>/subscribers/(normal|nomail|digest)`
 
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---

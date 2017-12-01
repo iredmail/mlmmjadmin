@@ -80,13 +80,13 @@ $inet_socket_port = [10024, 10026, 10027, 9998];
 
 $interface_policy{'10027'} = 'MLMMJ';
 $policy_bank{'MLMMJ'} = {
-    originating => 1,  # declare that mail was submitted by our smtp client
-    allow_disclaimers => 0, # mailing list should use footer text instead.
-    virus_admin_maps => ["virusalert\@$mydomain"],
-    spam_admin_maps  => ["virusalert\@$mydomain"],
+    originating => 1,           # declare that mail was submitted by our smtp client
+    allow_disclaimers => 0,     # we use 'mlmmj-amime-receive' program to handle disclaimer/footer
+    enable_dkim_signing => 1,   # enable DKIM signing for outbound
+    virus_admin_maps => ["root\@$mydomain"],
+    spam_admin_maps  => ["root\@$mydomain"],
     smtpd_discard_ehlo_keywords => ['8BITMIME'],
     terminate_dsn_on_notify_success => 0,  # don't remove NOTIFY=SUCCESS option
-    enable_dkim_signing => 1,           # sign DKIm signature
     bypass_spam_checks_maps => [1],     # don't check spam
     bypass_virus_checks_maps => [1],    # don't check virus
     bypass_banned_checks_maps => [1],   # don't check banned file names and types

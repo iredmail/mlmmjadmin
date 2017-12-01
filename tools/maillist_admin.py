@@ -30,7 +30,7 @@ Samples:
 
     *) Delete an existing mailing list account
 
-        python maillist_admin.py delete list@domain.com archive=yes
+        python maillist_admin.py delete list@domain.com
 
     *) Get subscribers which subscribed to `normal` version:
 
@@ -58,6 +58,9 @@ verify_ssl = False
 # Use first auth token
 api_auth_token = settings.api_auth_tokens[0]
 api_headers = {settings.API_AUTH_TOKEN_HEADER_NAME: api_auth_token}
+
+# Load mailing list backend.
+backend = __import__(settings.backend_cli)
 
 action = sys.argv[1]
 if action not in ['info', 'create', 'update', 'delete',
@@ -92,7 +95,12 @@ if action == 'info':
         print "Error while querying account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'create':
-    r = requests.post(api_url, data=args, headers=api_headers, verify=verify_ssl)
+    # Create account in backend
+    qr = backend.add_maillist(mail=mail, form=arg_kvs)
+    if not qr[0]:
+        print "Error while interactive with backend:", qr[1]
+
+    r = requests.post(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
         print "Created."
@@ -100,6 +108,10 @@ elif action == 'create':
         print "Error while creating account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'update':
+    qr = backend.update_maillist(mail=mail, form=arg_kvs)
+    if not qr[0]:
+        print "Error while interactive with backend:", qr[1]
+
     r = requests.put(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
@@ -108,6 +120,10 @@ elif action == 'update':
         print "Error while updating account {}: {}".format(mail, _json['_msg'])
 
 elif action == 'delete':
+    qr = backend.remove_maillist(mail=mail)
+    if not qr[0]:
+        print "Error while interactive with backend:", qr[1]
+
     api_url = api_url + '?' + urlencode(arg_kvs)
     r = requests.delete(api_url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
@@ -118,6 +134,7 @@ elif action == 'delete':
             print "Removed {} (without archive).".format(mail)
     else:
         print "Error while removing account {}: {}".format(mail, _json['_msg'])
+
 elif action in ['subscribers_normal', 'subscribers_nomail', 'subscribers_digest']:
     url = api_url + '/' + action.replace('_', '/') + '?combined=yes'
     r = requests.get(url, headers=api_headers, verify=verify_ssl)
