@@ -45,7 +45,15 @@ Tasks already finished:
 
 - script `samples/bin/mlmmj-amime-receive`: Call altermime for handling footer.
 
-## 2.0: Web Interface
+## 2.0
+
+### API
+
+- Rename a mailing list
+- View or remove pending subscription subscribers
+- Able to update parameter for ALL accounts under same domain.
+
+### Web Interface
 
 Since mlmmj supports management by sending emails to particular addresses
 (e.g. `list+unsubscribe@domain.com`, `list+owner@domain.com`), web
@@ -55,10 +63,6 @@ interface is not so urgent.
 - Allow end users to manage their own subscriptions
 - Custom skel template files
 - Deploy with Nginx with https support
-
-API:
-
-- Able to update parameter for ALL accounts under same domain.
 
 ## 3.0: Archive
 
