@@ -5,7 +5,11 @@ import sys
 import os
 from urllib import urlencode
 import requests
+import web
+web.config.debug = False
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../backends')
 
 from libs.utils import is_email
 import settings
@@ -99,6 +103,7 @@ elif action == 'create':
     qr = backend.add_maillist(mail=mail, form=arg_kvs)
     if not qr[0]:
         print "Error while interactive with backend:", qr[1]
+        sys.exit()
 
     r = requests.post(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
@@ -111,6 +116,7 @@ elif action == 'update':
     qr = backend.update_maillist(mail=mail, form=arg_kvs)
     if not qr[0]:
         print "Error while interactive with backend:", qr[1]
+        sys.exit()
 
     r = requests.put(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
@@ -123,6 +129,7 @@ elif action == 'delete':
     qr = backend.remove_maillist(mail=mail)
     if not qr[0]:
         print "Error while interactive with backend:", qr[1]
+        sys.exit()
 
     api_url = api_url + '?' + urlencode(arg_kvs)
     r = requests.delete(api_url, headers=api_headers, verify=verify_ssl)

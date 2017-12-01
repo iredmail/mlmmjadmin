@@ -269,10 +269,10 @@ def add_maillist(mail, form, conn=None):
                     dest_domain=domain,
                     active=1)
 
-        logger.info('[{}] {}, created.'.format(web.ctx.ip, mail))
+        logger.info('Created: {}.'.format(mail))
         return (True, )
     except Exception, e:
-        logger.error('[{}] {}, error while creating: {}'.format(web.ctx.ip, mail, e))
+        logger.error('Error while creating {}: {}'.format(mail, e))
         return (False, repr(e))
 
 
