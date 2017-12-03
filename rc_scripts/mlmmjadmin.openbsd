@@ -1,6 +1,6 @@
 #!/bin/sh
 
-daemon='python /opt/mlmmj-admin/mlmmj-admin-sysv.py'
+daemon='python /opt/mlmmj-admin/mlmmj-admin.py'
 
 . /etc/rc.d/rc.subr
 
