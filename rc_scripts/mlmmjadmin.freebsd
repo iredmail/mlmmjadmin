@@ -37,7 +37,7 @@ start() {
     fi
 
     echo "Starting ${name}."
-    /usr/local/bin/python ${BINPATH}
+    /usr/local/bin/python2 ${BINPATH}
     unset s
 }
 
