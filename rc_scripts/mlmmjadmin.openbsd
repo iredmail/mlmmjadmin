@@ -1,12 +1,32 @@
 #!/bin/sh
 
-daemon='/usr/local/bin/python2 /opt/mlmmj-admin/mlmmj-admin.py'
+# A switch in /etc/rc.conf.local is required:
+#mlmmjadmin_flags='--ini /etc/uwsgi/mlmmjadmin.ini --log-syslog'
+
+daemon='/usr/local/bin/uwsgi'
 
 . /etc/rc.d/rc.subr
 
 rc_reload=NO
-rc_cmd $1
 
 rc_stop() {
-    kill `cat /var/run/mlmmj-admin.pid`
+    ${daemon} --stop /var/run/mlmmjadmin.pid
 }
+
+remove_shmid() {
+    for shmid in $(/usr/bin/ipcs -sa | grep 'mlmmj' | awk '{print $2}'); do
+        if test -n ${shmid}; then
+            /usr/bin/ipcrm -s ${shmid}
+        fi
+    done
+}
+
+rc_pre() {
+    remove_shmid
+}
+
+rc_post() {
+    remove_shmid
+}
+
+rc_cmd $1

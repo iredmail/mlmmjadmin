@@ -293,15 +293,16 @@ MLMMJ_DEFAULT_SUB_DIRS = [
 #   - %(mail)s - will be replaced by full email address of mailing list
 #   - %(domain)s - will be replaced by domain name of mailing list email address
 #   - %(listname)s - will be replaced by username part of mailing list email address
+#
+# FYI: http://www.faqs.org/rfcs/rfc2369.html
 MLMMJ_DEFAULT_CUSTOM_HEADERS = {
     'Precedence': 'list',
     'X-Mailing-List': '%(mail)s',
     'Reply-To': '%(mail)s',
-    'List-Id': '%(mail)s',
-    #'List-Owner': '<mailto:%(listname)s-owner@%(domain)s>',
-    #'List-Post': '<mailto:%(mail)s>',
-    #'List-Subscribe': '<mailto:%(listname)s-subscribe@%(domain)s>',
-    'List-Unsubscribe': '<mailto:%(listname)s-unsubscribe@%(domain)s>',
+    'List-Unsubscribe': '<mailto:%(listname)s+unsubscribe@%(domain)s?subject=unsubscribe>',
+    #'List-Id': '%(mail)s',
+    #'List-Help': '<mailto:%(listname)s+help@%(domain)s?subject=help>',
+    #'List-Owner': '<mailto:%(listname)s+owner@%(domain)s>',
 }
 
 # Headers we need to remove from received emails.
@@ -309,6 +310,6 @@ MLMMJ_DEFAULT_CUSTOM_HEADERS = {
 #   - must be in title format like 'X-Abc-Def:' (first character is upper case)
 #   - must end with ':'
 MLMMJ_DEFAULT_REMOVED_HEADERS = [
-    'DKIM-Signature:',
-    'Authentication-Results:',
+    #'DKIM-Signature:',
+    #'Authentication-Results:',
 ]
