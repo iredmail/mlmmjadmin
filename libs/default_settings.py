@@ -9,6 +9,13 @@ SYSLOG_PORT = 514
 # Syslog facility
 SYSLOG_FACILITY = 'local5'
 
+# Recipient delimiters. If you have multiple delimiters, please list them all.
+RECIPIENT_DELIMITERS = ['+']
+
+# The transport name defined in Postfix master.cf used to call 'mlmmj-receive'
+# program.
+MTA_TRANSPORT_NAME = 'mlmmj'
+
 # HTTP header name used to store auth token.
 API_AUTH_TOKEN_HEADER_NAME = 'X-MLMMJ-ADMIN-API-AUTH-TOKEN'
 

@@ -14,6 +14,25 @@ import settings
 auth_token_name = 'HTTP_' + settings.API_AUTH_TOKEN_HEADER_NAME.replace('-', '_').upper()
 
 
+def strip_mail_ext_address(mail, delimiters=None):
+    """Remove '+extension' in email address.
+
+    >>> strip_mail_ext_address('user+ext@domain.com')
+    'user@domain.com'
+    """
+
+    if not delimiters:
+        delimiters = settings.RECIPIENT_DELIMITERS
+
+    (_orig_user, _domain) = mail.split('@', 1)
+    for delimiter in delimiters:
+        if delimiter in _orig_user:
+            (_user, _ext) = _orig_user.split(delimiter, 1)
+            return _user + '@' + _domain
+
+    return mail
+
+
 def is_email(s):
     try:
         s = str(s).strip()

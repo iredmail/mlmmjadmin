@@ -236,7 +236,7 @@ def __get_new_mlid(conn=None):
 def add_maillist(mail, form, conn=None):
     """Add required SQL records to add a mailing list account."""
     mail = str(mail).lower()
-    (_, domain) = mail.split('@', 1)
+    (listname, domain) = mail.split('@', 1)
 
     if not utils.is_email(mail):
         return (False, 'INVALID_EMAIL')
@@ -252,6 +252,7 @@ def add_maillist(mail, form, conn=None):
         return (False, 'ALREADY_EXISTS')
 
     name = form.get('name', '')
+    transport = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
 
     try:
         mlid = __get_new_mlid(conn=conn)
@@ -259,6 +260,7 @@ def add_maillist(mail, form, conn=None):
                     address=mail,
                     name=name,
                     domain=domain,
+                    transport=transport,
                     mlid=mlid,
                     active=1)
 
