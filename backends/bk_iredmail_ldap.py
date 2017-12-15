@@ -18,7 +18,7 @@ import uuid
 import ldap
 import web
 
-from libs import utils
+from libs import utils, form_utils
 from libs.logger import logger
 import settings
 
@@ -215,6 +215,7 @@ def __ldif_ml(mail,
               mlid,
               name=None,
               access_policy=None,
+              max_message_size=None,
               alias_domains=None,
               domain_status=None):
     """Generate LDIF (a dict) for a new (mlmmj) mailing list account.
@@ -239,6 +240,13 @@ def __ldif_ml(mail,
 
     if name:
         ldif += [('cn', [name.encode('utf-8')])]
+
+    if access_policy:
+        p = str(access_policy).lower()
+        ldif += [('accessPolicy', [p])]
+
+    if max_message_size and isinstance(max_message_size, int):
+        ldif += [('maxMessageSize', [str(max_message_size)])]
 
     if alias_domains:
         alias_domains = [str(d).lower() for d in alias_domains if utils.is_domain(d)]
@@ -374,11 +382,14 @@ def add_maillist(mail, form, conn=None):
         else:
             access_policy = None
 
+        max_message_size = form_utils.get_max_mail_size(form)
+
         dn_ml = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
         ldif_ml = __ldif_ml(mail=mail,
                             mlid=mlid,
                             name=name,
                             access_policy=access_policy,
+                            max_message_size=max_message_size,
                             alias_domains=alias_domains,
                             domain_status=domain_status)
 
@@ -436,6 +447,13 @@ def update_maillist(mail, form, conn=None):
         mod_attrs += [(ldap.MOD_REPLACE, 'accessPolicy', ['moderatorsonly'])]
     elif 'only_subscriber_can_post' in form:
         mod_attrs += [(ldap.MOD_REPLACE, 'accessPolicy', ['membersonly'])]
+
+    if 'maxmailsize' in form:
+        max_mail_size = form_utils.get_max_mail_size(form)
+        if max_mail_size:
+            mod_attrs += [(ldap.MOD_REPLACE, 'maxMessageSize', [str(max_mail_size)])]
+        else:
+            mod_attrs += [(ldap.MOD_REPLACE, 'maxMessageSize', None)]
 
     if mod_attrs:
         if not conn:

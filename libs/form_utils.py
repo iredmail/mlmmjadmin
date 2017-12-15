@@ -110,3 +110,14 @@ def get_dict_for_form_param(mail, form, param):
         kv = {param: form.get(param)}
 
     return kv
+
+
+def get_max_mail_size(form):
+    """Get maxmailsize (in bytes)."""
+    size = form.get('maxmailsize')
+    try:
+        size = int(size)
+    except:
+        size = 0
+
+    return size

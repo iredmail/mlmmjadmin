@@ -17,7 +17,7 @@
 
 import uuid
 import web
-from libs import utils
+from libs import utils, form_utils
 from libs.logger import logger
 import settings
 
@@ -258,6 +258,8 @@ def add_maillist(mail, form, conn=None):
     params['name'] = form.get('name', '')
     params['transport'] = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
     params['mlid'] = __get_new_mlid(conn=conn)
+    params['maxmsgsize'] = form_utils.get_max_mail_size(form)
+
     if 'only_moderator_can_post' in form:
         params['accesspolicy'] = 'moderatorsonly'
     elif 'only_subscriber_can_post' in form:
@@ -326,6 +328,10 @@ def update_maillist(mail, form, conn=None):
 
     params = {}
     params['name'] = form.get('name', '')
+
+    if 'maxmailsize' in form:
+        params['maxmsgsize'] = form_utils.get_max_mail_size(form)
+
     if 'only_moderator_can_post' in form:
         params['accesspolicy'] = 'moderatorsonly'
     elif 'only_subscriber_can_post' in form:
