@@ -231,11 +231,11 @@ def __ldif_ml(mail,
     transport = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
 
     ldif = [('objectClass', ['mailList']),
-            ('accountStatus', ['active']),
-            ('enabledService', ['mail', 'deliver', 'mlmmj']),
-            ('mtaTransport', [transport]),
             ('mail', [mail]),
-            ('mailingListID', [mlid])]
+            ('mtaTransport', [transport]),
+            ('mailingListID', [mlid]),
+            ('accountStatus', ['active']),
+            ('enabledService', ['mail', 'deliver', 'mlmmj'])]
 
     if name:
         ldif += [('cn', [name.encode('utf-8')])]
@@ -367,10 +367,18 @@ def add_maillist(mail, form, conn=None):
             alias_domains = [str(i).lower() for i in alias_domains if utils.is_domain(i)]
             alias_domains = list(set(alias_domains))
 
+        if 'only_moderator_can_post' in form:
+            access_policy = 'moderatorsonly'
+        elif 'only_subscriber_can_post' in form:
+            access_policy = 'moderatorsonly'
+        else:
+            access_policy = None
+
         dn_ml = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
         ldif_ml = __ldif_ml(mail=mail,
                             mlid=mlid,
                             name=name,
+                            access_policy=access_policy,
                             alias_domains=alias_domains,
                             domain_status=domain_status)
 
@@ -416,24 +424,29 @@ def update_maillist(mail, form, conn=None):
     if not utils.is_email(mail):
         return (False, 'INVALID_EMAIL')
 
-    if 'name' not in form:
+    mod_attrs = []
+
+    name = form.get('name')
+    if name:
+        mod_attrs += [(ldap.MOD_REPLACE, 'cn', [name.encode('utf-8')])]
+    else:
+        mod_attrs += [(ldap.MOD_REPLACE, 'cn', None)]
+
+    if 'only_moderator_can_post' in form:
+        mod_attrs += [(ldap.MOD_REPLACE, 'accessPolicy', ['moderatorsonly'])]
+    elif 'only_subscriber_can_post' in form:
+        mod_attrs += [(ldap.MOD_REPLACE, 'accessPolicy', ['membersonly'])]
+
+    if mod_attrs:
+        if not conn:
+            _wrap = LDAPWrap()
+            conn = _wrap.conn
+
+        try:
+            dn = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
+            conn.modify_s(dn, mod_attrs)
+            return (True, )
+        except Exception, e:
+            return (False, repr(e))
+    else:
         return (True, )
-
-    if not conn:
-        _wrap = LDAPWrap()
-        conn = _wrap.conn
-
-    name = form.get('name', '')
-
-    try:
-        dn = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
-
-        if name:
-            __add_or_remove_attr_value(dn, attr='cn', value=name, action='add', conn=conn)
-        else:
-            # Remove 'cn'.
-            conn.modify_s(dn, [(ldap.MOD_REPLACE, 'cn', None)])
-
-        return (True, )
-    except Exception, e:
-        return (False, repr(e))

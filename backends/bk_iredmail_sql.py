@@ -251,25 +251,28 @@ def add_maillist(mail, form, conn=None):
     if is_email_exists(mail=mail):
         return (False, 'ALREADY_EXISTS')
 
-    name = form.get('name', '')
-    transport = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
+    params = {}
+    params['active'] = 1
+    params['address'] = mail
+    params['domain'] = domain
+    params['name'] = form.get('name', '')
+    params['transport'] = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
+    params['mlid'] = __get_new_mlid(conn=conn)
+    if 'only_moderator_can_post' in form:
+        params['accesspolicy'] = 'moderatorsonly'
+    elif 'only_subscriber_can_post' in form:
+        params['accesspolicy'] = 'membersonly'
 
     try:
-        mlid = __get_new_mlid(conn=conn)
-        conn.insert('maillists',
-                    address=mail,
-                    name=name,
-                    domain=domain,
-                    transport=transport,
-                    mlid=mlid,
-                    active=1)
+        conn.insert('maillists', **params)
 
-        conn.insert('forwardings',
-                    address=mail,
-                    domain=domain,
-                    forwarding=mail,
-                    dest_domain=domain,
-                    active=1)
+        params = {}
+        params['active'] = 1
+        params['address'] = mail
+        params['domain'] = domain
+        params['forwarding'] = mail
+        params['dest_domain'] = domain
+        conn.insert('forwardings', **params)
 
         logger.info('Created: {}.'.format(mail))
         return (True, )
@@ -317,20 +320,22 @@ def update_maillist(mail, form, conn=None):
     if not utils.is_email(mail):
         return (False, 'INVALID_EMAIL')
 
-    if 'name' not in form:
-        return (True, )
-
     if not conn:
         _wrap = SQLWrap()
         conn = _wrap.conn
 
-    name = form.get('name', '')
+    params = {}
+    params['name'] = form.get('name', '')
+    if 'only_moderator_can_post' in form:
+        params['accesspolicy'] = 'moderatorsonly'
+    elif 'only_subscriber_can_post' in form:
+        params['accesspolicy'] = 'membersonly'
 
     try:
         conn.update('maillists',
                     vars={'mail': mail},
-                    name=name,
-                    where='address=$mail')
+                    where='address=$mail',
+                    **params)
 
         return (True, )
     except Exception, e:

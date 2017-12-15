@@ -7,16 +7,10 @@
     - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
     - Add API endpoint to verify whether given email address is already a member
 
-- Design SQL tables and LDAP schema used to store mailing list accounts and
-  profiles.
-    * LDAP: use existing `objectClass=mailList`?
-
 - Better FreeBSD support:
     - rc scripts
 
----
-
-Tasks already finished:
+### DONE
 
 - Run as non-privileged user/group: `mlmmj:mlmmj`.
 - Run as a daemon service, no web server required.
