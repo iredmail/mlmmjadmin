@@ -122,14 +122,12 @@ def __get_param_file(mail, param):
                         param)
 
 
-def __remove_param_file(mail, param, param_file=None):
-    if not param_file:
-        param_file = __get_param_file(mail=mail, param=param)
-
-    if os.path.exists(param_file):
+def __remove_file(path):
+    if os.path.exists(path):
         try:
-            os.remove(param_file)
+            os.remove(path)
         except Exception, e:
+            logger.error("[{}] error while removing parameter file: {}, {}".format(web.ctx.ip, path, e))
             return (False, repr(e))
 
     return (True, )
@@ -322,15 +320,9 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
-        _files = [param_file]
-
-        for f in _files:
-            if __has_param_file(f):
-                try:
-                    os.remove(f)
-                except Exception, e:
-                    logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, f, e))
-                    return (False, repr(e))
+        qr = __remove_file(path=param_file)
+        if not qr[0]:
+            return qr
 
     logger.info("[{}] {}, updated (boolean) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
@@ -340,6 +332,17 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
     # Although we write all given value, but only first line is used by mlmmj.
     if not param_file:
         param_file = __get_param_file(mail=mail, param=param)
+
+    if param == 'maxmailsize':
+        try:
+            value = int(value)
+        except:
+            value = 0
+
+        if not value:
+            # Remove param file.
+            qr = __remove_file(path=param_file)
+            return qr
 
     if value:
         if is_email:
@@ -360,12 +363,9 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
-        if __has_param_file(param_file):
-            try:
-                os.remove(param_file)
-            except Exception, e:
-                logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
-                return (False, repr(e))
+        qr = __remove_file(path=param_file)
+        if not qr[0]:
+            return qr
 
     logger.info("[{}] {}, updated (normal) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
@@ -392,13 +392,9 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
-        # remove it
-        if __has_param_file(param_file):
-            try:
-                os.remove(param_file)
-            except Exception, e:
-                logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
-                return (False, repr(e))
+        qr = __remove_file(path=param_file)
+        if not qr[0]:
+            return qr
 
     logger.info("[{}] {}, updated (list) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
@@ -426,12 +422,9 @@ def __update_text_param(mail, param, value, param_file=None):
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
-        if __has_param_file(param_file):
-            try:
-                os.remove(param_file)
-            except Exception, e:
-                logger.error("[{}] {}, error while removing parameter file: {}, {}".format(web.ctx.ip, mail, param, e))
-                return (False, repr(e))
+        qr = __remove_file(path=param_file)
+        if not qr[0]:
+            return qr
 
     logger.info("[{}] {}, updated (text) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
     return (True, )
@@ -634,7 +627,9 @@ def __remove_lines_in_file(f, lines):
                                 nf.write(''.join(file_lines))
                         else:
                             # Remove file
-                            os.remove(f)
+                            qr = __remove_file(path=f)
+                            if not qr[0]:
+                                return qr
 
                         break
         else:
@@ -647,7 +642,9 @@ def __remove_lines_in_file(f, lines):
                     nf.write(''.join(filtered_lines))
             else:
                 # Remove file
-                os.remove(f)
+                __remove_file(path=f)
+                if not qr[0]:
+                    return qr
 
         return (True, )
     except Exception, e:
@@ -730,7 +727,9 @@ def __add_subscribers_with_confirm(mail,
             # Remove confirm file generated before this request
             _old_conf_files = glob.glob(os.path.join(_subconf_dir, '????????????????-' + addr.replace('@', '=')))
             for _f in _old_conf_files:
-                os.remove(_f)
+                qr = __remove_file(path=_f)
+                if not qr[0]:
+                    return qr
 
             # Send new confirm
             _new_cmd = _cmd[:] + ['-a', addr]
@@ -998,7 +997,10 @@ def remove_all_subscribers(mail):
     try:
         for _dir in _dirs:
             for fn in os.listdir(_dir):
-                os.remove(os.path.join(_dir, fn))
+                _path = os.path.join(_dir, fn)
+                qr = __remove_file(path=_path)
+                if not qr[0]:
+                    return qr
     except Exception, e:
         return (False, repr(e))
 
