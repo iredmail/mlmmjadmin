@@ -217,7 +217,8 @@ def __ldif_ml(mail,
               access_policy=None,
               max_message_size=None,
               alias_domains=None,
-              domain_status=None):
+              domain_status=None,
+              moderators=None):
     """Generate LDIF (a dict) for a new (mlmmj) mailing list account.
 
     :param mail: mail address of new (mlmmj) mailing list account
@@ -225,7 +226,8 @@ def __ldif_ml(mail,
     :param name: short description of mailing list
     :param access_policy: access policy of mailing list
     :param alias_domains: a list/tuple/set of alias domains
-    :param domain_status: status of primary domain: active, disabled.
+    :param domain_status: status of primary domain: active, disabled
+    :param moderators: a list/tuple/set of moderator email addresses
     """
     mail = str(mail).lower()
     listname, domain = mail.split('@', 1)
@@ -258,7 +260,13 @@ def __ldif_ml(mail,
     if domain_status != 'active':
         ldif += [('domainStatus', ['disabled'])]
 
+    if moderators:
+        _addresses = [str(i).strip().lower() for i in moderators if utils.is_email(i)]
+        if _addresses:
+            ldif += [('listAllowedUser', _addresses)]
+
     return ldif
+
 
 def __add_or_remove_attr_value(dn, attr, value, action, conn=None):
     """Add or remove value of attribute which can handle multiple values.
@@ -384,6 +392,8 @@ def add_maillist(mail, form, conn=None):
 
         max_message_size = form_utils.get_max_mail_size(form)
 
+        moderators = form.get('moderators', '').split(',')
+
         dn_ml = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
         ldif_ml = __ldif_ml(mail=mail,
                             mlid=mlid,
@@ -391,7 +401,8 @@ def add_maillist(mail, form, conn=None):
                             access_policy=access_policy,
                             max_message_size=max_message_size,
                             alias_domains=alias_domains,
-                            domain_status=domain_status)
+                            domain_status=domain_status,
+                            moderators=moderators)
 
         conn.add_s(dn_ml, ldif_ml)
         logger.info('Created: {}.'.format(mail))
@@ -454,6 +465,14 @@ def update_maillist(mail, form, conn=None):
             mod_attrs += [(ldap.MOD_REPLACE, 'maxMessageSize', [str(max_mail_size)])]
         else:
             mod_attrs += [(ldap.MOD_REPLACE, 'maxMessageSize', None)]
+
+    if 'moderators' in form:
+        moderators = form.get('moderators', '').split(',')
+        moderators = [str(i).strip().lower() for i in moderators if utils.is_email(i)]
+        if moderators:
+            mod_attrs += [(ldap.MOD_REPLACE, 'listAllowedUser', moderators)]
+        else:
+            mod_attrs += [(ldap.MOD_REPLACE, 'listAllowedUser', None)]
 
     if mod_attrs:
         if not conn:
