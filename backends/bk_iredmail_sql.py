@@ -276,6 +276,27 @@ def add_maillist(mail, form, conn=None):
         params['dest_domain'] = domain
         conn.insert('forwardings', **params)
 
+        # Get moderators, store in SQL table `vmail.moderators`
+        if 'moderators' in form:
+            moderators = [i.strip() for i in form.get('moderators', '').split(',')]
+            moderators = [i.lower() for i in moderators if utils.is_email(i)]
+
+            conn.delete('moderators',
+                        vars={'address': mail},
+                        where='address=$address')
+
+            if moderators:
+                records = []
+                for _addr in moderators:
+                    params = {}
+                    params['address'] = mail
+                    params['domain'] = domain
+                    params['moderator'] = _addr
+                    params['dest_domain'] = _addr.split('@', 1)[-1]
+                    records.append(params)
+
+                conn.multiple_insert('moderators', records)
+
         logger.info('Created: {}.'.format(mail))
         return (True, )
     except Exception, e:
@@ -315,9 +336,13 @@ def update_maillist(mail, form, conn=None):
 
     Parameters stored in backend:
 
-    @name
+    - name
+    - moderators
+    - only_moderator_can_post
+    - only_subscriber_can_post
     """
     mail = str(mail).lower()
+    domain = mail.split('@', 1)[-1]
 
     if not utils.is_email(mail):
         return (False, 'INVALID_EMAIL')
@@ -342,6 +367,27 @@ def update_maillist(mail, form, conn=None):
                     vars={'mail': mail},
                     where='address=$mail',
                     **params)
+
+        # Get moderators, store in SQL table `vmail.moderators`
+        if 'moderators' in form:
+            moderators = [i.strip() for i in form.get('moderators', '').split(',')]
+            moderators = [i.lower() for i in moderators if utils.is_email(i)]
+
+            conn.delete('moderators',
+                        vars={'address': mail},
+                        where='address=$address')
+
+            if moderators:
+                records = []
+                for _addr in moderators:
+                    params = {}
+                    params['address'] = mail
+                    params['domain'] = domain
+                    params['moderator'] = _addr
+                    params['dest_domain'] = _addr.split('@', 1)[-1]
+                    records.append(params)
+
+                conn.multiple_insert('moderators', records)
 
         return (True, )
     except Exception, e:

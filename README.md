@@ -10,8 +10,6 @@ Check `docs/` directory for more detailed documents.
 ## Requirements
 
 * A working mail server with a working mlmmj instance.
-    * For iRedMail users, please follow tutorial `docs/integration-iredmail-*.md`
-      to integrate mlmmj.
     * Mlmmj data will be stored under `/var/spool/mlmmj`, it must be owned by
       user/group `mlmmj:mlmmj` with permission 0700. if you want to change it,
       please override it with setting `MLMMJ_SPOOL_DIR =` in its config file.
