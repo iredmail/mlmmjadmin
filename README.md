@@ -3,76 +3,108 @@
 mlmmj-admin is RESTful API server used to manage mlmmj (mailing list manager).
 Check `docs/` directory for more detailed documents.
 
-* [90% DONE] RESTful API interface for managing mlmmj mailing list accounts
-* [Not started] web interface to allow moderators and end users to manage
-  their own subscriptions.
-
 ## Requirements
 
 * A working mail server with a working mlmmj instance.
-    * Mlmmj data will be stored under `/var/spool/mlmmj`, it must be owned by
-      user/group `mlmmj:mlmmj` with permission 0700. if you want to change it,
-      please override it with setting `MLMMJ_SPOOL_DIR =` in its config file.
+    * Mlmmj data is configured to be stored under `/var/spool/mlmmj` by
+      default, it must be owned by user/group `mlmmj:mlmmj` with permission
+      `0700`. if you use a different directory, please override default setting
+      by adding setting `MLMMJ_SPOOL_DIR = '<directory>'` in config file.
 * Python 2.6.x or 2.7.x, with extra modules:
-    * `web.py
-    * `requests`: required by `tools/maillist_admin.py`.
+    * `web.py`: <http://webpy.org/>
+    * `requests`: <http://docs.python-requests.org/en/master/>. Required by
+      command line tool `tools/maillist_admin.py`.
 
 ## Setup mlmmj-admin
 
 > Please follow docs under `docs/` directory to integrate mlmmj first, make
 > sure it's working properly.
 
-* Create directory used to store mlmmj-admin program:
+NOTE: We use version `1.0` for example below.
+
+* Download mlmmj-admin: <https://bitbucket.org/iredmail/mlmmj-admin/downloads/>
+* Uncompress downloaded mlmmj-admin package, copy it to `/opt/` directory.
+* Create symbol link:
 
 ```
-mkdir -p /opt/mlmmj-admin
+cd /opt
+ln -s mlmmj-admin-1.0 mlmmj-admin
 ```
 
-* Copy files to `/opt/mlmmj-admin`.
-* Copy systemd service file (a SysV script is available too):
+* Generate config file by copying sample file, `settings.py.sample`:
 
 ```
-cp /opt/mlmmj-admin/rc_scripts/mlmmjadmin.service /lib/systemd/system
-systemctl enable mlmmjadmin
-```
-
-* Generate a config file by copying `settings.py.sample`:
-
-```
-cd /opt/mlmmj-admin/
 cp settings.py.sample settings.py
 chown mlmmj:mlmmj settings.py
 chmod 0400 settings.py
 ```
 
+* Open `settings.py`, make sure all settings are proper. The config file is
+  short, please spend few seconds to read all parameters and the comment lines.
 * Generate a long string as API auth token, it will be used by your API client.
   For example:
 
 ```
-$ echo $RANDOM | md5
+$ echo $RANDOM | md5sum
 43a89b7aa34354089e629ed9f9be0b3b
 ```
 
-* Add this API auth token in config file `settings.py`, parameter `api_auth_tokens`. For example:
+* Add this string in config file `settings.py`, parameter `api_auth_tokens`,
+  like below:
 
 ```
 api_auth_tokens = ['43a89b7aa34354089e629ed9f9be0b3b']
 ```
 
-You can add as many token as you want for different API clients.
+You can add as many token as you want for different API clients. For example:
 
-* Choose a proper mailing list backend and add required parameters.
+```
+api_auth_tokens = ['43a89b7aa34354089e629ed9f9be0b3b', '703ed37b20243d7c51c56ce6cd90e94c']
+```
 
-    * If you set `backend` to `bk_none` in config file, no addition
-      config required. Other backend may requires additional parameters.
-    * For iRedMail users:
-        - Backend `bk_iredmail_sql` requires few parameters to connect to
-          `vmail` database on iRedMail server, please open file
-          `backends/bk_iredmail_sql.py` to find the required parameters in
-          the comment lines.
-        - [TODO] Backend `bk_iredmail_ldap`
+* If you're running iRedMail as your mail server, please update parameters
+  `backend_api` and `backend_cli` to use a proper backend handler. The backend
+  handler will connect to SQL/LDAP server to sync data of mlmmj mailing list.
+    * if you manage mail accounts with iRedAdmin-Pro:
+        * Please set `backend_api = 'bk_none'`
+        * if you're running SQL backends, please set
+          `backend_api = 'bk_iredmail_sql'` in `settings.py`.
+        * if you're running LDAP backends, please set
+          `backend_api = 'bk_iredmail_ldap'` in `settings.py`.
+    * if you do not manage mail accounts with iRedAdmin-Pro:
+        * if you're running SQL backends, please set
+          `backend_api = 'bk_iredmail_sql'` and
+          `backend_cli = 'bk_iredmail_sql'` in `settings.py`.
+        * if you're running LDAP backends, please set
+          `backend_api = 'bk_iredmail_ldap'` and
+          `backend_cli = 'bk_iredmail_ldap` in `settings.py`.
+    * Please add extra __REQUIRED__ parameters in `settings.py`, so that
+      mlmmj-admin can connect and update LDAP server. Parameters are explanned
+      in file `backends/bk_iredmail_<backend>.py`.
 
-* Create directory used to store mlmmj-admin log file:
+```
+#
+# For SQL backends
+#
+iredmail_sql_db_type = 'mysql'          # or 'pgsql' for PostgreSQL
+iredmail_sql_db_server = '127.0.0.1'
+iredmail_sql_db_port = 3306             # or 5432 for PostgreSQL
+iredmail_sql_db_name = 'vmail'
+iredmail_sql_db_user = 'vmailadmin'     # SQL user must have read+write
+                                        # privilege to access 'vmail' database
+iredmail_sql_db_password = 'xxxxxxxx'   # Password of `iredmail_sql_db_user`
+
+#
+# For LDAP backends
+#
+iredmail_ldap_uri = 'ldap://127.0.0.1'
+iredmail_ldap_basedn = 'o=domains,dc=XXX,dc=XXX'
+iredmail_ldap_bind_dn = 'cn=vmailadmin,dc=XXX,dc=XXX'
+iredmail_ldap_bind_password = 'xxxxxxxx'
+```
+
+* Create directory used to store mlmmj-admin log file. mlmmj-admin is
+  configured to log to syslog directly.
 
 ```
 #
@@ -97,10 +129,9 @@ chown root:wheel /var/log/mlmmj-admin
 chmod 0755 /var/log/mlmmj-admin
 ```
 
-* Update syslog config file to log mlmmj-admin to dedicated log file:
+* Update syslog daemon config file to log mlmmj-admin to dedicated log file:
 
 For Linux
-
 ```
 cp /opt/mlmmj-admin/samples/rsyslog/mlmmj-admin.conf /etc/rsyslog.d/
 service rsyslog restart
@@ -116,6 +147,8 @@ local5.*            /var/log/mlmmj-admin/mlmmj-admin.log
 ---
 [TODO] For FreeBSD
 ---
+
+* [TODO] Copy systemd or rc script used to control mlmmj-admin service:
 
 * Now ok to start `mlmmjadmin` service:
 
