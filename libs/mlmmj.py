@@ -791,6 +791,13 @@ def add_maillist_from_web_form(mail, form):
     # Add (missing) default settings
     _form = settings.MLMMJ_DEFAULT_PROFILE_SETTINGS
     for param in _form:
+        # Avoid conflict parameters.
+        if param == 'only_subscriber_can_post' and form.get('only_moderator_can_post') == 'yes':
+            continue
+
+        if param == 'only_moderator_can_post' and form.get('only_subscriber_can_post') == 'yes':
+            continue
+
         if param not in form:
             kv = form_utils.get_dict_for_form_param(mail=mail, form=_form, param=param)
             kvs.update(kv)
