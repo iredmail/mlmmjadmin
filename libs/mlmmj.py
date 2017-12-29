@@ -3,6 +3,7 @@ import shutil
 import time
 import glob
 import subprocess
+from email.header import Header, decode_header
 import web
 
 from libs import utils, form_utils
@@ -155,13 +156,14 @@ def __get_boolean_param_value(mail, param):
         return 'no'
 
 
-def __get_list_param_value(mail, param, is_email=False):
-    _param_file = __get_param_file(mail=mail, param=param)
+def __get_list_param_value(mail, param, is_email=False, param_file=None):
+    if not param_file:
+        param_file = __get_param_file(mail=mail, param=param)
 
     _values = []
-    if __has_param_file(_param_file):
+    if __has_param_file(param_file):
         try:
-            with open(_param_file, 'r') as f:
+            with open(param_file, 'r') as f:
                 _lines = f.readlines()
                 _lines = [_line.strip() for _line in _lines]  # remove line breaks
                 _values = [_line for _line in _lines if _line]  # remove empty values
@@ -185,7 +187,16 @@ def __get_normal_param_value(mail, param, param_file=None):
 
     try:
         with open(param_file, 'r') as f:
-            value = f.readline()
+            value = f.readline().strip()
+
+            if param == 'prefix':
+                # Decode it.
+                _decoded = decode_header(value)
+                try:
+                    value = _decoded[0][0]
+                except:
+                    pass
+
             return value
     except IOError:
         # No such file.
@@ -276,21 +287,14 @@ def __get_param_value(mail, param):
     if _param_type == 'boolean':
         _ret['value'] = 'yes'
     else:
-        with open(_param_file) as f:
-            if _param_type == 'normal':
-                _line = f.readline()
-                _ret['value'] = _line
-            elif _param_type == 'text':
-                _text = f.read()
-                _ret['value'] = _text
-            elif _param_type == 'list':
-                # Get all lines
-                _lines = [_line.strip() for _line in f]
+        if _param_type == 'normal':
+            _func = __get_normal_param_value
+        elif _param_type == 'text':
+            _func = __get_text_param_value
+        elif _param_type == 'list':
+            _func = __get_list_param_value
 
-                # Remove empty values
-                _lines = [_line for _line in _lines if _line]
-
-                _ret['value'] = _lines
+        _ret['value'] = _func(mail=mail, param=param, param_file=_param_file)
 
     return (True, _ret)
 
@@ -356,8 +360,12 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
 
             value = value.encode('utf-8')
 
+            if param == 'prefix':
+                value = Header(value, 'utf-8').encode()
+
             with open(param_file, 'w') as f:
-                f.write(value)
+                f.write(value + '\n')
+
         except Exception, e:
             logger.error("[{}] {}, error while updating (normal) parameter: {} -> {}, {}".format(
                 web.ctx.ip, mail, param, value, e))
