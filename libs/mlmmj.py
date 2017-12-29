@@ -3,7 +3,6 @@ import shutil
 import time
 import glob
 import subprocess
-from email.header import Header, decode_header
 import web
 
 from libs import utils, form_utils
@@ -188,15 +187,6 @@ def __get_normal_param_value(mail, param, param_file=None):
     try:
         with open(param_file, 'r') as f:
             value = f.readline().strip()
-
-            if param == 'prefix':
-                # Decode it.
-                _decoded = decode_header(value)
-                try:
-                    value = _decoded[0][0]
-                except:
-                    pass
-
             return value
     except IOError:
         # No such file.
@@ -359,9 +349,6 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
                 value = str(value)
 
             value = value.encode('utf-8')
-
-            if param == 'prefix':
-                value = Header(value, 'utf-8').encode()
 
             with open(param_file, 'w') as f:
                 f.write(value + '\n')
