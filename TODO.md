@@ -2,7 +2,7 @@
 
 ## 1.0: RESTful API
 
-- Subscribe one subscriber to multiple mailing lists.
+- Unsubscribe one subscriber from multiple mailing lists.
 - Add subscriber with `tools/maillist_admin.py`.
 - rc/sysv script without uwsgi config file.
 - API:
@@ -33,6 +33,7 @@
 - Unit tests
 - Add backend `bk_none` to handle mlmmj without SQL/LDAP/... databases.
 - Correctly handle footer in both plain text and html formats.
+- Subscribe one subscriber to multiple mailing lists.
 
 - script `tools/maillist_admin.py` (interactive with API):
     * Add new account (must be able to handle all profile parameters)

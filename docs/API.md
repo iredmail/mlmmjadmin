@@ -16,8 +16,8 @@ PUT     | `/api/<mail>` | Update mailing list profiles.
 GET     | `/api/<mail>/subscribers/(normal|digest|nomail)` | Get subscribers which subscribed to given version (`normal`, `digest`, `nomail`). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
 DELETE | `/api/<mail>/remove_subscriber/(normal|digest|nomail)/<subscriber>` | Remove single subscriber from given subscription (`normal`, `digest`, `nomail`).
 POST | `/api/<mail>/remove_subscribers/(normal|digest|nomail|ALL)` | Remove multiple subscribers from given version (`normal`, `digest`, `nomail`). If version is `ALL`, will try to remove given subscribers from all subscriptions.
-GET | `/api/<subscriber>/subscribed/(normal|digest|nomail|ALL)` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
-POST | `/api/<subscriber>/subscribe/(normal|digest|nomail)` | Subscribe `<subscriber>` to mailing lists specified in parameter `lists=`. Multiple lists must be separated by comma.
+GET | `/api/subscriber/<subscriber>/subscribed/(normal|digest|nomail|ALL)` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
+POST | `/api/subscriber/<subscriber>/subscribe/(normal|digest|nomail)` | Subscribe `<subscriber>` to mailing lists specified in parameter `lists=`. If you don't want to send subscription confirm to subscriber, please post parameter `require_confirm=no`. Multiple lists must be separated by comma.
 
 ## Parameters used to create or update mailing list account
 

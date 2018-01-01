@@ -99,6 +99,7 @@ for arg in args:
         arg_kvs[k] = v
 
 api_url = api_base_url + '/' + mail
+api_subscriber_url = api_base_url + '/subscriber/' + mail
 
 if action == 'info':
     r = requests.get(api_url, headers=api_headers, verify=verify_ssl)
@@ -163,7 +164,7 @@ elif action in ['subscribers_normal', 'subscribers_nomail', 'subscribers_digest'
     else:
         print "Error: {}".format(_json['_msg'])
 elif action == 'subscribed':
-    url = api_url + '/subscribed/ALL' + '?' + 'query_all_lists=yes'
+    url = api_subscriber_url + '/subscribed/ALL' + '?' + 'query_all_lists=yes'
     r = requests.get(url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:

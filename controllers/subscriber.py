@@ -100,3 +100,41 @@ class RemoveSubscribers(object):
             return api_render(qr)
         else:
             return api_render(True)
+
+
+class Subscribe(object):
+    @api_acl
+    def POST(self, subscriber, subscription):
+        """
+        Add one subscriber to multiple mailing lists.
+
+        @mail -- email address of the mailing list account
+        @subscription -- possible subscription versions: normal, digest, nomail.
+
+        Available POST parameters:
+
+        :param lists: mailing lists. Multilple mailing lists must be separated
+                      by comma.
+        :param require_confirm: [yes|no]. If set to `no`, will not send
+                                subscription confirm to subscriber. Defaults to
+                                `yes`.
+        """
+        subscriber = str(subscriber).lower()
+        subscription = subscription.lower()
+
+        form = web.input(_unicode=False)
+
+        # Get mailing lists
+        lists = form.get('lists', '').replace(' ', '').split(',')
+        lists = [str(i).lower() for i in lists if utils.is_email(i)]
+
+        require_confirm = True
+        if form.get('require_confirm') == 'no':
+            require_confirm = False
+
+        qr = mlmmj.add_subscriber_to_lists(subscriber=subscriber,
+                                           lists=lists,
+                                           subscription=subscription,
+                                           require_confirm=require_confirm)
+
+        return api_render(qr)

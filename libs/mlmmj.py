@@ -1034,13 +1034,16 @@ def remove_all_subscribers(mail):
     return (True, )
 
 
-def add_subscribers(mail, subscribers, subscription='normal', require_confirm=True):
-    """
-    Add subscribers to given subscription version.
+def add_subscribers(mail,
+                    subscribers,
+                    subscription='normal',
+                    require_confirm=True):
+    """Add subscribers to given subscription version of mailing list.
 
-    @mail -- mail address of mailing list account
-    @subscribers -- a list/tuple/set of subscribers' email addresses
-    @subscription -- subscription version: normal, nomail, digest.
+    :param mail: mail address of mailing list account
+    :param subscribers: a list/tuple/set of subscribers' email addresses
+    :param subscription: subscription version: normal, nomail, digest.
+    :param require_confirm: subscription version: normal, nomail, digest.
     """
     mail = mail.lower()
     subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
@@ -1072,5 +1075,32 @@ def add_subscribers(mail, subscribers, subscription='normal', require_confirm=Tr
             qr = __add_lines_in_file(f=path, lines=grouped_subscribers[letter])
             if not qr[0]:
                 return qr
+
+    return (True, )
+
+
+def add_subscriber_to_lists(subscriber,
+                            lists,
+                            subscription='normal',
+                            require_confirm=True):
+    """Add one subscriber to multiple mailing lists.
+
+    @subscriber -- mail address of subscriber
+    @lists -- a list/tuple/set of mailing lists
+    @subscription -- subscription version: normal, nomail, digest.
+    @require_confirm -- subscription version: normal, nomail, digest.
+    """
+    subscriber = subscriber.lower()
+    lists = [str(i).lower() for i in lists if utils.is_email(i)]
+    if not lists:
+        return (True, )
+
+    for l in lists:
+        qr = add_subscribers(mail=l,
+                             subscribers=[subscriber],
+                             subscription=subscription,
+                             require_confirm=require_confirm)
+        if not qr[0]:
+            return qr
 
     return (True, )
