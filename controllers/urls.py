@@ -15,7 +15,7 @@ urls = [
     # per-subscriber
     #
     # Get all subscribed mailing lists of given subscriber.
-    '/api/subscriber/({})/subscribed/(normal|nomail|digest|ALL)$'.format(e), 'controllers.profile.SubscribedLists',
+    '/api/subscriber/({})/subscribed'.format(e), 'controllers.profile.SubscribedLists',
     # Add one subscriber to multiple mailing lists.
     '/api/subscriber/({})/subscribe/(normal|nomail|digest)$'.format(e), 'controllers.subscriber.Subscribe',
 ]

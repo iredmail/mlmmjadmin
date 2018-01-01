@@ -15,7 +15,7 @@ DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.
 GET     | `/api/<mail>/subscribers` | Get subscribers.
 POST    | `/api/<mail>/subscribers` | Add or remove subscribers.
-GET | `/api/subscriber/<subscriber>/subscribed/(normal|digest|nomail|ALL)` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
+GET | `/api/subscriber/<subscriber>/subscribed` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
 POST | `/api/subscriber/<subscriber>/subscribe/(normal|digest|nomail)` | Subscribe `<subscriber>` to mailing lists specified in parameter `lists=`. If you don't want to send subscription confirm to subscriber, please post parameter `require_confirm=no`. Multiple lists must be separated by comma.
 
 ## Parameters used to create or update mailing list account
