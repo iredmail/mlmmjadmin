@@ -487,3 +487,42 @@ def update_maillist(mail, form, conn=None):
             return (False, repr(e))
     else:
         return (True, )
+
+
+def get_existing_maillists(domains=None, conn=None):
+    """Get existing mailing lists.
+
+    :param domains: a list/tuple/set of valid domain names.
+                    Used if you want to get mailing lists under given domains.
+    :param conn: sql connection cursor.
+    """
+    if domains:
+        domains = [str(d).lower() for d in domains if utils.is_domain(d)]
+
+    if not conn:
+        _wrap = LDAPWrap()
+        conn = _wrap.conn
+
+    _filter = '(&(objectClass=mailList)(enabledService=mlmmj))'
+    if domains:
+        _f = '(|'
+        for d in domains:
+            _f += '(mail=*@%s)(shadowAddress=*@%s)' % (d, d)
+        _f += ')'
+        _filter = '(&' + _filter + _f + ')'
+
+    existing_lists = set()
+    try:
+        qr = conn.search_s(settings.iredmail_ldap_basedn,
+                           ldap.SCOPE_SUBTREE,
+                           _filter,
+                           ['mail'])
+
+        for (_dn, _ldif) in qr:
+            _addresses = _ldif.get('mail', [])
+            _addresses = [str(i).lower() for i in _addresses]
+            existing_lists.update(_addresses)
+
+        return (True, existing_lists)
+    except Exception, e:
+        return (False, repr(e))

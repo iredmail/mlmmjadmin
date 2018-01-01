@@ -16,4 +16,7 @@ urls = [
     '/api/({})/remove_subscriber/(normal|nomail|digest)/({})$'.format(e, e), 'controllers.subscriber.RemoveSubscriber',
     # Remove multiple or ALL subscribers
     '/api/({})/remove_subscribers/(normal|nomail|digest|ALL)$'.format(e), 'controllers.subscriber.RemoveSubscribers',
+
+    # Get all subscribed mailing lists of given subscriber.
+    '/api/({})/subscribed/(normal|nomail|digest|ALL)$'.format(e), 'controllers.profile.SubscribedLists',
 ]

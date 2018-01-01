@@ -738,6 +738,31 @@ def __add_subscribers_with_confirm(mail,
         return (False, repr(_error))
 
 
+def has_subscriber(mail, subscriber, subscription=None):
+    """
+    Check whether mailing list `<mail>` has subscriber `<subscriber>`.
+    Return `(True, <subscription>)` or `False`.
+    """
+    mail = str(mail).lower()
+    subscriber = str(subscriber).lower()
+
+    subscriptions = ['normal', 'digest', 'nomail']
+    if subscription:
+        subscriptions = [subscription]
+
+    for subscription in subscriptions:
+        _sub_dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+        _sub_file = os.path.join(_sub_dir, subscriber[0])
+
+        if os.path.exists(_sub_file):
+            with open(_sub_file, 'r') as f:
+                line = f.readline().strip()
+                if line == subscriber:
+                    return (True, subscription)
+
+    return False
+
+
 def is_maillist_exists(mail):
     if __has_ml_dir(mail):
         return True

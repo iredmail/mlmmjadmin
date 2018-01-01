@@ -2,7 +2,9 @@
 
 ## 1.0: RESTful API
 
-- rc/sysv script without uwsgi.
+- Subscribe one subscriber to multiple mailing lists.
+- Add subscriber with `tools/maillist_admin.py`.
+- rc/sysv script without uwsgi config file.
 - API:
     - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
     - Add API endpoint to verify whether given email address is already a member

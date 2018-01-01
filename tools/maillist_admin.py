@@ -16,17 +16,28 @@ import settings
 
 usage = """Usage:
 
-    python maillist_admin.py <info|create|update|delete> <mail> [<param1>=<value1> <param2>=<value2> ...]
+    python maillist_admin.py <action> <mail> [<param1>=<value1> <param2>=<value2> ...]
+
+Valid actions:
+
+    create: Create a new mailing list account with additional setting:
+    info: Get settings of an existing mailing list account
+    update: Update an existing mailing list account
+    delete: Delete an existing mailing list account
+    subscribers_normal: Get subscribers which subscribed to `normal` version
+    subscribers_digest: Get subscribers which subscribed to `digest` version
+    subscribers_nomail: Get subscribers which subscribed to `nomail` version
+    subscribed: Get subscribed lists of a given subscriber.
 
 Samples:
-
-    *) Get settings of an existing mailing list account
-
-        python maillist_admin.py info list@domain.com
 
     *) Create a new mailing list account with additional setting:
 
         python maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no
+
+    *) Get settings of an existing mailing list account
+
+        python maillist_admin.py info list@domain.com
 
     *) Update an existing mailing list account
 
@@ -36,17 +47,15 @@ Samples:
 
         python maillist_admin.py delete list@domain.com
 
-    *) Get subscribers which subscribed to `normal` version:
+    *) Get subscribers which subscribed to `normal`, `digest`, `nomail` version:
 
         python maillist_admin.py subscribers_normal list@domain.com
-
-    *) Get subscribers which subscribed to `digest` version:
-
         python maillist_admin.py subscribers_digest list@domain.com
-
-    *) Get subscribers which subscribed to `nomail` version:
-
         python maillist_admin.py subscribers_nomail list@domain.com
+
+    *) Get assigned lists of a given subscriber:
+
+        python maillist_admin.py subscribed subscriber@domain.com
 """
 
 if len(sys.argv) < 3:
@@ -68,11 +77,13 @@ backend = __import__(settings.backend_cli)
 
 action = sys.argv[1]
 if action not in ['info', 'create', 'update', 'delete',
-                  'subscribers',
                   'subscribers_normal',
                   'subscribers_digest',
-                  'subscribers_nomail']:
-    sys.exit('Invalid action: {}, must be one of: info, create, update, delete.'.format(action))
+                  'subscribers_nomail',
+                  'subscribed']:
+    print '<ERROR> Invalid action: {}. Usage:'
+    print usage
+    sys.exit()
 
 mail = sys.argv[2]
 if not is_email(mail):
@@ -96,7 +107,7 @@ if action == 'info':
         for (k, v) in _json['_data'].items():
             print '{}={}'.format(k, v)
     else:
-        print "Error while querying account {}: {}".format(mail, _json['_msg'])
+        print "Error: {}".format(_json['_msg'])
 
 elif action == 'create':
     # Create account in backend
@@ -110,7 +121,7 @@ elif action == 'create':
     if _json['_success']:
         print "Created."
     else:
-        print "Error while creating account {}: {}".format(mail, _json['_msg'])
+        print "Error: {}".format(_json['_msg'])
 
 elif action == 'update':
     qr = backend.update_maillist(mail=mail, form=arg_kvs)
@@ -123,7 +134,7 @@ elif action == 'update':
     if _json['_success']:
         print "Updated."
     else:
-        print "Error while updating account {}: {}".format(mail, _json['_msg'])
+        print "Error: {}".format(_json['_msg'])
 
 elif action == 'delete':
     qr = backend.remove_maillist(mail=mail)
@@ -140,7 +151,7 @@ elif action == 'delete':
         else:
             print "Removed {} (without archive).".format(mail)
     else:
-        print "Error while removing account {}: {}".format(mail, _json['_msg'])
+        print "Error: {}".format(_json['_msg'])
 
 elif action in ['subscribers_normal', 'subscribers_nomail', 'subscribers_digest']:
     url = api_url + '/' + action.replace('_', '/') + '?combined=yes'
@@ -150,4 +161,13 @@ elif action in ['subscribers_normal', 'subscribers_nomail', 'subscribers_digest'
         for i in _json['_data']:
             print i
     else:
-        print "Error while querying account {}: {}".format(mail, _json['_msg'])
+        print "Error: {}".format(_json['_msg'])
+elif action == 'subscribed':
+    url = api_url + '/subscribed/ALL' + '?' + 'query_all_lists=yes'
+    r = requests.get(url, headers=api_headers, verify=verify_ssl)
+    _json = r.json()
+    if _json['_success']:
+        for i in _json['_data']:
+            print i['mail'], '(%s)' % i['subscription']
+    else:
+        print "Error: {}".format(_json['_msg'])

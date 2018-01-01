@@ -13,16 +13,11 @@ GET     | `/api/<mail>` | Get profile of an existing mailing list account. It re
 POST    | `/api/<mail>` | Create a new mailing list account.
 DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.
-GET     | `/api/<mail>/subscribers/normal` | Get subscribers which subscribed to `normal` version (receive all emails). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
-GET     | `/api/<mail>/subscribers/digest` | Get subscribers which subscribed to `digest` version. It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/digest?combined=yes`.
-GET     | `/api/<mail>/subscribers/nomail` | Get subscribers which subscribed to `nomail` version (don't receive any email). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/nomail?combined=yes`.
-DELETE | `/api/<mail>/remove_subscriber/normal/<subscriber>` | Remove single subscriber from `normal` version.
-DELETE | `/api/<mail>/remove_subscriber/digest/<subscriber>` | Remove single subscriber from `digest` version.
-DELETE | `/api/<mail>/remove_subscriber/nomail/<subscriber>` | Remove single subscriber from `nomail` version.
-POST | `/api/<mail>/remove_subscribers/normal` | Remove multiple subscribers from `normal` version.
-POST | `/api/<mail>/remove_subscribers/digest` | Remove multiple subscribers from `digest` version.
-POST | `/api/<mail>/remove_subscribers/nomail` | Remove multiple subscribers from `nomail` version.
-DELETE | `/api/<mail>/remove_subscribers/ALL` | Remove all subscribers from all subscription versions. Note: `ALL` is in upper cases.
+GET     | `/api/<mail>/subscribers/(normal|digest|nomail)` | Get subscribers which subscribed to given version (`normal`, `digest`, `nomail`). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
+DELETE | `/api/<mail>/remove_subscriber/(normal|digest|nomail)/<subscriber>` | Remove single subscriber from given subscription (`normal`, `digest`, `nomail`).
+POST | `/api/<mail>/remove_subscribers/(normal|digest|nomail|ALL)` | Remove multiple subscribers from given version (`normal`, `digest`, `nomail`). If version is `ALL`, will try to remove given subscribers from all subscriptions.
+GET | `/api/<subscriber>/subscribed/(normal|digest|nomail|ALL)` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
+POST | `/api/<subscriber>/subscribe/(normal|digest|nomail)` | Subscribe `<subscriber>` to mailing lists specified in parameter `lists=`. Multiple lists must be separated by comma.
 
 ## Parameters used to create or update mailing list account
 

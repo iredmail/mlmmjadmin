@@ -392,3 +392,39 @@ def update_maillist(mail, form, conn=None):
         return (True, )
     except Exception, e:
         return (False, repr(e))
+
+
+def get_existing_maillists(domains=None, conn=None):
+    """Get existing mailing lists.
+
+    :param domains: a list/tuple/set of valid domain names.
+                    Used if you want to get mailing lists under given domains.
+    :param conn: sql connection cursor.
+    """
+    if domains:
+        domains = [str(d).lower() for d in domains if utils.is_domain(d)]
+
+    if not conn:
+        _wrap = SQLWrap()
+        conn = _wrap.conn
+
+    existing_lists = set()
+    try:
+        if domains:
+            qr = conn.update('maillists',
+                             vars={'domains': domains},
+                             what='address',
+                             where='domain IN $domains',
+                             group='address')
+        else:
+            qr = conn.update('maillists',
+                             what='address',
+                             group='address')
+
+        for i in qr:
+            _addr = str(i.address).lower()
+            existing_lists.add(_addr)
+
+        return (True, list(existing_lists))
+    except Exception, e:
+        return (False, repr(e))
