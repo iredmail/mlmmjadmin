@@ -13,9 +13,8 @@ GET     | `/api/<mail>` | Get profile of an existing mailing list account. It re
 POST    | `/api/<mail>` | Create a new mailing list account.
 DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.
-GET     | `/api/<mail>/subscribers/(normal|digest|nomail)` | Get subscribers which subscribed to given version (`normal`, `digest`, `nomail`). It returns a dict with begining letter of email address as key, if you want to combine all subscribers to a list, please speify parameter `combined=yes` for this purpose. For example, `/api/<mail>/subscribers/normal?combined=yes`.
-DELETE | `/api/<mail>/remove_subscriber/(normal|digest|nomail)/<subscriber>` | Remove single subscriber from given subscription (`normal`, `digest`, `nomail`).
-POST | `/api/<mail>/remove_subscribers/(normal|digest|nomail|ALL)` | Remove multiple subscribers from given version (`normal`, `digest`, `nomail`). If version is `ALL`, will try to remove given subscribers from all subscriptions.
+GET     | `/api/<mail>/subscribers` | Get subscribers.
+POST    | `/api/<mail>/subscribers` | Add or remove subscribers.
 GET | `/api/subscriber/<subscriber>/subscribed/(normal|digest|nomail|ALL)` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
 POST | `/api/subscriber/<subscriber>/subscribe/(normal|digest|nomail)` | Subscribe `<subscriber>` to mailing lists specified in parameter `lists=`. If you don't want to send subscription confirm to subscriber, please post parameter `require_confirm=no`. Multiple lists must be separated by comma.
 
@@ -60,16 +59,17 @@ Parameter | Sample Usage | Default Value | Comment
 
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---
-`subscribers` | `subscribers=<mail>,<mail2>,<mail3>` | | Add multiple subscribers from mailing list. Multiple subscribers must be separated by comma.
+`add_subscribers` | `add_subscribers=<mail>,<mail2>,<mail3>` | | Add multiple subscribers from mailing list. Multiple subscribers must be separated by comma.
 `require_confirm` | `require_confirm=yes` | `yes` | Send an email to subscriber for confirm. Subscriber will be added as member after confirmed.
+`subscription` | `subscription=normal` | `normal` | Specify the subscription version: normal, digest, nomail.
 
-## Parameters used to remove multiple subscribers
+## Parameters used to remove subscribers
 
-`POST /api/<mail>/remove_subscribers/(normal|nomail|digest)`
+`POST /api/<mail>/subscribers/(normal|nomail|digest)`
 
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---
-`subscribers` | `subscribers=<mail>,<mail2>,<mail3>` | | Remove multiple subscribers from mailing list. Multiple subscribers must be separated by comma.
+`remove_subscribers` | `remove_subscribers=<mail>,<mail2>,<mail3>` | | Remove multiple subscribers from mailing list. Multiple subscribers must be separated by comma. If `remove_subscribers=ALL` (all upper cases), all subscribers will be removed.
 
 ## Parameters used to delete mailing list account
 

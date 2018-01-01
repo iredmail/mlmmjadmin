@@ -594,59 +594,42 @@ def __archive_ml(mail):
     return (True, )
 
 
-def __remove_lines_in_file(f, lines):
+def __remove_lines_in_file(path, lines):
     """
     Remove line from given file.
 
-    @f -- path to file
-    @lines -- a list/dict/tuple of lines you want to remove
+    :param path: path to file
+    :param lines: a list/dict/tuple of lines you want to remove
     """
     if not lines:
         return (True, )
 
-    if not os.path.exists(f):
+    if not os.path.exists(path):
         return (True, )
 
     try:
-        with open(f, 'r') as _f:
-            file_lines = _f.readlines()
+        with open(path, 'r') as _f:
+            _file_lines = _f.readlines()
+            stripped_file_lines = [l.strip() for l in _file_lines]
 
-        if len(lines) == 1:
-            for l in file_lines:
-                _l = l.strip()
-                for line in lines:
-                    if _l == line:
-                        file_lines.remove(l)
-                        if file_lines:
-                            with open(f, 'w') as nf:
-                                nf.write(''.join(file_lines))
-                        else:
-                            # Remove file
-                            qr = __remove_file(path=f)
-                            if not qr[0]:
-                                return qr
+        given_lines = [l.strip() for l in lines]
+        filtered_lines = set(stripped_file_lines) - set(given_lines)
 
-                        break
+        if filtered_lines:
+            with open(path, 'w') as f:
+                f.write('\n'.join(filtered_lines) + '\n')
         else:
-            stripped_file_lines = [l.strip().lower() for l in file_lines]
-            given_lines = [l.strip().lower() for l in lines]
-
-            filtered_lines = set(stripped_file_lines) - set(given_lines)
-            if filtered_lines:
-                with open(f, 'w') as nf:
-                    nf.write(''.join(filtered_lines))
-            else:
-                # Remove file
-                __remove_file(path=f)
-                if not qr[0]:
-                    return qr
+            # Remove file
+            qr = __remove_file(path=path)
+            if not qr[0]:
+                return qr
 
         return (True, )
     except Exception, e:
         return (False, repr(e))
 
 
-def __add_lines_in_file(f, lines, sort_before_saving=True):
+def __add_lines_in_file(f, lines):
     """
     Add lines to given file.
 
@@ -666,8 +649,8 @@ def __add_lines_in_file(f, lines, sort_before_saving=True):
         lines = [i + '\n' for i in lines]
         file_lines += lines
 
-        if sort_before_saving:
-            file_lines.sort()
+        # Remove duplicate lines.
+        file_lines = list(set(file_lines))
 
         with open(f, 'w') as nf:
             nf.write(''.join(file_lines))
@@ -926,64 +909,41 @@ def update_web_form_params(mail, form):
     return __update_mlmmj_params(mail=mail, **kvs)
 
 
-def get_subscribers(mail, subscription=None, combined=False):
+def get_subscribers(mail, email_only=False):
     """Get subscribers of given subscription version.
 
-    @mail -- mail address of mailing list account
-    @subscription -- subscription version: normal, nomail, digest.
-    @combined -- combine all subscribers into a list. Defaults to a dict with
-                 beginning letter as key.
+    :param mail: mail address of mailing list account
+    :param email_only: if True, return a list of subscribers' mail addresses.
     """
-    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+    subscribers = []
 
-    # Make sure directory exists
-    try:
-        fns = os.listdir(_dir)
-    except Exception, e:
-        return (False, repr(e))
+    for subscription in subscription_versions:
+        _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
 
-    if combined:
-        subscribers = set()
+        try:
+            fns = os.listdir(_dir)
+        except:
+            continue
+
         for fn in fns:
             _addresses = [str(i).lower().strip() for i in open(os.path.join(_dir, fn)).readlines()]
-            subscribers.update(_addresses)
 
-        subscribers = list(subscribers)
-        subscribers.sort()
-    else:
-        subscribers = {}
-        for fn in fns:
-            _addresses = [str(i).lower().strip() for i in open(os.path.join(_dir, fn)).readlines()]
-            subscribers[fn] = list(set(_addresses))
-            subscribers[fn].sort()
+            if email_only:
+                subscribers += _addresses
+            else:
+                subscribers += [{'mail': i, 'subscription': subscription} for i in _addresses]
 
     return (True, subscribers)
 
 
-def remove_subscriber(mail, subscriber, subscription='normal'):
-    """Remove single subscriber from given subscription version.
+def remove_subscribers(mail, subscribers):
+    """Remove multiple subscribers from given mailing list.
 
-    @mail -- mail address of mailing list account
-    @subscriber -- mail address of subscriber
-    @subscription -- subscription version: normal, nomail, digest.
-    """
-    mail = mail.lower()
-    subscriber = subscriber.lower()
-
-    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
-
-    # Get file stores the subscriber.
-    path = os.path.join(_dir, subscriber[0])
-
-    return __remove_lines_in_file(f=path, lines=[subscriber])
-
-
-def remove_subscribers(mail, subscribers, subscription='normal'):
-    """Remove multiple subscribers from given subscription version.
-
-    @mail -- mail address of mailing list account
-    @subscribers -- a list/tuple/set of subscribers' email addresses
-    @subscription -- subscription version: normal, nomail, digest.
+    :param mail: mail address of mailing list account
+    :sparam ubscribers: a list/tuple/set of subscribers' email addresses
+    :sparam ubscription: subscription version: normal, nomail, digest. If set
+                         to None, will try to remove subscribers from all
+                         subscription versions.
     """
     mail = mail.lower()
     subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
@@ -1000,14 +960,15 @@ def remove_subscribers(mail, subscribers, subscription='normal'):
         else:
             grouped_subscribers[letter] = [i]
 
-    _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
-    for letter in grouped_subscribers:
-        # Get file stores the subscriber.
-        path = os.path.join(_dir, letter)
+    for subscription in ['normal', 'digest', 'nomail']:
+        _dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)
+        for letter in grouped_subscribers:
+            # Get file stores the subscriber.
+            path = os.path.join(_dir, letter)
 
-        qr = __remove_lines_in_file(f=path, lines=grouped_subscribers[letter])
-        if not qr[0]:
-            return qr
+            qr = __remove_lines_in_file(path=path, lines=grouped_subscribers[letter])
+            if not qr[0]:
+                return qr
 
     return (True, )
 
@@ -1079,10 +1040,10 @@ def add_subscribers(mail,
     return (True, )
 
 
-def add_subscriber_to_lists(subscriber,
-                            lists,
-                            subscription='normal',
-                            require_confirm=True):
+def subscribe_to_lists(subscriber,
+                       lists,
+                       subscription='normal',
+                       require_confirm=True):
     """Add one subscriber to multiple mailing lists.
 
     @subscriber -- mail address of subscriber
