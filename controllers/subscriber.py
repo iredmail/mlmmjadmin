@@ -3,6 +3,10 @@ import web
 from controllers.decorators import api_acl
 from libs.utils import api_render
 from libs import mlmmj, utils
+import settings
+
+# Load mailing list backend.
+backend = __import__(settings.backend_api)
 
 
 class Subscribers(object):
@@ -76,14 +80,60 @@ class Subscribers(object):
         return api_render(True)
 
 
+class SubscribedLists(object):
+    @api_acl
+    def GET(self, subscriber):
+        """Get mailing lists which the given subscriber subscribed to.
+
+        HTTP GET Parameters:
+
+        :param query_all_lists: If set to 'yes', will check all available
+                                mailing lists on server. If 'no', check only
+                                lists under same domain.
+        """
+        subscriber = str(subscriber).lower()
+        domain = subscriber.split('@', 1)[-1]
+
+        form = web.input(_unicode=False)
+
+        email_only = False
+        if form.get('email_only') == 'yes':
+            email_only = True
+
+        # Get mail addresses of existing accounts
+        if form.get('query_all_lists') == 'yes':
+            qr = backend.get_existing_maillists(domains=None)
+        else:
+            qr = backend.get_existing_maillists(domains=[domain])
+
+        if not qr[0]:
+            return api_render(qr)
+
+        existing_lists = qr[1]
+        if not existing_lists:
+            return api_render((True, []))
+
+        subscribed_lists = []
+        for i in existing_lists:
+            qr = mlmmj.has_subscriber(mail=i,
+                                      subscriber=subscriber,
+                                      subscription=None)
+            if qr:
+                if email_only:
+                    subscribed_lists.append(i)
+                else:
+                    subscribed_lists.append({'subscription': qr[1], 'mail': i})
+
+        return api_render((True, list(subscribed_lists)))
+
+
 class Subscribe(object):
     @api_acl
-    def POST(self, subscriber, subscription):
+    def POST(self, subscriber):
         """
         Add one subscriber to multiple mailing lists.
 
-        @mail -- email address of the mailing list account
-        @subscription -- possible subscription versions: normal, digest, nomail.
+        :param mail: email address of the subscriber
 
         Available POST parameters:
 
@@ -92,11 +142,15 @@ class Subscribe(object):
         :param require_confirm: [yes|no]. If set to `no`, will not send
                                 subscription confirm to subscriber. Defaults to
                                 `yes`.
+        :param subscription: possible subscription versions: normal, digest, nomail.
         """
         subscriber = str(subscriber).lower()
-        subscription = subscription.lower()
 
         form = web.input(_unicode=False)
+
+        subscription = form.get('subscription', 'normal')
+        if subscription not in mlmmj.subscription_versions:
+            subscription = 'normal'
 
         # Get mailing lists
         lists = form.get('lists', '').replace(' ', '').split(',')

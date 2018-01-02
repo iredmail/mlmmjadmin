@@ -21,13 +21,11 @@ usage = """Usage:
 Valid actions:
 
     create: Create a new mailing list account with additional setting:
-    info: Get settings of an existing mailing list account
+    info: Show settings of an existing mailing list account
     update: Update an existing mailing list account
     delete: Delete an existing mailing list account
-    subscribers_normal: Get subscribers which subscribed to `normal` version
-    subscribers_digest: Get subscribers which subscribed to `digest` version
-    subscribers_nomail: Get subscribers which subscribed to `nomail` version
-    subscribed: Get subscribed lists of a given subscriber.
+    subscribers: Show all subscribers
+    subscribed: Show all subscribed lists of a given subscriber.
 
 Samples:
 
@@ -35,7 +33,7 @@ Samples:
 
         python maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no
 
-    *) Get settings of an existing mailing list account
+    *) Show settings of an existing mailing list account
 
         python maillist_admin.py info list@domain.com
 
@@ -47,15 +45,17 @@ Samples:
 
         python maillist_admin.py delete list@domain.com
 
-    *) Get subscribers which subscribed to `normal`, `digest`, `nomail` version:
+    *) Show all subscribers:
 
-        python maillist_admin.py subscribers_normal list@domain.com
-        python maillist_admin.py subscribers_digest list@domain.com
-        python maillist_admin.py subscribers_nomail list@domain.com
+        python maillist_admin.py subscribers list@domain.com
 
-    *) Get assigned lists of a given subscriber:
+    *) Show subscribed lists of a given subscriber:
 
         python maillist_admin.py subscribed subscriber@domain.com
+
+    *) Subscribe one subscriber to multiple mailing lists
+
+        python maillist_admin.py subscribe subscriber@gmail.com list-1@domain.com list-2@domain.com
 """
 
 if len(sys.argv) < 3:
@@ -77,10 +77,7 @@ backend = __import__(settings.backend_cli)
 
 action = sys.argv[1]
 if action not in ['info', 'create', 'update', 'delete',
-                  'subscribers_normal',
-                  'subscribers_digest',
-                  'subscribers_nomail',
-                  'subscribed']:
+                  'subscribers', 'subscribed']:
     print '<ERROR> Invalid action: {}. Usage:'
     print usage
     sys.exit()
@@ -154,15 +151,16 @@ elif action == 'delete':
     else:
         print "Error: {}".format(_json['_msg'])
 
-elif action in ['subscribers_normal', 'subscribers_nomail', 'subscribers_digest']:
-    url = api_url + '/' + action.replace('_', '/') + '?combined=yes'
+elif action == 'subscribers':
+    url = api_url + '/subscribers'
     r = requests.get(url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
         for i in _json['_data']:
-            print i
+            print i['mail'], '(%s)' % i['subscription']
     else:
         print "Error: {}".format(_json['_msg'])
+
 elif action == 'subscribed':
     url = api_subscriber_url + '/subscribed' + '?' + 'query_all_lists=yes'
     r = requests.get(url, headers=api_headers, verify=verify_ssl)

@@ -16,7 +16,7 @@ PUT     | `/api/<mail>` | Update mailing list profiles.
 GET     | `/api/<mail>/subscribers` | Get subscribers.
 POST    | `/api/<mail>/subscribers` | Add or remove subscribers.
 GET | `/api/subscriber/<subscriber>/subscribed` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
-POST | `/api/subscriber/<subscriber>/subscribe/(normal|digest|nomail)` | Subscribe `<subscriber>` to mailing lists specified in parameter `lists=`. If you don't want to send subscription confirm to subscriber, please post parameter `require_confirm=no`. Multiple lists must be separated by comma.
+POST | `/api/subscriber/<subscriber>/subscribe` | Subscribe `<subscriber>` to multiple mailing lists.
 
 ## Parameters used to create or update mailing list account
 
@@ -70,6 +70,16 @@ Parameter | Sample Usage | Default Value | Comment
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---
 `remove_subscribers` | `remove_subscribers=<mail>,<mail2>,<mail3>` | | Remove multiple subscribers from mailing list. Multiple subscribers must be separated by comma. If `remove_subscribers=ALL` (all upper cases), all subscribers will be removed.
+
+## Parameters used to subscribe one subscriber to multiple mailing lists
+
+`POST /api/<subscriber>/subscriber`
+
+Parameter | Sample Usage | Default Value | Comment
+---|---|---|---
+`lists` | `lists=<mail>,<mail2>,<mail3>` | | Subscribe to multiple mailing lists. Multiple lists must be separated by comma.
+`require_confirm` | `require_confirm=yes` | `yes` | Send an email to subscriber for confirm. Subscriber will be added as member after confirmed.
+`subscription` | `subscription=normal` | `normal` | Subscribe to specified subscription version, defaults to `normal`.
 
 ## Parameters used to delete mailing list account
 
