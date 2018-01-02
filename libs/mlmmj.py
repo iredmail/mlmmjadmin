@@ -729,9 +729,10 @@ def has_subscriber(mail, subscriber, subscription=None):
     mail = str(mail).lower()
     subscriber = str(subscriber).lower()
 
-    subscriptions = ['normal', 'digest', 'nomail']
     if subscription:
         subscriptions = [subscription]
+    else:
+        subscriptions = subscription_versions
 
     for subscription in subscriptions:
         _sub_dir = __get_ml_subscribers_dir(mail=mail, subscription=subscription)

@@ -106,24 +106,22 @@ class Profile(object):
 
 class SubscribedLists(object):
     @api_acl
-    def GET(self, subscriber, subscription):
+    def GET(self, subscriber):
         """Get mailing lists which the given subscriber subscribed to.
 
-        Parameters:
+        HTTP GET Parameters:
 
-        :param under_same_domain: [yes|no]. If set to 'yes', only query domains
+        :param query_all_lists: If set to 'yes', will check all available
+                                mailing lists on server. If 'no', check only
+                                lists under same domain.
         """
         subscriber = str(subscriber).lower()
         domain = subscriber.split('@', 1)[-1]
 
-        form = web.input()
-
-        query_all_lists = False
-        if form.get('query_all_lists') == 'yes':
-            query_all_lists = True
+        form = web.input(_unicode=False)
 
         # Get mail addresses of existing accounts
-        if query_all_lists:
+        if form.get('query_all_lists') == 'yes':
             qr = backend.get_existing_maillists(domains=None)
         else:
             qr = backend.get_existing_maillists(domains=[domain])
@@ -135,14 +133,11 @@ class SubscribedLists(object):
         if not existing_lists:
             return api_render((True, []))
 
-        if subscription == 'ALL':
-            subscription = None
-
         subscribed_lists = []
         for i in existing_lists:
             qr = mlmmj.has_subscriber(mail=i,
                                       subscriber=subscriber,
-                                      subscription=subscription)
+                                      subscription=None)
             if qr:
                 subscribed_lists.append({'subscription': qr[1], 'mail': i})
 
