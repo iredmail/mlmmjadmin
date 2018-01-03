@@ -532,7 +532,7 @@ def __convert_form_to_mlmmj_params(mail, form):
                 # and use mailing list owners as subscription moderators.
                 form.pop('subscription_moderators')
         else:
-            # remove 'subscription_moderators' and let mlmmj-admin remove
+            # remove 'subscription_moderators' and let mlmmjadmin remove
             # 'submod' directly.
             form.pop('subscription_moderators')
 

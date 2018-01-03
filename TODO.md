@@ -2,13 +2,9 @@
 
 ## 1.0: RESTful API
 
-- rc/sysv script without uwsgi config file.
 - API:
     - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
     - Add API endpoint to verify whether given email address is already a member
-
-- Better FreeBSD support:
-    - rc scripts
 
 ### DONE
 
@@ -33,6 +29,7 @@
 - Correctly handle footer in both plain text and html formats.
 - Subscribe one subscriber to multiple mailing lists.
 - Unsubscribe one subscriber from multiple mailing lists.
+- RC script used to control mlmmjadmin service.
 
 - script `tools/maillist_admin.py` (interactive with API):
     * Add new account (must be able to handle all profile parameters)

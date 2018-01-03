@@ -42,7 +42,7 @@ if __name__ == '__main__':
     listen_address = settings.listen_address
     listen_port = int(settings.listen_port)
 
-    logger.info('Starting mlmmj-admin, version {}, listening on {}:{}.'.format(
+    logger.info('Starting mlmmjadmin, version {}, listening on {}:{}.'.format(
         __version__, listen_address, listen_port))
     web.httpserver.runsimple(app.wsgifunc(), (listen_address, listen_port))
 else:

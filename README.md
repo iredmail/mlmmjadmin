@@ -1,6 +1,6 @@
 # Mlmmj Admin
 
-mlmmj-admin is RESTful API server used to manage mlmmj (mailing list manager).
+mlmmjadmin is RESTful API server used to manage mlmmj (mailing list manager).
 Check `docs/` directory for more detailed documents.
 
 ## Requirements
@@ -15,20 +15,20 @@ Check `docs/` directory for more detailed documents.
     * `requests`: <http://docs.python-requests.org/en/master/>. Required by
       command line tool `tools/maillist_admin.py`.
 
-## Setup mlmmj-admin
+## Setup mlmmjadmin
 
 > Please follow docs under `docs/` directory to integrate mlmmj first, make
 > sure it's working properly.
 
 NOTE: We use version `1.0` for example below.
 
-* Download mlmmj-admin: <https://bitbucket.org/iredmail/mlmmj-admin/downloads/>
-* Uncompress downloaded mlmmj-admin package, copy it to `/opt/` directory.
+* Download mlmmjadmin: <https://bitbucket.org/iredmail/mlmmjadmin/downloads/>
+* Uncompress downloaded mlmmjadmin package, copy it to `/opt/` directory.
 * Create symbol link:
 
 ```
 cd /opt
-ln -s mlmmj-admin-1.0 mlmmj-admin
+ln -s mlmmjadmin-1.0 mlmmjadmin
 ```
 
 * Generate config file by copying sample file, `settings.py.sample`:
@@ -79,7 +79,7 @@ api_auth_tokens = ['43a89b7aa34354089e629ed9f9be0b3b', '703ed37b20243d7c51c56ce6
           `backend_api = 'bk_iredmail_ldap'` and
           `backend_cli = 'bk_iredmail_ldap` in `settings.py`.
     * Please add extra __REQUIRED__ parameters in `settings.py`, so that
-      mlmmj-admin can connect and update LDAP server. Parameters are explanned
+      mlmmjadmin can connect and update LDAP server. Parameters are explanned
       in file `backends/bk_iredmail_<backend>.py`.
 
 ```
@@ -103,52 +103,52 @@ iredmail_ldap_bind_dn = 'cn=vmailadmin,dc=XXX,dc=XXX'
 iredmail_ldap_bind_password = 'xxxxxxxx'
 ```
 
-* Create directory used to store mlmmj-admin log file. mlmmj-admin is
+* Create directory used to store mlmmjadmin log file. mlmmjadmin is
   configured to log to syslog directly.
 
 ```
 #
 # For RHEL/CentOS
 #
-mkdir /var/log/mlmmj-admin
-chown root:root /var/log/mlmmj-admin
-chmod 0755 /var/log/mlmmj-admin
+mkdir /var/log/mlmmjadmin
+chown root:root /var/log/mlmmjadmin
+chmod 0755 /var/log/mlmmjadmin
 
 #
 # For Debian/Ubuntu
 #
-mkdir /var/log/mlmmj-admin
-chown syslog:adm /var/log/mlmmj-admin
-chmod 0755 /var/log/mlmmj-admin
+mkdir /var/log/mlmmjadmin
+chown syslog:adm /var/log/mlmmjadmin
+chmod 0755 /var/log/mlmmjadmin
 
 #
 # For OpenBSD/FreeBSD
 #
-mkdir /var/log/mlmmj-admin
-chown root:wheel /var/log/mlmmj-admin
-chmod 0755 /var/log/mlmmj-admin
+mkdir /var/log/mlmmjadmin
+chown root:wheel /var/log/mlmmjadmin
+chmod 0755 /var/log/mlmmjadmin
 ```
 
-* Update syslog daemon config file to log mlmmj-admin to dedicated log file:
+* Update syslog daemon config file to log mlmmjadmin to dedicated log file:
 
 For Linux
 ```
-cp /opt/mlmmj-admin/samples/rsyslog/mlmmj-admin.conf /etc/rsyslog.d/
+cp /opt/mlmmjadmin/samples/rsyslog/mlmmjadmin.conf /etc/rsyslog.d/
 service rsyslog restart
 ```
 
 For OpenBSD, please append below lines in `/etc/syslog.conf`:
 
 ```
-!!mlmmj-admin
-local5.*            /var/log/mlmmj-admin/mlmmj-admin.log
+!!mlmmjadmin
+local5.*            /var/log/mlmmjadmin/mlmmjadmin.log
 ```
 
 ---
 [TODO] For FreeBSD
 ---
 
-* [TODO] Copy systemd or rc script used to control mlmmj-admin service:
+* [TODO] Copy systemd or rc script used to control mlmmjadmin service:
 
 * Now ok to start `mlmmjadmin` service:
 
@@ -162,21 +162,21 @@ service mlmmjadmin restart
 # Create a new mailing list
 curl \
     -X POST \
-    --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
+    --header 'X-MLMMJADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
     -d "owner=postmaster@a.io&only_subscriber_can_post=yes"
     http://127.0.0.1:7779/list@domain.com
 
 # Update a mailing list
 curl \
     -X PUT \
-    --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
+    --header 'X-MLMMJADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
     -d "only_subscriber_can_post=no"
     http://127.0.0.1:7779/list@domain.com
 
 # Delete a mailing list
 curl \
     -X DELETE \
-    --header 'X-MLMMJ-ADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
+    --header 'X-MLMMJADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
     http://127.0.0.1:7779/list@domain.com
 ```
 

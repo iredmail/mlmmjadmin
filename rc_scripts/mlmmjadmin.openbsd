@@ -3,14 +3,26 @@
 # A switch in /etc/rc.conf.local is required:
 #mlmmjadmin_flags='--ini /etc/uwsgi/mlmmjadmin.ini --log-syslog'
 
-daemon='/usr/local/bin/uwsgi'
+UWSGI_BIN='/usr/local/bin/uwsgi'
+UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi.ini'
+PIDFILE='/var/run/mlmmjadmin.pid'
 
 . /etc/rc.d/rc.subr
 
 rc_reload=NO
 
+rc_start() {
+    ${UWSGI_BIN} --ini ${UWSGI_INI_FILE} --pidfile ${PIDFILE}
+}
+
 rc_stop() {
-    ${daemon} --stop /var/run/mlmmjadmin.pid
+    ${UWSGI_BIN} --stop ${PIDFILE}
+
+    if [ X"$?" == X"0" ]; then
+        rm -f ${PIDFILE} >/dev/null 2>&1
+    else
+        echo -e "\t\t[ FAILED ]"
+    fi
 }
 
 remove_shmid() {

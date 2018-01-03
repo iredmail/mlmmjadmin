@@ -10,8 +10,8 @@
 name='mlmmjadmin'
 rcvar=`set_rcvar_obsolete`
 
-BINPATH='/opt/mlmmj-admin/mlmmj-admin.py'
-PIDFILE='/var/run/mlmmj-admin.pid'
+PIDFILE='/var/run/mlmmjadmin.pid'
+UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi.ini'
 
 check_status() {
     # Usage: check_status pid_number
@@ -37,7 +37,7 @@ start() {
     fi
 
     echo "Starting ${name}."
-    /usr/local/bin/python2 ${BINPATH}
+    uwsgi --ini ${UWSGI_INI_FILE} --pidfile ${PIDFILE}
     unset s
 }
 
@@ -48,7 +48,7 @@ stop() {
 
         if [ X"$s" == X"running" ]; then
             echo "Stopping ${name}."
-            kill -9 ${PID}
+            uwsgi --stop ${PIDFILE}
             if [ X"$?" == X"0" ]; then
                 rm -f ${PIDFILE} >/dev/null 2>&1
             else

@@ -12,9 +12,9 @@
 # Description: Mlmmj RESTful API server.
 ### END INIT INFO
 
-PROG='mlmmj-admin'
-BINPATH='/opt/mlmmj-admin/mlmmj-admin.py'
-PIDFILE='/var/run/mlmmj-admin.pid'
+PROG='mlmmjadmin'
+PIDFILE='/var/run/mlmmjadmin.pid'
+UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi.ini'
 
 check_status() {
     # Usage: check_status pid_number
@@ -41,7 +41,7 @@ start() {
     fi
 
     echo "Starting ${PROG} ..."
-    python ${BINPATH}
+    uwsgi --ini ${UWSGI_INI_FILE} --pidfile ${PIDFILE}
     unset s
 }
 
@@ -52,7 +52,7 @@ stop() {
 
         if [ X"$s" == X"running" ]; then
             echo "Stopping ${PROG} ..."
-            kill -9 ${PID}
+            uwsgi --stop ${PIDFILE}
             if [ X"$?" == X"0" ]; then
                 rm -f ${PIDFILE} >/dev/null 2>&1
             else

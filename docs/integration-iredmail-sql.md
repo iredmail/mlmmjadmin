@@ -98,7 +98,7 @@ $policy_bank{'MLMMJ'} = {
 
 !!! warning
 
-    [__TODO__] ALL these managements should be done by calling the mlmmj-admin
+    [__TODO__] ALL these managements should be done by calling the mlmmjadmin
     RESTful APIs.
 
 ### Create a new mailing list account

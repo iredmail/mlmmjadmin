@@ -3,7 +3,7 @@ from logging.handlers import SysLogHandler
 import settings
 
 # Set application name.
-logger = logging.getLogger('mlmmj-admin')
+logger = logging.getLogger('mlmmjadmin')
 
 # Set log level.
 _log_level = getattr(logging, str(settings.log_level).upper())

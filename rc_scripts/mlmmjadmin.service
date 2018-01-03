@@ -1,11 +1,11 @@
 [Unit]
-Description=Mlmmj admin
+Description=RESTful API server used to manage mlmmj mailing list manager
 After=network.target
 
 [Service]
 Type=simple
-PIDFile=/run/mlmmj-admin.pid
-ExecStart=/usr/bin/python /opt/mlmmj-admin/mlmmj-admin.py
+ExecStart=/usr/bin/uwsgi --ini /opt/mlmmjadmin/rc_scripts/uwsgi.ini --pidfile /var/run/mlmmjadmin.pid
+ExecStop=/usr/bin/uwsgi --stop /var/run/mlmmjadmin.pid
 KillMode=control-group
 KillSignal=SIGTERM
 TimeoutStopSec=5

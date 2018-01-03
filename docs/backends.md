@@ -1,4 +1,4 @@
-# How to integrate mlmmj-admin with your own mail server
+# How to integrate mlmmjadmin with your own mail server
 
 * File `libs/mlmmj.py` handles mlmmj related data on file system. Usually you
   don't need to modify this file.

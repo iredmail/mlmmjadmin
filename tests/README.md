@@ -1,4 +1,4 @@
-# Unit tests for mlmmj-admin RESTful API
+# Unit tests for mlmmjadmin RESTful API
 
 ## Requirements
 
