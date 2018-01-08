@@ -25,9 +25,9 @@ remove_shmid() {
 rc_pre() {
     remove_shmid
 
-    mkdir $(dirname ${LOGFILE}) 2>/dev/null
-    touch ${LOGFILE}
-    chmod 0755 ${LOGFILE}
+    /bin/mkdir $(dirname ${PIDFILE}) 2>/dev/null
+    /sbin/chown mlmmj:mlmmj $(dirname ${PIDFILE})
+    #/bin/chmod 0755 ${PIDFILE}
 }
 
 rc_start() {
@@ -38,7 +38,6 @@ rc_start() {
 }
 
 rc_stop() {
-    echo 'in rc_stop()'
     ${daemon} --stop ${PIDFILE}
 
     if [ X"$?" == X"0" ]; then
