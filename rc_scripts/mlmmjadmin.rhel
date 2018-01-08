@@ -1,19 +1,18 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Author: Zhang Huangbin (zhb@iredmail.org)
 
-# PROVIDE: mlmmjadmin
-# REQUIRE: DAEMON
-# KEYWORD: shutdown
+### BEGIN INIT INFO
+# chkconfig: - 99 99
+# description: mlmmjadmin is a RESTful API server used to manage mlmmj mailing
+#              list manager..
+# processname: mlmmjadmin
+### END INIT INFO
 
-. /etc/rc.subr
-name='mlmmjadmin'
-rcvar=`set_rcvar_obsolete`
-
+PROG='mlmmjadmin'
+BINPATH='/opt/mlmmjadmin/mlmmjadmin.py'
 PIDFILE='/var/run/mlmmjadmin/mlmmjadmin.pid'
-UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/freebsd.ini'
-
-PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+LOGFILE='/var/log/mlmmjadmin/mlmmjadmin.log'
 
 check_status() {
     # Usage: check_status pid_number
@@ -32,19 +31,22 @@ start() {
         s="$(check_status ${PID})"
 
         if [ X"$s" == X"running" ]; then
-            echo "${name} is already running."
+            echo "${PROG} is already running."
         else
             rm -f ${PIDFILE} >/dev/null 2>&1
         fi
-
-        unset s
     fi
 
-    echo "Starting ${name}."
+    unset s
+
+    mkdir /var/run/mlmmjadmin 2>/dev/null
+    chown mlmmj:mlmmj /var/run/mlmmjadmin
+    chmod 0755 /var/run/mlmmjadmin
+
+    echo "Starting ${PROG} ..."
     uwsgi --ini ${UWSGI_INI_FILE} \
           --pidfile ${PIDFILE} \
-          --log-syslog \
-          --daemonize ${LOGFILE}
+          --log-syslog
 }
 
 stop() {
@@ -53,22 +55,23 @@ stop() {
         s="$(check_status ${PID})"
 
         if [ X"$s" == X"running" ]; then
-            echo "Stopping ${name}."
-            uwsgi --stop ${PIDFILE}
+            echo "Stopping ${PROG} ..."
+            kill -9 ${PID}
             if [ X"$?" == X"0" ]; then
                 rm -f ${PIDFILE} >/dev/null 2>&1
+                rm -rf /var/run/mlmmjadmin
             else
                 echo -e "\t\t[ FAILED ]"
             fi
         else
-            echo "${name} is already stopped."
+            echo "${PROG} is already stopped."
             rm -f ${PIDFILE} >/dev/null 2>&1
         fi
-
-        unset s
     else
-        echo "${name} is already stopped."
+        echo "${PROG} is already stopped."
     fi
+
+    unset s
 }
 
 status() {
@@ -77,25 +80,25 @@ status() {
         s="$(check_status ${PID})"
 
         if [ X"$s" == X"running" ]; then
-            echo "${name} is running."
+            echo "${PROG} is running."
             exit 0
         else
-            echo "${name} is stopped."
+            echo "${PROG} is stopped."
             exit 1
         fi
-
-        unset s
     else
-        echo "${name} is stopped."
+        echo "${PROG} is stopped."
         exit 3
     fi
 }
 
-start_cmd="start"
-stop_cmd="stop"
-status_cmd="status"
-restart_cmd="stop && start"
-
-command="start"
-load_rc_config ${name}
-run_rc_command "$1"
+case "$1" in
+    start) start ;;
+    stop) stop ;;
+    status) status ;;
+    restart) stop && sleep 1 && start ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|status}"
+        RETVAL=1
+        ;;
+esac

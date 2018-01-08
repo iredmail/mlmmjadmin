@@ -1,0 +1,19 @@
+[Unit]
+Description=RESTful API server used to manage mlmmj mailing list manager
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/mkdir /var/run/mlmmjadmin
+ExecStartPre=/usr/bin/chown mlmmj:mlmmj /var/run/mlmmjadmin
+ExecStartPre=/usr/bin/chmod 0755 /var/run/mlmmjadmin
+ExecStart=/usr/sbin/uwsgi --ini /opt/mlmmjadmin/rc_scripts/uwsgi.ini --pidfile /var/run/mlmmjadmin/mlmmjadmin.pid
+ExecStop=/usr/sbin/uwsgi --stop /var/run/mlmmjadmin/mlmmjadmin.pid
+ExecStopPost=/usr/bin/rm -rf /var/run/mlmmjadmin
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

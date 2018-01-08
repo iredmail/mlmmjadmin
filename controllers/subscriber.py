@@ -80,6 +80,20 @@ class Subscribers(object):
         return api_render(True)
 
 
+class HasSubscriber(object):
+    @api_acl
+    def GET(self, mail, subscriber):
+        """Check whether given subscriber is member of given mailing list."""
+        mail = str(mail).lower()
+        subscriber = str(subscriber).lower()
+
+        qr = mlmmj.has_subscriber(mail=mail,
+                                  subscriber=subscriber,
+                                  subscription=None)
+
+        return api_render(qr)
+
+
 class SubscribedLists(object):
     @api_acl
     def GET(self, subscriber):

@@ -11,6 +11,9 @@ urls = [
     # Get subscribers.
     '/api/({})/subscribers'.format(e), 'controllers.subscriber.Subscribers',
 
+    # Check whether given subscriber is member of given mailing list.
+    '/api/({})/has_subscriber/({})'.format(e, e), 'controllers.subscriber.HasSubscriber',
+
     #
     # per-subscriber
     #

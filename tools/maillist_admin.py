@@ -24,6 +24,7 @@ Valid actions:
     info: Show settings of an existing mailing list account
     update: Update an existing mailing list account
     delete: Delete an existing mailing list account
+    has_subscriber: Check whether mailing list has given subscriber.
     subscribers: Show all subscribers
     subscribed: Show all subscribed lists of a given subscriber.
 
@@ -44,6 +45,10 @@ Samples:
     *) Delete an existing mailing list account
 
         python maillist_admin.py delete list@domain.com
+
+    *) Check whether mailing list has given subscriber.
+
+        python maillist_admin.py has_subscriber list@domain.com subscriber@gmail.com
 
     *) Show all subscribers:
 
@@ -77,6 +82,7 @@ backend = __import__(settings.backend_cli)
 
 action = sys.argv[1]
 if action not in ['info', 'create', 'update', 'delete',
+                  'has_subscriber',
                   'subscribers', 'subscribed']:
     print '<ERROR> Invalid action: {}. Usage:'
     print usage
@@ -150,6 +156,19 @@ elif action == 'delete':
             print "Removed {} (without archive).".format(mail)
     else:
         print "Error: {}".format(_json['_msg'])
+
+elif action == 'has_subscriber':
+    _subscriber = args[0]
+    url = api_url + '/has_subscriber/' + _subscriber
+    r = requests.get(url, headers=api_headers, verify=verify_ssl)
+    _json = r.json()
+    if _json['_success']:
+        print '[YES] Mailing list <{}> has subscriber <{}>.'.format(mail, _subscriber)
+    else:
+        if '_msg' in _json:
+            print "Error: {}".format(_json['_msg'])
+        else:
+            print '[NO] Mailing list <{}> does NOT have subscriber <{}>.'.format(mail, _subscriber)
 
 elif action == 'subscribers':
     url = api_url + '/subscribers'

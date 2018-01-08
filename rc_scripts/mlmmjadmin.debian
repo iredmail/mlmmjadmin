@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Author: Zhang Huangbin (zhb@iredmail.org)
 
 ### BEGIN INIT INFO
@@ -8,13 +7,13 @@
 # Required-Stop:     $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: iRedMail Cluster API Server
-# Description: Mlmmj RESTful API server.
+# Short-Description: mlmmj RESTful API server.
+# Description: mlmmj RESTful API server.
 ### END INIT INFO
 
 PROG='mlmmjadmin'
-PIDFILE='/var/run/mlmmjadmin.pid'
-UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi.ini'
+PIDFILE='/var/run/mlmmjadmin/mlmmjadmin.pid'
+UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/debian.ini'
 
 check_status() {
     # Usage: check_status pid_number
@@ -38,11 +37,18 @@ start() {
         else
             rm -f ${PIDFILE} >/dev/null 2>&1
         fi
+
+        unset s
     fi
 
+    mkdir /var/run/mlmmjadmin 2>/dev/null
+    chown mlmmj:mlmmj /var/run/mlmmjadmin
+    chmod 0755 /var/run/mlmmjadmin
+
     echo "Starting ${PROG} ..."
-    uwsgi --ini ${UWSGI_INI_FILE} --pidfile ${PIDFILE}
-    unset s
+    uwsgi --ini ${UWSGI_INI_FILE} \
+          --pidfile ${PIDFILE} \
+          --log-syslog
 }
 
 stop() {
@@ -55,6 +61,7 @@ stop() {
             uwsgi --stop ${PIDFILE}
             if [ X"$?" == X"0" ]; then
                 rm -f ${PIDFILE} >/dev/null 2>&1
+                rm -rf /var/run/mlmmjadmin
             else
                 echo -e "\t\t[ FAILED ]"
             fi

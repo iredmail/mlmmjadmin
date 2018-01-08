@@ -13,6 +13,7 @@ GET     | `/api/<mail>` | Get profile of an existing mailing list account. It re
 POST    | `/api/<mail>` | Create a new mailing list account.
 DELETE  | `/api/<mail>` | Remove an existing mailing list account.
 PUT     | `/api/<mail>` | Update mailing list profiles.
+GET     | `/api/<mail>/has_subscriber/<subscriber>` | Check whether given subscriber is member of given mailing list.
 GET     | `/api/<mail>/subscribers` | Get subscribers.
 POST    | `/api/<mail>/subscribers` | Add or remove subscribers.
 GET | `/api/subscriber/<subscriber>/subscribed` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.

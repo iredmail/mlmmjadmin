@@ -1,29 +1,18 @@
 #!/bin/sh
+# Author: Zhang Huangbin (zhb@iredmail.org)
+# Purpose: Start/stop mlmmjadmin RESTful API server.
 
-# A switch in /etc/rc.conf.local is required:
-#mlmmjadmin_flags='--ini /etc/uwsgi/mlmmjadmin.ini --log-syslog'
-
-UWSGI_BIN='/usr/local/bin/uwsgi'
-UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi.ini'
-PIDFILE='/var/run/mlmmjadmin.pid'
+daemon='/usr/local/bin/uwsgi'
 
 . /etc/rc.d/rc.subr
 
+UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/openbsd.ini'
+PIDFILE='/var/run/mlmmjadmin/mlmmjadmin.pid'
+LOGFILE='/var/log/mlmmjadmin/mlmmjadmin.log'
 rc_reload=NO
 
-rc_start() {
-    ${UWSGI_BIN} --ini ${UWSGI_INI_FILE} --pidfile ${PIDFILE}
-}
-
-rc_stop() {
-    ${UWSGI_BIN} --stop ${PIDFILE}
-
-    if [ X"$?" == X"0" ]; then
-        rm -f ${PIDFILE} >/dev/null 2>&1
-    else
-        echo -e "\t\t[ FAILED ]"
-    fi
-}
+# [REQUIRED] Regular expression used to filter uwsgi processes.
+pexp="${daemon} --ini ${UWSGI_INI_FILE}.*"
 
 remove_shmid() {
     for shmid in $(/usr/bin/ipcs -sa | grep 'mlmmj' | awk '{print $2}'); do
@@ -35,10 +24,33 @@ remove_shmid() {
 
 rc_pre() {
     remove_shmid
+
+    mkdir $(dirname ${LOGFILE}) 2>/dev/null
+    touch ${LOGFILE}
+    chmod 0755 ${LOGFILE}
+}
+
+rc_start() {
+    ${daemon} --ini ${UWSGI_INI_FILE} \
+              --pidfile ${PIDFILE} \
+              --log-syslog \
+              --daemonize ${LOGFILE}
+}
+
+rc_stop() {
+    echo 'in rc_stop()'
+    ${daemon} --stop ${PIDFILE}
+
+    if [ X"$?" == X"0" ]; then
+        rm -f ${PIDFILE} >/dev/null 2>&1
+    else
+        echo -e "\t\t[ FAILED ]"
+    fi
 }
 
 rc_post() {
     remove_shmid
+    rm -f ${PIDFILE}
 }
 
 rc_cmd $1

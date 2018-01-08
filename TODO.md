@@ -4,7 +4,6 @@
 
 - API:
     - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
-    - Add API endpoint to verify whether given email address is already a member
 
 ### DONE
 
