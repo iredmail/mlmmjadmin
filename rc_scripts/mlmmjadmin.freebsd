@@ -12,6 +12,7 @@ rcvar=`set_rcvar_obsolete`
 
 PIDFILE='/var/run/mlmmjadmin/mlmmjadmin.pid'
 UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/freebsd.ini'
+LOGFILE='/var/log/mlmmjadmin/mlmmjadmin.log'
 
 PATH="/usr/local/bin:/usr/local/sbin:$PATH"
 
