@@ -40,6 +40,9 @@ start() {
         unset s
     fi
 
+    /bin/mkdir $(dirname ${PIDFILE}) 2>/dev/null
+    /usr/sbin/chown mlmmj:mlmmj $(dirname ${PIDFILE})
+
     echo "Starting ${name}."
     uwsgi --ini ${UWSGI_INI_FILE} \
           --pidfile ${PIDFILE} \

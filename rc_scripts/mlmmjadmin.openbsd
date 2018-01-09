@@ -27,7 +27,6 @@ rc_pre() {
 
     /bin/mkdir $(dirname ${PIDFILE}) 2>/dev/null
     /sbin/chown mlmmj:mlmmj $(dirname ${PIDFILE})
-    #/bin/chmod 0755 ${PIDFILE}
 }
 
 rc_start() {
