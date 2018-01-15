@@ -378,6 +378,14 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
     if _values:
         try:
             param_file = __get_param_file(mail=mail, param=param)
+
+            if param == 'listaddress':
+                # Remove primary address from extra address
+                if mail in _values:
+                    _values.remove(mail)
+
+                _values = [mail] + _values
+
             with open(param_file, 'w') as f:
                 f.write('\n'.join(_values) + '\n')
 
@@ -754,11 +762,19 @@ def is_maillist_exists(mail):
         return False
 
 
+# This is the function we can get both web parameter and mlmmj parameter names.
 def get_web_param_value(mail, param):
     """Get mlmmj parameter value of given web parameter name."""
     if param in settings.MLMMJ_WEB_PARAMS:
         _mlmmj_param = settings.MLMMJ_WEB_PARAMS[param]
-        return __get_param_value(mail=mail, param=_mlmmj_param)
+
+        v = __get_param_value(mail=mail, param=_mlmmj_param)
+
+        if param == 'extra_addresses':
+            if mail in v[1]['value']:
+                v[1]['value'].remove(mail)
+
+        return v
     else:
         return (False, 'INVALID_PARAM')
 

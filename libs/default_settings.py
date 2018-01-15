@@ -149,9 +149,7 @@ MLMMJ_LIST_WEB_PARAMS = {
     #'access': 'access',
     'custom_headers': 'customheaders',
     'remove_headers': 'delheaders',
-    # we always use email address in API URI as primary address, so
-    # `listaddress` is not required and should be hiden
-    #'listaddress': 'listaddress',
+    'extra_addresses': 'listaddress',
     'owner': 'owner',
     'owners': 'owner',  # this is an alias to 'owner'
 }
