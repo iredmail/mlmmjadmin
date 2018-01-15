@@ -40,9 +40,8 @@ def api_acl(func):
 
     _auth_token = get_auth_token()
     if not _auth_token:
-        if client_ip != '127.0.0.1':
-            logger.error('[{}] Blocked request without auth token.'.format(client_ip))
-
+        #if client_ip != '127.0.0.1':
+        #    logger.error('[{}] Blocked request without auth token.'.format(client_ip))
         return no_auth_token
     else:
         logger.debug('[{}] API AUTH TOKEN: {:.8}...'.format(client_ip, _auth_token))
