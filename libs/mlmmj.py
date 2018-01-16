@@ -380,10 +380,10 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
             param_file = __get_param_file(mail=mail, param=param)
 
             if param == 'listaddress':
-                # Remove primary address from extra address
-                if mail in _values:
-                    _values.remove(mail)
+                # Remove primary address(es)
+                _values = [v for v in _values if v != mail]
 
+                # Prepend primary address (must be first one)
                 _values = [mail] + _values
 
             with open(param_file, 'w') as f:

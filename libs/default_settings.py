@@ -138,7 +138,7 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
     'disable_notify_when_exceeding_max_mail_size': 'nomaxmailsizedenymails',
 
     'disable_archive': 'noarchive',
-    #'tocc': 'tocc',
+    'tocc': 'tocc',
     #
     # Custom parameters which are not supported by mlmmj itself
     #
@@ -249,6 +249,11 @@ MLMMJ_PARAM_TYPES = {
 #   MLMMJ_DEFAULT_PROFILE_SETTINGS.pop(key)             # Remove existing one
 #
 MLMMJ_DEFAULT_PROFILE_SETTINGS = {
+    # With `tocc` enabled, the list address does not have to be in the To: or
+    # Cc: header of the email to the list. This is useful when we have alias
+    # domains and don't want to list all <listname>@<alias-domain> in the
+    # `control/listaddress` file.
+    'tocc': 'yes',
     #'disable_send_copy_to_sender': 'yes',
     'only_subscriber_can_post': 'yes',
     'only_moderator_can_post': 'no',
