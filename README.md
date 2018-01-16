@@ -103,6 +103,40 @@ iredmail_ldap_bind_dn = 'cn=vmailadmin,dc=XXX,dc=XXX'
 iredmail_ldap_bind_password = 'xxxxxxxx'
 ```
 
+* Copy rc/systemd scripts for service control:
+
+```
+#
+# For RHEL/CentOS
+#
+cp /opt/mlmmjadmin/rc_scripts/systemd/rhel.service /lib/systemd/system/mlmmjadmin.service
+chmod 0644 /lib/systemd/system/mlmmjadmin.service
+systemctl daemon-reload
+systemctl enable mlmmjadmin
+
+#
+# For Debian 9 and Ubuntu 16.04 which systemd
+#
+cp /opt/mlmmjadmin/rc_scripts/systemd/debian.service /lib/systemd/system/mlmmjadmin.service
+chmod 0644 /lib/systemd/system/mlmmjadmin.service
+systemctl daemon-reload
+systemctl enable mlmmjadmin
+
+#
+# For FreeBSD
+#
+cp /opt/mlmmjadmin/rc_scripts/mlmmjadmin.freebsd /usr/local/etc/rc.d/mlmmjadmin
+echo 'mlmmjadmin_enable=YES' >> /etc/rc.conf.local
+
+#
+# For OpenBSD
+#
+cp /opt/mlmmjadmin/rc_scripts/mlmmjadmin.openbsd /etc/rc.d/mlmmjadmin
+chmod 0755 /etc/rc.d/mlmmjadmin
+rcctl enable mlmmjadmin
+```
+
+
 * Create directory used to store mlmmjadmin log file. mlmmjadmin is
   configured to log to syslog directly.
 
@@ -144,11 +178,12 @@ For OpenBSD, please append below lines in `/etc/syslog.conf`:
 local5.*            /var/log/mlmmjadmin/mlmmjadmin.log
 ```
 
----
-[TODO] For FreeBSD
----
+For FreeBSD, please append below lines in `/etc/
 
-* [TODO] Copy systemd or rc script used to control mlmmjadmin service:
+```
+!mlmmjadmin
+local5.*            /var/log/mlmmjadmin/mlmmjadmin.log
+```
 
 * Now ok to start `mlmmjadmin` service:
 
