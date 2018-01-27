@@ -57,10 +57,6 @@ Samples:
     *) Show subscribed lists of a given subscriber:
 
         python maillist_admin.py subscribed subscriber@domain.com
-
-    *) Subscribe one subscriber to multiple mailing lists
-
-        python maillist_admin.py subscribe subscriber@gmail.com list-1@domain.com list-2@domain.com
 """
 
 if len(sys.argv) < 3:

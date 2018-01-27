@@ -2,18 +2,13 @@
 
 ## 1.0: RESTful API
 
-- API:
-    - new parameter: `enable_newsletter_subscription`. Used to explictly enable it.
-
-### DONE
-
 - Run as non-privileged user/group: `mlmmj:mlmmj`.
 - Run as a daemon service, no web server required.
 - Return JSON data to API client:
     - Operation succeeds: `{'_success': true}`
     - Operation succeeds with data returned: `{'_success': true, '_data': <data>}`
     - Operation failed: `{'_success': false, '_msg': <error reason>}`
-- Supports hook to check whether domain, email address exist in SQL/LDAP/...
+- Supports hook to check whether domain, email address exist in SQL/LDAP
   backend.
 - Log (part of) auth_token for troubleshooting purpose
 - Add mapping for form parameters and mlmmj parameters
