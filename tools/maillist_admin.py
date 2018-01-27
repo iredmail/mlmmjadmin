@@ -28,6 +28,9 @@ Valid actions:
     subscribers: Show all subscribers
     subscribed: Show all subscribed lists of a given subscriber.
 
+To subscribe/unsubscribe address to/from a mailing list, please run command
+`mlmmj-sub` and `mlmmj-unsub` shipped in mlmmj package instead.
+
 Samples:
 
     *) Create a new mailing list account with additional setting:

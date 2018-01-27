@@ -1,4 +1,4 @@
-# Mlmmj Admin
+# mlmmjadmin
 
 mlmmjadmin is RESTful API server used to manage mlmmj (mailing list manager).
 Check `docs/` directory for more detailed documents.
