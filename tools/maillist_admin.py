@@ -18,14 +18,14 @@ usage = """Usage:
 
     python maillist_admin.py <action> <mail> [<param1>=<value1> <param2>=<value2> ...]
 
-Valid actions:
+Available actions:
 
     create: Create a new mailing list account with additional setting:
     info: Show settings of an existing mailing list account
     update: Update an existing mailing list account
     delete: Delete an existing mailing list account
-    has_subscriber: Check whether mailing list has given subscriber.
     subscribers: Show all subscribers
+    has_subscriber: Check whether mailing list has given subscriber.
     subscribed: Show all subscribed lists of a given subscriber.
 
 To subscribe/unsubscribe address to/from a mailing list, please run command
@@ -49,7 +49,7 @@ Samples:
 
         python maillist_admin.py delete list@domain.com
 
-    *) Check whether mailing list has given subscriber.
+    *) Check whether mailing list has given subscriber
 
         python maillist_admin.py has_subscriber list@domain.com subscriber@gmail.com
 
