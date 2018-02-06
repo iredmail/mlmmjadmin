@@ -13,6 +13,7 @@ PROG='mlmmjadmin'
 BINPATH='/opt/mlmmjadmin/mlmmjadmin.py'
 PIDFILE='/var/run/mlmmjadmin/mlmmjadmin.pid'
 LOGFILE='/var/log/mlmmjadmin/mlmmjadmin.log'
+UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/rhel.ini'
 
 check_status() {
     # Usage: check_status pid_number
