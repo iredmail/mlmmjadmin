@@ -1,4 +1,8 @@
-# Query LDAP server on iRedMail server.
+# Interactive with OpenLDAP server configured by iRedMail:
+# https://www.iredmail.org/
+#
+# For more details, please read iRedMail official tutorial:
+# https://docs.iredmail.org/integration.mlmmj.ldap.html
 #
 # Required Python modules:
 #

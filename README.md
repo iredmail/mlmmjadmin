@@ -3,6 +3,11 @@
 mlmmjadmin is RESTful API server used to manage mlmmj (mailing list manager).
 Check `docs/` directory for more detailed documents.
 
+If you're running [iRedMail](https://www.iredmail.org/) (prior to 0.9.8) as
+mail server, please follow
+[iRedMail tutorials](https://www.iredmail.org/index.html#integration) to
+integrate mlmmj in iRedMail-0.9.7 or earler releases.
+
 ## Requirements
 
 * A working mail server with a working mlmmj instance.
@@ -60,47 +65,6 @@ You can add as many token as you want for different API clients. For example:
 
 ```
 api_auth_tokens = ['43a89b7aa34354089e629ed9f9be0b3b', '703ed37b20243d7c51c56ce6cd90e94c']
-```
-
-* If you're running iRedMail as your mail server, please update parameters
-  `backend_api` and `backend_cli` to use a proper backend handler. The backend
-  handler will connect to SQL/LDAP server to sync data of mlmmj mailing list.
-    * if you manage mail accounts with iRedAdmin-Pro:
-        * Please set `backend_api = 'bk_none'`
-        * if you're running SQL backends, please set
-          `backend_api = 'bk_iredmail_sql'` in `settings.py`.
-        * if you're running LDAP backends, please set
-          `backend_api = 'bk_iredmail_ldap'` in `settings.py`.
-    * if you do not manage mail accounts with iRedAdmin-Pro:
-        * if you're running SQL backends, please set
-          `backend_api = 'bk_iredmail_sql'` and
-          `backend_cli = 'bk_iredmail_sql'` in `settings.py`.
-        * if you're running LDAP backends, please set
-          `backend_api = 'bk_iredmail_ldap'` and
-          `backend_cli = 'bk_iredmail_ldap` in `settings.py`.
-    * Please add extra __REQUIRED__ parameters in `settings.py`, so that
-      mlmmjadmin can connect and update LDAP server. Parameters are explanned
-      in file `backends/bk_iredmail_<backend>.py`.
-
-```
-#
-# For SQL backends
-#
-iredmail_sql_db_type = 'mysql'          # or 'pgsql' for PostgreSQL
-iredmail_sql_db_server = '127.0.0.1'
-iredmail_sql_db_port = 3306             # or 5432 for PostgreSQL
-iredmail_sql_db_name = 'vmail'
-iredmail_sql_db_user = 'vmailadmin'     # SQL user must have read+write
-                                        # privilege to access 'vmail' database
-iredmail_sql_db_password = 'xxxxxxxx'   # Password of `iredmail_sql_db_user`
-
-#
-# For LDAP backends
-#
-iredmail_ldap_uri = 'ldap://127.0.0.1'
-iredmail_ldap_basedn = 'o=domains,dc=XXX,dc=XXX'
-iredmail_ldap_bind_dn = 'cn=vmailadmin,dc=XXX,dc=XXX'
-iredmail_ldap_bind_password = 'xxxxxxxx'
 ```
 
 * Copy rc/systemd scripts for service control:

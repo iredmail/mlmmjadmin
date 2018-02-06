@@ -1,4 +1,10 @@
-# Query SQL server on iRedMail server.
+# Interactive with MySQL/MariaDB/PostgreSQL server configured by iRedMail:
+# https://www.iredmail.org/
+#
+# For more details, please read iRedMail official tutorial:
+#
+#   - MySQL/MariaDB: https://docs.iredmail.org/integration.mlmmj.mysql.html
+#   - PostgreSQL: https://docs.iredmail.org/integration.mlmmj.pgsql.html
 #
 # Required Python modules:
 #
