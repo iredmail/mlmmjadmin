@@ -45,9 +45,10 @@ start() {
     chmod 0755 /var/run/mlmmjadmin
 
     echo "Starting ${PROG} ..."
-    uwsgi --ini ${UWSGI_INI_FILE} \
-          --pidfile ${PIDFILE} \
-          --log-syslog
+    uwsgi -d \
+        --ini ${UWSGI_INI_FILE} \
+        --pidfile ${PIDFILE} \
+        --log-syslog
 }
 
 stop() {
