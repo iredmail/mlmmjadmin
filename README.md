@@ -163,20 +163,20 @@ curl \
     -X POST \
     --header 'X-MLMMJADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
     -d "owner=postmaster@a.io&only_subscriber_can_post=yes"
-    http://127.0.0.1:7779/list@domain.com
+    http://127.0.0.1:7790/list@domain.com
 
 # Update a mailing list
 curl \
     -X PUT \
     --header 'X-MLMMJADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
     -d "only_subscriber_can_post=no"
-    http://127.0.0.1:7779/list@domain.com
+    http://127.0.0.1:7790/list@domain.com
 
 # Delete a mailing list
 curl \
     -X DELETE \
     --header 'X-MLMMJADMIN-API-AUTH-TOKEN: 43a89b7aa34354089e629ed9f9be0b3b' \
-    http://127.0.0.1:7779/list@domain.com
+    http://127.0.0.1:7790/list@domain.com
 ```
 
 ## Manage mailing lists from command line

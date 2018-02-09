@@ -2,7 +2,7 @@ import requests
 import settings
 
 # Use first api token defined in `settings.py`.
-base_url = 'http://127.0.0.1:7779'
+base_url = 'http://127.0.0.1:7790'
 api_auth_token = settings.api_auth_tokens[0]
 api_headers = {settings.API_AUTH_TOKEN_HEADER_NAME: api_auth_token}
 
