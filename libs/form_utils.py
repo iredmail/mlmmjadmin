@@ -112,9 +112,9 @@ def get_dict_for_form_param(mail, form, param):
     return kv
 
 
-def get_max_mail_size(form):
-    """Get maxmailsize (in bytes)."""
-    size = form.get('maxmailsize')
+def get_max_message_size(form):
+    """Get max message size (in bytes)."""
+    size = form.get('max_message_size')
     try:
         size = int(size)
     except:

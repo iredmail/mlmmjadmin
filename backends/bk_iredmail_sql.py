@@ -264,7 +264,7 @@ def add_maillist(mail, form, conn=None):
     params['name'] = form.get('name', '')
     params['transport'] = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
     params['mlid'] = __get_new_mlid(conn=conn)
-    params['maxmsgsize'] = form_utils.get_max_mail_size(form)
+    params['maxmsgsize'] = form_utils.get_max_message_size(form)
 
     if 'only_moderator_can_post' in form:
         params['accesspolicy'] = 'moderatorsonly'
@@ -360,8 +360,8 @@ def update_maillist(mail, form, conn=None):
     params = {}
     params['name'] = form.get('name', '')
 
-    if 'maxmailsize' in form:
-        params['maxmsgsize'] = form_utils.get_max_mail_size(form)
+    if 'max_message_size' in form:
+        params['maxmsgsize'] = form_utils.get_max_message_size(form)
 
     if 'only_moderator_can_post' in form:
         params['accesspolicy'] = 'moderatorsonly'

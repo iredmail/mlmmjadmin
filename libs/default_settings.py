@@ -159,7 +159,7 @@ MLMMJ_NORMAL_WEB_PARAMS = {
     #'delimiter': 'delimiter',
     #'digestinterval': 'digestinterval',
     #'digestmaxmails': 'digestmaxmails',
-    'maxmailsize': 'maxmailsize',
+    'max_message_size': 'maxmailsize',
     #'maxverprecips': 'maxverprecips',
     #'memorymailsize': 'memorymailsize',
     #'modreqlife': 'modreqlife',

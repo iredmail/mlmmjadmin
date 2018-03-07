@@ -394,7 +394,7 @@ def add_maillist(mail, form, conn=None):
         else:
             access_policy = None
 
-        max_message_size = form_utils.get_max_mail_size(form)
+        max_message_size = form_utils.get_max_message_size(form)
 
         moderators = form.get('moderators', '').split(',')
 
@@ -463,8 +463,8 @@ def update_maillist(mail, form, conn=None):
     elif 'only_subscriber_can_post' in form:
         mod_attrs += [(ldap.MOD_REPLACE, 'accessPolicy', ['membersonly'])]
 
-    if 'maxmailsize' in form:
-        max_mail_size = form_utils.get_max_mail_size(form)
+    if 'max_message_size' in form:
+        max_mail_size = form_utils.get_max_message_size(form)
         if max_mail_size:
             mod_attrs += [(ldap.MOD_REPLACE, 'maxMessageSize', [str(max_mail_size)])]
         else:
