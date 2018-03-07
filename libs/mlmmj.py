@@ -133,6 +133,11 @@ def __remove_file(path):
     return (True, )
 
 
+def __remove_param_file(mail, param):
+    _path = __get_param_file(mail=mail, param=param)
+    return __remove_file(_path)
+
+
 def __get_param_type(param):
     """Get parameter type.
 
@@ -289,7 +294,11 @@ def __get_param_value(mail, param):
     return (True, _ret)
 
 
-def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of_create=False):
+def __update_boolean_param(mail,
+                           param,
+                           value,
+                           param_file=None,
+                           touch_instead_of_create=False):
     """Create or remove parameter file for boolean type parameter.
 
     @touch_instead_of_create - touch parameter file instead of re-create it.
@@ -304,7 +313,13 @@ def __update_boolean_param(mail, param, value, param_file=None, touch_instead_of
             else:
                 open(param_file, 'w').close()
 
-            if param in ['modonlypost']:
+            # Avoid some conflicts
+            if param == 'subonlypost':
+                __remove_param_file(mail=mail, param='modonlypost')
+
+            if param == 'modonlypost':
+                __remove_param_file(mail=mail, param='subonlypost')
+
                 # Create 'control/moderated' also
                 _f = __get_param_file(mail=mail, param='moderated')
                 open(_f, 'a').close()
