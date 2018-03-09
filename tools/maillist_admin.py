@@ -27,9 +27,8 @@ Available actions:
     subscribers: Show all subscribers
     has_subscriber: Check whether mailing list has given subscriber.
     subscribed: Show all subscribed lists of a given subscriber.
-
-To subscribe/unsubscribe address to/from a mailing list, please run command
-`mlmmj-sub` and `mlmmj-unsub` shipped in mlmmj package instead.
+    add_subscribers: Add new subscribers to mailing list.
+    remove_subscribers: Remove existing subscribers from mailing list.
 
 Samples:
 
@@ -60,6 +59,14 @@ Samples:
     *) Show subscribed lists of a given subscriber:
 
         python maillist_admin.py subscribed subscriber@domain.com
+
+    *) Add new subscribers to mailing list:
+
+        python maillist_admin.py add_subscribers list@domain.com <mail> <mail> <mail>
+
+    *) Remove existing subscribers from mailing list:
+
+        python maillist_admin.py remove_subscribers list@domain.com <mail> <mail> <mail>
 """
 
 if len(sys.argv) < 3:
@@ -85,7 +92,8 @@ if settings.backend_api == 'bk_none':
 action = sys.argv[1]
 if action not in ['info', 'create', 'update', 'delete',
                   'has_subscriber',
-                  'subscribers', 'subscribed']:
+                  'subscribers', 'subscribed',
+                  'add_subscribers', 'remove_subscribers']:
     print '<ERROR> Invalid action: {}. Usage:'
     print usage
     sys.exit()
@@ -192,5 +200,37 @@ elif action == 'subscribed':
     if _json['_success']:
         for i in _json['_data']:
             print i['mail'], '(%s)' % i['subscription']
+    else:
+        print "Error: {}".format(_json['_msg'])
+
+elif action == 'add_subscribers':
+    url = api_url + '/subscribers'
+
+    _subscribers = set([str(i).lower() for i in args if is_email(i)])
+    if not _subscribers:
+        print "Error: No subscribers given."
+        sys.exit()
+
+    arg_kvs['add_subscribers'] = ','.join(_subscribers)
+    r = requests.post(url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
+    _json = r.json()
+    if _json['_success']:
+        print "Added."
+    else:
+        print "Error: {}".format(_json['_msg'])
+
+elif action == 'remove_subscribers':
+    url = api_url + '/subscribers'
+
+    _subscribers = set([str(i).lower() for i in args if is_email(i)])
+    if not _subscribers:
+        print "Error: No subscribers given."
+        sys.exit()
+
+    arg_kvs['remove_subscribers'] = ','.join(_subscribers)
+    r = requests.post(url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
+    _json = r.json()
+    if _json['_success']:
+        print "Removed."
     else:
         print "Error: {}".format(_json['_msg'])

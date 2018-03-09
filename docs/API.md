@@ -57,7 +57,7 @@ Parameter | Sample Usage | Default Value | Comment
 
 ## Parameters used to add subscribers
 
-`POST /api/<mail>/subscribers/(normal|nomail|digest)`
+`POST /api/<mail>/subscribers`
 
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---
@@ -67,7 +67,7 @@ Parameter | Sample Usage | Default Value | Comment
 
 ## Parameters used to remove subscribers
 
-`POST /api/<mail>/subscribers/(normal|nomail|digest)`
+`POST /api/<mail>/subscribers`
 
 Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---

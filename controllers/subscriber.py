@@ -35,13 +35,13 @@ class Subscribers(object):
         """
         Add multiple subscribers to given subscription version.
 
-        @mail -- email address of the mailing list account
-        @subscription -- possible subscription versions: normal, digest, nomail.
+        :param mail: email address of the mailing list account
 
         Available parameters:
 
-        @subscribers -- email address of subscriber. Multiple subscribers must
-                        be separated by comma.
+        :param subscribers: email address of subscriber. Multiple subscribers
+                            must be separated by comma.
+        :param subscription: possible subscription versions: normal, digest, nomail.
         """
         form = web.input()
 
