@@ -1,3 +1,6 @@
+# TODO list all mailing list accounts
+#   - if `backend` is `bk_none`, list all accounts under mlmmj spool directory.
+#   - if `backend` is not `bk_none`, query from backend.
 import sys
 import os
 from urllib import urlencode
@@ -6,6 +9,7 @@ import web
 web.config.debug = False
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../backends')
 
 from libs.utils import is_email
 import settings
@@ -72,6 +76,12 @@ verify_ssl = False
 api_auth_token = settings.api_auth_tokens[0]
 api_headers = {settings.API_AUTH_TOKEN_HEADER_NAME: api_auth_token}
 
+# Load mailing list backend.
+run_backend_cli = False
+if settings.backend_api == 'bk_none':
+    run_backend_cli = True
+    backend = __import__(settings.backend_cli)
+
 action = sys.argv[1]
 if action not in ['info', 'create', 'update', 'delete',
                   'has_subscriber',
@@ -106,6 +116,13 @@ if action == 'info':
         print "Error: {}".format(_json['_msg'])
 
 elif action == 'create':
+    if run_backend_cli:
+        # Create account in backend
+        qr = backend.add_maillist(mail=mail, form=arg_kvs)
+        if not qr[0]:
+            print "Error while interactive with backend:", qr[1]
+            sys.exit()
+
     r = requests.post(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
@@ -114,6 +131,12 @@ elif action == 'create':
         print "Error: {}".format(_json['_msg'])
 
 elif action == 'update':
+    if run_backend_cli:
+        qr = backend.update_maillist(mail=mail, form=arg_kvs)
+        if not qr[0]:
+            print "Error while interactive with backend:", qr[1]
+            sys.exit()
+
     r = requests.put(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
@@ -122,6 +145,12 @@ elif action == 'update':
         print "Error: {}".format(_json['_msg'])
 
 elif action == 'delete':
+    if run_backend_cli:
+        qr = backend.remove_maillist(mail=mail)
+        if not qr[0]:
+            print "Error while interactive with backend:", qr[1]
+            sys.exit()
+
     api_url = api_url + '?' + urlencode(arg_kvs)
     r = requests.delete(api_url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
