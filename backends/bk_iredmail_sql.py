@@ -417,13 +417,13 @@ def get_existing_maillists(domains=None, conn=None):
     existing_lists = set()
     try:
         if domains:
-            qr = conn.update('maillists',
+            qr = conn.select('maillists',
                              vars={'domains': domains},
                              what='address',
                              where='domain IN $domains',
                              group='address')
         else:
-            qr = conn.update('maillists',
+            qr = conn.select('maillists',
                              what='address',
                              group='address')
 

@@ -1,38 +1,5 @@
 # Roadmap
 
-## 1.0: RESTful API
-
-- Run as non-privileged user/group: `mlmmj:mlmmj`.
-- Run as a daemon service, no web server required.
-- Return JSON data to API client:
-    - Operation succeeds: `{'_success': true}`
-    - Operation succeeds with data returned: `{'_success': true, '_data': <data>}`
-    - Operation failed: `{'_success': false, '_msg': <error reason>}`
-- Supports hook to check whether domain, email address exist in SQL/LDAP
-  backend.
-- Log (part of) auth_token for troubleshooting purpose
-- Add mapping for form parameters and mlmmj parameters
-- Hide unsupported web/mlmmj parameters
-- Add mailing list with some default settings
-- Delete mailing list
-- Update mailing list parameters
-- Archive mailing list directory.
-    - Able to archive account data to specified archive directory.
-- Unit tests
-- Add backend `bk_none` to handle mlmmj without SQL/LDAP/... databases.
-- Correctly handle footer in both plain text and html formats.
-- Subscribe one subscriber to multiple mailing lists.
-- Unsubscribe one subscriber from multiple mailing lists.
-- RC script used to control mlmmjadmin service.
-
-- script `tools/maillist_admin.py` (interactive with API):
-    * Add new account (must be able to handle all profile parameters)
-    * Update profile parameters
-    * Delete account
-    * List subscribers in different subscription version
-
-- script `samples/bin/mlmmj-amime-receive`: Call altermime for handling footer.
-
 ## 2.0
 
 ### API
