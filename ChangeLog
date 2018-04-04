@@ -1,3 +1,17 @@
+# 1.1
+
+* Improvements:
+    - Add header 'List-Subscribe'.
+    - tools/maillist_admin.py:
+        - `add_subscribers`: add new members to the mailing list.
+        - `remove_subscribers`: remove existing members from mailing list.
+    - Parameter renamed: maxmailsize -> max_message_size.
+    - Use 'uwsgi' (instead of 'mlmmjadmin') as syslog id.
+    - Change default port number to 7790 instead of 7779.
+
+* Fixed issues:
+    - backends/bk_iredmail_sql.py, cannot query existing mailing lists.
+
 # 1.0
 
 - Initial release.
