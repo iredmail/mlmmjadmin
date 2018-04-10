@@ -3,22 +3,22 @@ from libs.regxes import email as e
 
 urls = [
     # Per-maillist profile
-    '/api/({})$'.format(e), 'controllers.profile.Profile',
+    '/api/(%s)$' % e, 'controllers.profile.Profile',
 
     #
     # Per-maillist subscribers
     #
     # Get subscribers.
-    '/api/({})/subscribers'.format(e), 'controllers.subscriber.Subscribers',
+    '/api/(%s)/subscribers' % e, 'controllers.subscriber.Subscribers',
 
     # Check whether given subscriber is member of given mailing list.
-    '/api/({})/has_subscriber/({})'.format(e, e), 'controllers.subscriber.HasSubscriber',
+    '/api/(%s)/has_subscriber/(%s)' % (e, e), 'controllers.subscriber.HasSubscriber',
 
     #
     # per-subscriber
     #
     # Get all subscribed mailing lists of given subscriber.
-    '/api/subscriber/({})/subscribed'.format(e), 'controllers.subscriber.SubscribedLists',
+    '/api/subscriber/(%s)/subscribed' % e, 'controllers.subscriber.SubscribedLists',
     # Subscribe one subscriber to multiple mailing lists.
-    '/api/subscriber/({})/subscribe'.format(e), 'controllers.subscriber.Subscribe',
+    '/api/subscriber/(%s)/subscribe' % e, 'controllers.subscriber.Subscribe',
 ]

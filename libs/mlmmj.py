@@ -260,7 +260,7 @@ def __get_param_value(mail, param):
 
         return (True, {'type': _param_type, 'value': _value})
 
-    if param not in settings.MLMMJ_PARAMS:
+    if param not in settings.MLMMJ_PARAM_NAMES:
         logger.error("[{}] {}, unknown parameter: {}".format(web.ctx.ip, mail, param))
         return (False, 'INVALID_PARAM')
 
