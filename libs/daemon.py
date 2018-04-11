@@ -165,7 +165,7 @@ def daemonize(noClose=False):
             _redirectFileDescriptors()
 
     except Exception, e:
-        raise DaemonError('Error during daemonizing: {} [{}]'.format(e.strerror, e.errno))
+        raise DaemonError('Error during daemonizing: {0} [{1}]'.format(e.strerror, e.errno))
 
 
 # ---------------------------------------------------------------------------
@@ -176,7 +176,7 @@ def _fork():
     try:
         return os.fork()
     except OSError, e:
-        raise DaemonError('Cannot fork: {} [{}]'.format(e.strerror, e.errno))
+        raise DaemonError('Cannot fork: {0} [{1}]'.format(e.strerror, e.errno))
 
 
 def _redirectFileDescriptors():
@@ -198,9 +198,9 @@ def _redirectFileDescriptors():
             os.close(fd)
         except OSError, e:
             # File descriptor wasn't open. Ignore.
-            logging.info('Error in _redirectFileDescriptors 1: ({}, {})'.format(e.errno, e.strerror))
+            logging.info('Error in _redirectFileDescriptors 1: ({0}, {1})'.format(e.errno, e.strerror))
         except Exception, e:
-            logging.info('Error in _redirectFileDescriptors 2: ({}, {})'.format(e.errno, e.strerror))
+            logging.info('Error in _redirectFileDescriptors 2: ({0}, {1})'.format(e.errno, e.strerror))
 
     # Redirect standard input, output and error to something safe.
     # os.open() is guaranteed to return the lowest available file
@@ -224,9 +224,9 @@ if __name__ == '__main__':
     log.addHandler(hdlr)
     log.setLevel(logging.DEBUG)
 
-    log.debug('Before daemonizing, PID={}'.format(os.getpid()))
+    log.debug('Before daemonizing, PID={0}'.format(os.getpid()))
     daemonize(noClose=True)
-    log.debug('After daemonizing, PID={}'.format(os.getpid()))
+    log.debug('After daemonizing, PID={0}'.format(os.getpid()))
     log.debug('Daemon is sleeping for 10 seconds')
 
     import time

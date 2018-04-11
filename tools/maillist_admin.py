@@ -74,7 +74,7 @@ if len(sys.argv) < 3:
     sys.exit()
 
 # Base url of API interface
-api_base_url = 'http://127.0.0.1:{}/api'.format(settings.listen_port)
+api_base_url = 'http://127.0.0.1:{0}/api'.format(settings.listen_port)
 
 # Don't verify ssl cert. useful for self-signed ssl cert.
 verify_ssl = False
@@ -94,13 +94,13 @@ if action not in ['info', 'create', 'update', 'delete',
                   'has_subscriber',
                   'subscribers', 'subscribed',
                   'add_subscribers', 'remove_subscribers']:
-    print '<ERROR> Invalid action: {}. Usage:'
+    print '<ERROR> Invalid action: {0}. Usage:'.format(action)
     print usage
     sys.exit()
 
 mail = sys.argv[2]
 if not is_email(mail):
-    sys.exit('Invalid email address: {}'.format(mail))
+    sys.exit('Invalid email address: {0}'.format(mail))
 
 args = sys.argv[3:]
 
@@ -119,9 +119,9 @@ if action == 'info':
     _json = r.json()
     if _json['_success']:
         for (k, v) in _json['_data'].items():
-            print '{}={}'.format(k, v)
+            print '{0}={1}'.format(k, v)
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])
 
 elif action == 'create':
     if run_backend_cli:
@@ -136,7 +136,7 @@ elif action == 'create':
     if _json['_success']:
         print "Created."
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])
 
 elif action == 'update':
     if run_backend_cli:
@@ -150,7 +150,7 @@ elif action == 'update':
     if _json['_success']:
         print "Updated."
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])
 
 elif action == 'delete':
     if run_backend_cli:
@@ -164,11 +164,11 @@ elif action == 'delete':
     _json = r.json()
     if _json['_success']:
         if arg_kvs.get('archive') in ['yes', None]:
-            print "Removed {} (archived).".format(mail)
+            print "Removed {0} (archived).".format(mail)
         else:
-            print "Removed {} (without archive).".format(mail)
+            print "Removed {0} (without archive).".format(mail)
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])
 
 elif action == 'has_subscriber':
     _subscriber = args[0]
@@ -176,12 +176,12 @@ elif action == 'has_subscriber':
     r = requests.get(url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
-        print '[YES] Mailing list <{}> has subscriber <{}>.'.format(mail, _subscriber)
+        print '[YES] Mailing list <{0}> has subscriber <{1}>.'.format(mail, _subscriber)
     else:
         if '_msg' in _json:
-            print "Error: {}".format(_json['_msg'])
+            print "Error: {0}".format(_json['_msg'])
         else:
-            print '[NO] Mailing list <{}> does NOT have subscriber <{}>.'.format(mail, _subscriber)
+            print '[NO] Mailing list <{0}> does NOT have subscriber <{1}>.'.format(mail, _subscriber)
 
 elif action == 'subscribers':
     url = api_url + '/subscribers'
@@ -191,7 +191,7 @@ elif action == 'subscribers':
         for i in _json['_data']:
             print i['mail'], '(%s)' % i['subscription']
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])
 
 elif action == 'subscribed':
     url = api_subscriber_url + '/subscribed' + '?' + 'query_all_lists=yes'
@@ -201,7 +201,7 @@ elif action == 'subscribed':
         for i in _json['_data']:
             print i['mail'], '(%s)' % i['subscription']
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])
 
 elif action == 'add_subscribers':
     url = api_url + '/subscribers'
@@ -217,7 +217,7 @@ elif action == 'add_subscribers':
     if _json['_success']:
         print "Added."
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])
 
 elif action == 'remove_subscribers':
     url = api_url + '/subscribers'
@@ -233,4 +233,4 @@ elif action == 'remove_subscribers':
     if _json['_success']:
         print "Removed."
     else:
-        print "Error: {}".format(_json['_msg'])
+        print "Error: {0}".format(_json['_msg'])

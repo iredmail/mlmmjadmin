@@ -35,19 +35,19 @@ def api_acl(func):
         return empty
 
     if not _is_allowed_client(client_ip):
-        logger.error('[{}] Blocked request from disallowed client.'.format(client_ip))
+        logger.error('[{0}] Blocked request from disallowed client.'.format(client_ip))
         return not_allowed_client
 
     _auth_token = get_auth_token()
     if not _auth_token:
         #if client_ip != '127.0.0.1':
-        #    logger.error('[{}] Blocked request without auth token.'.format(client_ip))
+        #    logger.error('[{0}] Blocked request without auth token.'.format(client_ip))
         return no_auth_token
     else:
-        logger.debug('[{}] API AUTH TOKEN: {:.8}...'.format(client_ip, _auth_token))
+        logger.debug('[{0}] API AUTH TOKEN: {:.8}...'.format(client_ip, _auth_token))
 
     if _auth_token not in settings.api_auth_tokens:
-        logger.error('[{}] Blocked request with invalid auth token: {}.'.format(client_ip, _auth_token))
+        logger.error('[{0}] Blocked request with invalid auth token: {1}.'.format(client_ip, _auth_token))
         return invalid_auth_token
 
     return proxyfunc

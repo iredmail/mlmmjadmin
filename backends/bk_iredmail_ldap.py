@@ -409,10 +409,10 @@ def add_maillist(mail, form, conn=None):
                             moderators=moderators)
 
         conn.add_s(dn_ml, ldif_ml)
-        logger.info('Created: {}.'.format(mail))
+        logger.info('Created: {0}.'.format(mail))
         return (True, )
     except Exception, e:
-        logger.error('Error while creating {}: {}'.format(mail, e))
+        logger.error('Error while creating {0}: {1}'.format(mail, e))
         return (False, repr(e))
 
 
@@ -433,7 +433,7 @@ def remove_maillist(mail, conn=None):
         conn.delete_s(dn)
         return (True, )
     except Exception, e:
-        logger.error("Error: {}".format(e))
+        logger.error("Error: {0}".format(e))
         return (False, repr(e))
 
 

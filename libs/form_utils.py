@@ -50,7 +50,7 @@ def __get_dict_for_list_params(mail, form, param):
         for (k, v) in _default_custom_headers.items():
             # for placeholder support
             v = v % {'mail': mail, 'domain': domain, 'listname': listname}
-            _new.append('{}: {}'.format(k, v))
+            _new.append('{0}: {1}'.format(k, v))
 
         _values = _new
 

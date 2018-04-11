@@ -50,9 +50,9 @@ def __remove_ml_sub_dir(mail, dirname):
     if os.path.exists(_sub_dir):
         try:
             shutil.rmtree(_sub_dir)
-            logger.debug("[{}] {}, removed sub-directory: {}".format(web.ctx.ip, mail, _sub_dir))
+            logger.debug("[{0}] {1}, removed sub-directory: {2}".format(web.ctx.ip, mail, _sub_dir))
         except Exception, e:
-            logger.error("[{}] {}, error while removing sub-directory: {}".format(web.ctx.ip, mail, _sub_dir))
+            logger.error("[{0}] {1}, error while removing sub-directory: {2}".format(web.ctx.ip, mail, _sub_dir))
             return (False, repr(e))
 
     return (True, )
@@ -127,7 +127,7 @@ def __remove_file(path):
         try:
             os.remove(path)
         except Exception, e:
-            logger.error("[{}] error while removing parameter file: {}, {}".format(web.ctx.ip, path, e))
+            logger.error("[{0}] error while removing parameter file: {1}, {2}".format(web.ctx.ip, path, e))
             return (False, repr(e))
 
     return (True, )
@@ -178,7 +178,7 @@ def __get_list_param_value(mail, param, is_email=False, param_file=None):
             # No such file.
             pass
         except Exception, e:
-            logger.error('Error while getting (list) parameter value: {} -> {}'.format(param, e))
+            logger.error('Error while getting (list) parameter value: {0} -> {1}'.format(param, e))
 
     _values.sort()
     return _values
@@ -197,7 +197,7 @@ def __get_normal_param_value(mail, param, param_file=None):
         # No such file.
         return ''
     except Exception, e:
-        logger.error("[{}] {}, error while getting parameter value: {}, {}".format(web.ctx.ip, mail, param, e))
+        logger.error("[{0}] {1}, error while getting parameter value: {2}, {3}".format(web.ctx.ip, mail, param, e))
         return ''
 
     return ''
@@ -216,7 +216,7 @@ def __get_text_param_value(mail, param, param_file=None):
         # No such file.
         return ''
     except Exception, e:
-        logger.error("[{}] {}, error while getting parameter value: {}, {}".format(web.ctx.ip, mail, param, e))
+        logger.error("[{0}] {1}, error while getting parameter value: {2}, {3}".format(web.ctx.ip, mail, param, e))
         return ''
 
     return ''
@@ -261,7 +261,7 @@ def __get_param_value(mail, param):
         return (True, {'type': _param_type, 'value': _value})
 
     if param not in settings.MLMMJ_PARAM_NAMES:
-        logger.error("[{}] {}, unknown parameter: {}".format(web.ctx.ip, mail, param))
+        logger.error("[{0}] {1}, unknown parameter: {2}".format(web.ctx.ip, mail, param))
         return (False, 'INVALID_PARAM')
 
     _param_file = __get_param_file(mail=mail, param=param)
@@ -325,7 +325,7 @@ def __update_boolean_param(mail,
                 open(_f, 'a').close()
 
         except Exception, e:
-            logger.error("[{}] {}, error while updating (boolean) parameter: {} -> {}, {}".format(
+            logger.error("[{0}] {1}, error while updating (boolean) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
@@ -333,7 +333,7 @@ def __update_boolean_param(mail,
         if not qr[0]:
             return qr
 
-    logger.info("[{}] {}, updated (boolean) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{0}] {1}, updated (boolean) parameter: {2} -> {3}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -369,7 +369,7 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
                 f.write(value + '\n')
 
         except Exception, e:
-            logger.error("[{}] {}, error while updating (normal) parameter: {} -> {}, {}".format(
+            logger.error("[{0}] {1}, error while updating (normal) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
@@ -377,7 +377,7 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
         if not qr[0]:
             return qr
 
-    logger.info("[{}] {}, updated (normal) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{0}] {1}, updated (normal) parameter: {2} -> {3}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -404,9 +404,9 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
             with open(param_file, 'w') as f:
                 f.write('\n'.join(_values) + '\n')
 
-            logger.info("[{}] {}, updated: {} -> {}".format(web.ctx.ip, mail, param, ', '.join(_values)))
+            logger.info("[{0}] {1}, updated: {2} -> {3}".format(web.ctx.ip, mail, param, ', '.join(_values)))
         except Exception, e:
-            logger.error("[{}] {}, error while updating (list) parameter: {} -> {}, {}".format(
+            logger.error("[{0}] {1}, error while updating (list) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
@@ -414,7 +414,7 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
         if not qr[0]:
             return qr
 
-    logger.info("[{}] {}, updated (list) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{0}] {1}, updated (list) parameter: {2} -> {3}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -436,7 +436,7 @@ def __update_text_param(mail, param, value, param_file=None):
             with open(param_file, 'w') as f:
                 f.write(value + '\n')
         except Exception, e:
-            logger.error("[{}] {}, error while updating (normal) parameter: {} -> {}, {}".format(
+            logger.error("[{0}] {1}, error while updating (normal) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
@@ -444,7 +444,7 @@ def __update_text_param(mail, param, value, param_file=None):
         if not qr[0]:
             return qr
 
-    logger.info("[{}] {}, updated (text) parameter: {} -> {}".format(web.ctx.ip, mail, param, value))
+    logger.info("[{0}] {1}, updated (text) parameter: {2} -> {3}".format(web.ctx.ip, mail, param, value))
     return (True, )
 
 
@@ -499,7 +499,7 @@ def __update_mlmmj_param(mail, param, value):
     elif _param_type == 'other':
         _update_func = __update_other_param
     else:
-        logger.error("[{}] {}, unknown parameter: {}".format(web.ctx.ip, mail, param))
+        logger.error("[{0}] {1}, unknown parameter: {2}".format(web.ctx.ip, mail, param))
         return (False, 'INVALID_PARAM_TYPE')
 
     qr = _update_func(mail=mail, param=param, value=value)
@@ -600,18 +600,18 @@ def __archive_ml(mail):
         try:
             os.makedirs(_new_dir, mode=settings.MLMMJ_FILE_PERMISSION)
         except Exception, e:
-            _msg = "error while creating directory under archive directory ({}), {}".format(_new_dir, repr(e))
-            logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
+            _msg = "error while creating directory under archive directory ({0}), {1}".format(_new_dir, repr(e))
+            logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
             return (False, _msg)
 
         try:
             os.rename(_dir, _new_dir)
-            logger.info("[{}] {}, archived: {} -> {}".format(web.ctx.ip, mail, _dir, _new_dir))
+            logger.info("[{0}] {1}, archived: {2} -> {3}".format(web.ctx.ip, mail, _dir, _new_dir))
 
             # Return new directory path
             return (True, _new_dir)
         except Exception, e:
-            logger.error("[{}] {}, error while archiving: {} ({} -> {})".format(web.ctx.ip, mail, e, _dir, _new_dir))
+            logger.error("[{0}] {1}, error while archiving: {2} ({3} -> {4})".format(web.ctx.ip, mail, e, _dir, _new_dir))
             return (False, repr(e))
 
     return (True, )
@@ -865,8 +865,8 @@ def create_ml(mail, **kwargs):
         try:
             os.makedirs(_ml_dir, mode=settings.MLMMJ_FILE_PERMISSION)
         except Exception, e:
-            _msg = "error while creating base directory ({}), {}".format(_ml_dir, repr(e))
-            logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
+            _msg = "error while creating base directory ({0}), {1}".format(_ml_dir, repr(e))
+            logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
             return (False, _msg)
 
     # Create required sub-directories
@@ -876,8 +876,8 @@ def create_ml(mail, **kwargs):
             try:
                 os.makedirs(_sub_dir, mode=settings.MLMMJ_FILE_PERMISSION)
             except Exception, e:
-                _msg = "error while creating sub-directory ({}), {}".format(_sub_dir, repr(e))
-                logger.error("[{}] {}, {}".format(web.ctx.ip, mail, _msg))
+                _msg = "error while creating sub-directory ({0}), {1}".format(_sub_dir, repr(e))
+                logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
                 return (False, _msg)
         else:
             qr = __set_file_permission(_sub_dir)
@@ -887,7 +887,7 @@ def create_ml(mail, **kwargs):
     # Create file `control/listaddress` with primary address
     _f = os.path.join(_ml_dir, 'control/listaddress')
     with open(_f, 'w') as f:
-        f.write('{}\n'.format(mail))
+        f.write('{0}\n'.format(mail))
 
     # Create extra control file
     index_path = os.path.join(_ml_dir, 'index')
@@ -898,7 +898,7 @@ def create_ml(mail, **kwargs):
     _language = kwargs.get('language', 'en')
     _src_dir = os.path.join(settings.MLMMJ_SKEL_DIR, _language)
     if not os.path.exists(_src_dir):
-        logger.error("Skel directory doesn't exist: {}".format(_src_dir))
+        logger.error("Skel directory doesn't exist: {0}".format(_src_dir))
         return (False, 'SKEL_DIR_NOT_EXIST')
 
     qr = __copy_dir_files(_src_dir, _sub_dir_text)
@@ -925,11 +925,11 @@ def delete_ml(mail, archive=True):
         else:
             try:
                 shutil.rmtree(_ml_dir)
-                logger.info("[{}] {}, removed.".format(web.ctx.ip, mail))
+                logger.info("[{0}] {1}, removed.".format(web.ctx.ip, mail))
             except Exception, e:
                 return (False, repr(e))
     else:
-        logger.info("[{}] {}, removed (no data on file system).".format(web.ctx.ip, mail))
+        logger.info("[{0}] {1}, removed (no data on file system).".format(web.ctx.ip, mail))
 
     return (True, )
 

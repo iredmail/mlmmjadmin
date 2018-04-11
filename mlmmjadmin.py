@@ -23,7 +23,7 @@ web.config.debug = settings.DEBUG
 # Make sure required directories exists.
 for _dir in [settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_SKEL_DIR]:
     if not os.path.exists(_dir):
-        sys.exit("ERROR: directory doesn't exist: {}.".format(_dir))
+        sys.exit("ERROR: directory doesn't exist: {0}.".format(_dir))
 
 os.umask(0077)
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     listen_address = settings.listen_address
     listen_port = int(settings.listen_port)
 
-    logger.info('Starting mlmmjadmin, version {}, listening on {}:{}.'.format(
+    logger.info('Starting mlmmjadmin, version {0}, listening on {1}:{2}.'.format(
         __version__, listen_address, listen_port))
     web.httpserver.runsimple(app.wsgifunc(), (listen_address, listen_port))
 else:

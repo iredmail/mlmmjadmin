@@ -57,7 +57,7 @@ class MYSQLWrap(object):
             # Reconnect if error raised: MySQL server has gone away.
             self.conn = self.__connect()
         except Exception, e:
-            logger.error("SQL error: {}".format(e))
+            logger.error("SQL error: {0}".format(e))
 
 
 class PGSQLWrap(object):
@@ -78,7 +78,7 @@ class PGSQLWrap(object):
                                      pw=settings.iredmail_sql_db_password)
             self.conn.supports_multiple_insert = True
         except Exception, e:
-            logger.error("SQL error: {}".format(e))
+            logger.error("SQL error: {0}".format(e))
 
 
 if settings.iredmail_sql_db_type == 'mysql':
@@ -123,7 +123,7 @@ def is_domain_exists(domain, conn=None):
         return False
     except Exception, e:
         # Return True as exist to not allow to create new domain/account.
-        logger.error("SQL error: {}".format(e))
+        logger.error("SQL error: {0}".format(e))
         return True
 
 
@@ -160,7 +160,7 @@ def is_email_exists(mail, conn=None):
 
         return False
     except Exception, e:
-        logger.error("SQL error: {}".format(e))
+        logger.error("SQL error: {0}".format(e))
         return True
 
 
@@ -187,7 +187,7 @@ def is_maillist_exists(mail, conn=None):
 
         return False
     except Exception, e:
-        logger.error("SQL error: {}".format(e))
+        logger.error("SQL error: {0}".format(e))
         return True
 
 
@@ -303,10 +303,10 @@ def add_maillist(mail, form, conn=None):
 
                 conn.multiple_insert('moderators', records)
 
-        logger.info('Created: {}.'.format(mail))
+        logger.info('Created: {0}.'.format(mail))
         return (True, )
     except Exception, e:
-        logger.error('Error while creating {}: {}'.format(mail, e))
+        logger.error('Error while creating {0}: {1}'.format(mail, e))
         return (False, repr(e))
 
 
@@ -332,7 +332,7 @@ def remove_maillist(mail, conn=None):
 
         return (True, )
     except Exception, e:
-        logger.error("SQL error: {}".format(e))
+        logger.error("SQL error: {0}".format(e))
         return (False, repr(e))
 
 
