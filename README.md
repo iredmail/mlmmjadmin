@@ -8,6 +8,10 @@ mail server, please follow
 [iRedMail tutorials](https://www.iredmail.org/index.html#integration) to
 integrate mlmmj in iRedMail-0.9.7 or earler releases.
 
+## License
+
+MIT License.
+
 ## Requirements
 
 * A working mail server with a working mlmmj instance.
