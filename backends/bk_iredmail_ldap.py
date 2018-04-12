@@ -487,6 +487,8 @@ def update_maillist(mail, form, conn=None):
             dn = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
             conn.modify_s(dn, mod_attrs)
             return (True, )
+        except ldap.NO_SUCH_OBJECT:
+            return (False, 'ACCOUNT_NOT_EXIST')
         except Exception, e:
             return (False, repr(e))
     else:
