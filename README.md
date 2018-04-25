@@ -24,14 +24,22 @@ MIT License.
     * `requests`: <http://docs.python-requests.org/en/master/>. Required by
       command line tool `tools/maillist_admin.py`.
 
-## Setup mlmmjadmin
+## Setup mlmmj
 
-> Please follow docs under `docs/` directory to integrate mlmmj first, make
-> sure it's working properly.
+Please follow iRedMail tutorials to integrate mlmmj with Postfix first, make
+sure it's working properly:
+
+Integrate mlmmj mailing list manager with Postfix:
+
+* [For LDAP backends](https://docs.iredmail.org/integration.mlmmj.ldap.html)
+* [For MySQL/MariaDB backend](https://docs.iredmail.org/integration.mlmmj.mysql.html)
+* [For PostgreSQL backend](https://docs.iredmail.org/integration.mlmmj.pgsql.html)
+
+## Setup mlmmjadmin
 
 NOTE: We use version `1.0` for example below.
 
-* Download mlmmjadmin: <https://bitbucket.org/iredmail/mlmmjadmin/downloads/>
+* Download the latest mlmmjadmin: <https://github.com/iredmail/mlmmjadmin/releases>
 * Uncompress downloaded mlmmjadmin package, copy it to `/opt/` directory.
 * Create symbol link:
 
