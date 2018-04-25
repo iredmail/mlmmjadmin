@@ -29,8 +29,6 @@ MIT License.
 Please follow iRedMail tutorials to integrate mlmmj with Postfix first, make
 sure it's working properly:
 
-Integrate mlmmj mailing list manager with Postfix:
-
 * [For LDAP backends](https://docs.iredmail.org/integration.mlmmj.ldap.html)
 * [For MySQL/MariaDB backend](https://docs.iredmail.org/integration.mlmmj.mysql.html)
 * [For PostgreSQL backend](https://docs.iredmail.org/integration.mlmmj.pgsql.html)
