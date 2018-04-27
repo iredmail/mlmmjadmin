@@ -432,6 +432,8 @@ def remove_maillist(mail, conn=None):
         dn = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
         conn.delete_s(dn)
         return (True, )
+    except ldap.NO_SUCH_OBJECT:
+        return (False, 'ACCOUNT_NOT_EXIST')
     except Exception, e:
         logger.error("Error: {0}".format(e))
         return (False, repr(e))

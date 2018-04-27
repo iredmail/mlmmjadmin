@@ -1,3 +1,9 @@
+# 1.4
+
+* Fixed issues:
+    - LDAP backend: Not properly handle error while removing account if account
+      doesn't exist.
+
 # 1.3
 
 * Fixed issues:
