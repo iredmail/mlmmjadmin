@@ -1,6 +1,7 @@
 # 1.4
 
 * Fixed issues:
+    - bk_none: not exclude non-directory paths while getting all mailing lists.
     - LDAP backend: Not properly handle error while removing account if account
       doesn't exist.
 
