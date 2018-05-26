@@ -48,11 +48,19 @@ def get_existing_maillists(domains=None, *args, **kw):
     else:
         try:
             fns = os.listdir(settings.MLMMJ_SPOOL_DIR)
+
+            # Remove names which starts with a dot.
+            fns = [i for i in fns if not i.startswith('.')]
         except Exception, e:
             return (False, repr(e))
 
         for fn in fns:
             _dir = os.path.join(settings.MLMMJ_SPOOL_DIR, fn)
+
+            # Remove path which is not a directory
+            if not os.path.isdir(_dir):
+                continue
+
             parent_dirs.append(_dir)
 
     # Get all mailing lists.
