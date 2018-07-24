@@ -12,7 +12,7 @@ LOGFILE='/var/log/mlmmjadmin/mlmmjadmin.log'
 rc_reload=NO
 
 # [REQUIRED] Regular expression used to filter uwsgi processes.
-pexp="${daemon} --ini ${UWSGI_INI_FILE}.*"
+pexp="${daemon} --ini ${UWSGI_INI_FILE}"
 
 remove_shmid() {
     for shmid in $(/usr/bin/ipcs -sa | grep 'mlmmj' | awk '{print $2}'); do
