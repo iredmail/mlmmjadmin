@@ -251,7 +251,6 @@ def __get_param_value(mail, param):
     - (True, {'type': 'list', 'value': [...]})
     - (True, {'type': 'normal', 'value': '...'})
     - (True, {'type': 'text', 'value': '...'})
-    - None: no such param.
     """
     if param in settings.MLMMJ_OTHER_WEB_PARAMS:
         _v = settings.MLMMJ_OTHER_PARAM_MAP[param]
@@ -418,7 +417,11 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
     return (True, )
 
 
-def __update_text_param(mail, param, value, param_file=None):
+def __update_text_param(mail,
+                        param,
+                        value,
+                        param_file=None,
+                        create_if_empty=False):
     if not param_file:
         param_file = __get_param_file(mail=mail, param=param)
 
@@ -440,9 +443,15 @@ def __update_text_param(mail, param, value, param_file=None):
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
     else:
-        qr = __remove_file(path=param_file)
-        if not qr[0]:
-            return qr
+        if create_if_empty:
+            # Footer text/html must ends with an empty line, otherwise
+            # the characters will be a mess.
+            with open(param_file, 'w') as f:
+                f.write('\n')
+        else:
+            qr = __remove_file(path=param_file)
+            if not qr[0]:
+                return qr
 
     logger.info("[{0}] {1}, updated (text) parameter: {2} -> {3}".format(web.ctx.ip, mail, param, value))
     return (True, )
@@ -517,6 +526,17 @@ def __update_mlmmj_params(mail, **kwargs):
             qr = __update_mlmmj_param(mail=mail, param=k, value=v)
             if not qr[0]:
                 return qr
+
+        # If we have `footer_html`, make sure `footer_text` always exists,
+        # otherwise AlterMIME may not work and email will be discarded.
+        if kwargs.get('footer_html'):
+            (_status, _d) = __get_param_value(mail, 'footer_text')
+
+            if _status and (not _d.get('value')):
+                __update_text_param(mail=mail,
+                                    param='footer_text',
+                                    value='',
+                                    create_if_empty=True)
 
     return (True, )
 
@@ -821,16 +841,22 @@ def add_maillist_from_web_form(mail, form):
     if 'moderators' not in form:
         form['moderators'] = 'postmaster@' + domain
 
+    # If `footer_html` exists but `footer_text` doesn't
+    if 'footer_html' in form and 'footer_text' not in form:
+        form['footer_text'] = ''
+
     kvs.update(__convert_form_to_mlmmj_params(mail=mail, form=form))
 
     # Add (missing) default settings
     _form = settings.MLMMJ_DEFAULT_PROFILE_SETTINGS
     for param in _form:
         # Avoid conflict parameters.
-        if param == 'only_subscriber_can_post' and form.get('only_moderator_can_post') == 'yes':
+        if param == 'only_subscriber_can_post' and \
+           form.get('only_moderator_can_post') == 'yes':
             continue
 
-        if param == 'only_moderator_can_post' and form.get('only_subscriber_can_post') == 'yes':
+        if param == 'only_moderator_can_post' and \
+           form.get('only_subscriber_can_post') == 'yes':
             continue
 
         if param not in form:

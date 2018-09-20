@@ -1,3 +1,7 @@
+# 1.5
+    - Fixed issues:
+        - If footer html is not empty, always create footer plain text.
+
 # 1.4
 
 * Fixed issues:
