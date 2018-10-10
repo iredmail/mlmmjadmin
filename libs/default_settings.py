@@ -307,7 +307,7 @@ MLMMJ_DEFAULT_SUB_DIRS = [
 MLMMJ_DEFAULT_CUSTOM_HEADERS = {
     'Precedence': 'list',
     'X-Mailing-List': '%(mail)s',
-    'Reply-To': '%(mail)s',
+    #'Reply-To': '%(mail)s',
     'List-Subscribe': '<mailto:%(listname)s+subscribe@%(domain)s?subject=Subscribe>',
     'List-Unsubscribe': '<mailto:%(listname)s+unsubscribe@%(domain)s?subject=Unsubscribe>',
     #'List-Help': '<mailto:%(listname)s+help@%(domain)s?subject=help>',
