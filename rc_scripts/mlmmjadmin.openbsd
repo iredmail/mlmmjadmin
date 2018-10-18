@@ -9,13 +9,15 @@ daemon='/usr/local/bin/uwsgi'
 UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/openbsd.ini'
 PIDFILE='/var/run/mlmmjadmin/mlmmjadmin.pid'
 LOGFILE='/var/log/mlmmjadmin/mlmmjadmin.log'
+DAEMON_USER='mlmmj'
+DAEMON_GROUP='mlmmj'
 rc_reload=NO
 
 # [REQUIRED] Regular expression used to filter uwsgi processes.
 pexp="${daemon} --ini ${UWSGI_INI_FILE}"
 
 remove_shmid() {
-    for shmid in $(/usr/bin/ipcs -sa | grep 'mlmmj' | awk '{print $2}'); do
+    for shmid in $(/usr/bin/ipcs -sa | grep "${DAEMON_USER}" | awk '{print $2}'); do
         if test -n ${shmid}; then
             /usr/bin/ipcrm -s ${shmid}
         fi
@@ -26,7 +28,7 @@ rc_pre() {
     remove_shmid
 
     /bin/mkdir $(dirname ${PIDFILE}) 2>/dev/null
-    /sbin/chown mlmmj:mlmmj $(dirname ${PIDFILE})
+    /sbin/chown ${DAEMON_USER}:${DAEMON_GROUP} $(dirname ${PIDFILE})
 }
 
 rc_start() {
