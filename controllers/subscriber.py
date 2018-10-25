@@ -27,7 +27,10 @@ class Subscribers(object):
                             '<subscription3>': [<mail>, <mail>, ...]}
         """
         # Get extra parameters.
-        qr = mlmmj.get_subscribers(mail=mail)
+        form = web.input(_unicode=False)
+        email_only = ('email_only' in form)
+
+        qr = mlmmj.get_subscribers(mail=mail, email_only=email_only)
         return api_render(qr)
 
     @api_acl
