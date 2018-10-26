@@ -2,55 +2,22 @@
 # Author: Zhang Huangbin (zhb@iredmail.org)
 # Purpose: Start/stop mlmmjadmin RESTful API server.
 
-daemon='/usr/local/bin/uwsgi'
+RUN_DIR='/var/run/mlmmjadmin'
+PID_FILE="${RUN_DIR}/mlmmjadmin.pid"
+UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/openbsd.ini'
+
+daemon="/usr/local/bin/uwsgi --ini ${UWSGI_INI_FILE} --log-syslog --pidfile ${PID_FILE} --daemonize /dev/null"
+daemon_user='mlmmj'
+daemon_group='mlmmj'
 
 . /etc/rc.d/rc.subr
 
-UWSGI_INI_FILE='/opt/mlmmjadmin/rc_scripts/uwsgi/openbsd.ini'
-PIDFILE='/var/run/mlmmjadmin/mlmmjadmin.pid'
-LOGFILE='/var/log/mlmmjadmin/mlmmjadmin.log'
-DAEMON_USER='mlmmj'
-DAEMON_GROUP='mlmmj'
-rc_reload=NO
-
-# [REQUIRED] Regular expression used to filter uwsgi processes.
-pexp="${daemon} --ini ${UWSGI_INI_FILE}"
-
-remove_shmid() {
-    for shmid in $(/usr/bin/ipcs -sa | grep "${DAEMON_USER}" | awk '{print $2}'); do
-        if test -n ${shmid}; then
-            /usr/bin/ipcrm -s ${shmid}
-        fi
-    done
-}
-
 rc_pre() {
-    remove_shmid
-
-    /bin/mkdir $(dirname ${PIDFILE}) 2>/dev/null
-    /sbin/chown ${DAEMON_USER}:${DAEMON_GROUP} $(dirname ${PIDFILE})
-}
-
-rc_start() {
-    ${daemon} --ini ${UWSGI_INI_FILE} \
-              --pidfile ${PIDFILE} \
-              --log-syslog \
-              --daemonize ${LOGFILE}
+    install -d -o ${daemon_user} -g ${daemon_group} -m 0775 ${RUN_DIR}
 }
 
 rc_stop() {
-    ${daemon} --stop ${PIDFILE}
-
-    if [ X"$?" == X"0" ]; then
-        rm -f ${PIDFILE} >/dev/null 2>&1
-    else
-        echo -e "\t\t[ FAILED ]"
-    fi
-}
-
-rc_post() {
-    remove_shmid
-    rm -f ${PIDFILE}
+    kill -INT `cat ${PID_FILE}`
 }
 
 rc_cmd $1

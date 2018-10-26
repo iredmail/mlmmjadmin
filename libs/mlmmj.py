@@ -991,6 +991,9 @@ def get_subscribers(mail, email_only=False):
             else:
                 subscribers += [{'mail': i, 'subscription': subscription} for i in _addresses]
 
+    if email_only:
+        subscribers.sort()
+
     return (True, subscribers)
 
 

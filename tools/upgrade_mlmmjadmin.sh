@@ -91,6 +91,7 @@ fi
 dir_new_version="$(dirname ${PWD})"
 name_new_version="$(basename ${dir_new_version})"
 NEW_MA_ROOT_DIR="${MA_PARENT_DIR}/${name_new_version}"
+NEW_MA_CONF="${NEW_MA_ROOT_DIR}/settings.py"
 if [ -d ${NEW_MA_ROOT_DIR} ]; then
     COPY_FILES="${dir_new_version}/*"
     COPY_DEST_DIR="${NEW_MA_ROOT_DIR}"
@@ -113,7 +114,8 @@ fi
 
 # Set owner and permission.
 chown -R ${SYS_USER_MLMMJ}:${SYS_GROUP_MLMMJ} ${NEW_MA_ROOT_DIR}
-chmod -R 0500 ${NEW_MA_ROOT_DIR}
+chmod -R 0755 ${NEW_MA_ROOT_DIR}
+chmod 0400 ${NEW_MA_CONF}
 
 echo "* Removing old symbol link ${MA_ROOT_DIR}"
 rm -f ${MA_ROOT_DIR}
