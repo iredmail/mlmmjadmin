@@ -1,3 +1,19 @@
+# 1.8
+
+    - Fixed: Not sort list of subscribers.
+    - Simplify openbsd rc script. It now works on OpenBSD 6.4.
+    - Fix incorrect permission of mlmmjadmin installation directory while
+      upgrading.
+
+# 1.7
+
+    - Fixed: Don't always set header `Reply-To:` (leave it to MUA).
+
+# 1.6
+
+    - Fixed: not always create file `control/footer_text` if
+      `control/footer_html` is not empty.
+
 # 1.5
     - Fixed issues:
         - If footer html is not empty, always create footer plain text.

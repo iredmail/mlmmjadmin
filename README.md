@@ -3,10 +3,11 @@
 mlmmjadmin is RESTful API server used to manage mlmmj (mailing list manager).
 Check `docs/` directory for more detailed documents.
 
-If you're running [iRedMail](https://www.iredmail.org/) (prior to 0.9.8) as
-mail server, please follow
-[iRedMail tutorials](https://www.iredmail.org/index.html#integration) to
-integrate mlmmj in iRedMail-0.9.7 or earler releases.
+mlmmjadmin is a core component of iRedMail (since version 0.9.8), but it should
+work with any mail server which runs mlmmj. You're free to develop your own
+backend plugin to store basic info of mlmmj mailing lists in your
+SQL/LDAP database (or any other database, it's up to you) for better
+integration with your mail server.
 
 ## License
 
@@ -20,8 +21,8 @@ MIT License.
       `0700`. if you use a different directory, please override default setting
       by adding setting `MLMMJ_SPOOL_DIR = '<directory>'` in config file.
 * Python 2.6.x or 2.7.x, with extra modules:
-    * `web.py`: <http://webpy.org/>
-    * `requests`: <http://docs.python-requests.org/en/master/>. Required by
+    * [web.py](http://webpy.org/)
+    * [requests](http://docs.python-requests.org/en/master/). Required by
       command line tool `tools/maillist_admin.py`.
 
 ## Setup mlmmj
