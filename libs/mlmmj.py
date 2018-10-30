@@ -755,7 +755,10 @@ def __add_subscribers_with_confirm(mail,
             # Send new confirm
             _new_cmd = _cmd[:] + ['-a', addr]
             subprocess.Popen(_new_cmd, stdout=subprocess.PIPE)
+
+            logger.debug("[{0}] {1}, queued confirm mail for {2}.".format(web.ctx.ip, mail, addr))
         except Exception, e:
+            logger.error("[{0}] {1}, error while subscribing {2}: {3}".format(web.ctx.ip, mail, addr, e))
             _error[addr] = repr(e)
 
     if not _error:
@@ -951,7 +954,7 @@ def delete_ml(mail, archive=True):
         else:
             try:
                 shutil.rmtree(_ml_dir)
-                logger.info("[{0}] {1}, removed.".format(web.ctx.ip, mail))
+                logger.info("[{0}] {1}, removed without archiving.".format(web.ctx.ip, mail))
             except Exception, e:
                 return (False, repr(e))
     else:
@@ -1077,7 +1080,10 @@ def add_subscribers(mail,
         qr = __add_subscribers_with_confirm(mail=mail,
                                             subscribers=subscribers,
                                             subscription=subscription)
+
         if not qr[0]:
+            logger.error('[{0}] {1} Failed to add subscribers (require '
+                         'confirm): error={2}'.format(web.ctx.ip, mail, qr[1]))
             return qr
     else:
         grouped_subscribers = {}
@@ -1095,8 +1101,13 @@ def add_subscribers(mail,
             path = os.path.join(_dir, letter)
 
             qr = __add_lines_in_file(f=path, lines=grouped_subscribers[letter])
+
             if not qr[0]:
+                logger.error('[{0}] {1} Failed to add subscribers to file: '
+                             'error={2}'.format(web.ctx.ip, mail, qr[1]))
                 return qr
+
+        logger.info('[{0}] {1}, added subscribers without confirming: {2}.'.format(web.ctx.ip, mail, ', '.join(subscribers)))
 
     return (True, )
 
