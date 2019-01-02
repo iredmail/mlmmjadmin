@@ -23,7 +23,8 @@ web.config.debug = settings.DEBUG
 # Make sure required directories exists.
 for _dir in [settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_SKEL_DIR]:
     if not os.path.exists(_dir):
-        sys.exit("ERROR: directory doesn't exist: {0}.".format(_dir))
+        sys.exit("ERROR: directory doesn't exist or incorrect permission "
+                 "(check parent directories also): {0}.".format(_dir))
 
 os.umask(0077)
 

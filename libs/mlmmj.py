@@ -927,7 +927,7 @@ def create_ml(mail, **kwargs):
     _language = kwargs.get('language', 'en')
     _src_dir = os.path.join(settings.MLMMJ_SKEL_DIR, _language)
     if not os.path.exists(_src_dir):
-        logger.error("Skel directory doesn't exist: {0}".format(_src_dir))
+        logger.error("Skel directory does not exist: {0}".format(_src_dir))
         return (False, 'SKEL_DIR_NOT_EXIST')
 
     qr = __copy_dir_files(_src_dir, _sub_dir_text)
