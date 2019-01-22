@@ -786,9 +786,9 @@ def has_subscriber(mail, subscriber, subscription=None):
 
         if os.path.exists(_sub_file):
             with open(_sub_file, 'r') as f:
-                line = f.readline().strip()
-                if line == subscriber:
-                    return (True, subscription)
+                for line in f:
+                    if line.strip() == subscriber:
+                        return (True, subscription)
 
     return False
 

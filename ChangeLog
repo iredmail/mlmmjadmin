@@ -1,3 +1,12 @@
+# 2.0
+    - Fixed: not correctly verify whether given email address is subscribed to
+      the list.
+      Thanks napoleon.lam <napoleon.lam _at_ artwell-hk.com> for the report in
+      iRedMail forum (https://forum.iredmail.org).
+
+# 1.9
+    - Improve logging for easier troubleshooting.
+
 # 1.8
 
     - Fixed: Not sort list of subscribers.
