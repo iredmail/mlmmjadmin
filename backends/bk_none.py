@@ -51,6 +51,9 @@ def get_existing_maillists(domains=None, *args, **kw):
 
             # Remove names which starts with a dot.
             fns = [i for i in fns if not i.startswith('.')]
+        except OSError:
+            # No such directory.
+            pass
         except Exception, e:
             return (False, repr(e))
 
@@ -75,6 +78,9 @@ def get_existing_maillists(domains=None, *args, **kw):
             for fn in fns:
                 mail = fn + '@' + os.path.basename(d)
                 all_lists.append(mail)
+        except OSError:
+            # No such directory.
+            pass
         except Exception, e:
             return (False, repr(e))
 

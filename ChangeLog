@@ -1,3 +1,6 @@
+# 2.1:
+    - Fixed: don't return error if mailing list directory doesn't exist.
+
 # 2.0
     - Fixed: not correctly verify whether given email address is subscribed to
       the list.
