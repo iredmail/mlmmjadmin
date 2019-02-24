@@ -16,7 +16,7 @@ import settings
 
 usage = """Usage:
 
-    python maillist_admin.py <action> <mail> [<param1>=<value1> <param2>=<value2> ...]
+    python2 maillist_admin.py <action> <mail> [<param1>=<value1> <param2>=<value2> ...]
 
 Available actions:
 
@@ -34,39 +34,39 @@ Samples:
 
     *) Create a new mailing list account with additional setting:
 
-        python maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no
+        python2 maillist_admin.py create list@domain.com only_subscriber_can_post=yes disable_archive=no
 
     *) Show settings of an existing mailing list account
 
-        python maillist_admin.py info list@domain.com
+        python2 maillist_admin.py info list@domain.com
 
     *) Update an existing mailing list account
 
-        python maillist_admin.py update list@domain.com only_moderator_can_post=yes disable_subscription=yes
+        python2 maillist_admin.py update list@domain.com only_moderator_can_post=yes disable_subscription=yes
 
     *) Delete an existing mailing list account
 
-        python maillist_admin.py delete list@domain.com
+        python2 maillist_admin.py delete list@domain.com
 
     *) Check whether mailing list has given subscriber
 
-        python maillist_admin.py has_subscriber list@domain.com subscriber@gmail.com
+        python2 maillist_admin.py has_subscriber list@domain.com subscriber@gmail.com
 
     *) Show all subscribers:
 
-        python maillist_admin.py subscribers list@domain.com
+        python2 maillist_admin.py subscribers list@domain.com
 
     *) Show subscribed lists of a given subscriber:
 
-        python maillist_admin.py subscribed subscriber@domain.com
+        python2 maillist_admin.py subscribed subscriber@domain.com
 
     *) Add new subscribers to mailing list:
 
-        python maillist_admin.py add_subscribers list@domain.com <mail> <mail> <mail>
+        python2 maillist_admin.py add_subscribers list@domain.com <mail> <mail> <mail>
 
     *) Remove existing subscribers from mailing list:
 
-        python maillist_admin.py remove_subscribers list@domain.com <mail> <mail> <mail>
+        python2 maillist_admin.py remove_subscribers list@domain.com <mail> <mail> <mail>
 """
 
 if len(sys.argv) < 3:

@@ -20,7 +20,7 @@ export MA_CONF="${MA_ROOT_DIR}/settings.py"
 export MA_CUSTOM_CONF="${MA_ROOT_DIR}/custom_settings.py"
 
 # Path to some programs.
-export PYTHON_BIN='/usr/bin/python'
+export PYTHON_BIN='/usr/bin/python2'
 
 # Check OS to detect some necessary info.
 export KERNEL_NAME="$(uname -s | tr '[a-z]' '[A-Z]')"
@@ -45,10 +45,10 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
     fi
 elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
     export DISTRO='FREEBSD'
-    export PYTHON_BIN='/usr/local/bin/python'
+    export PYTHON_BIN='/usr/local/bin/python2'
 elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
     export DISTRO='OPENBSD'
-    export PYTHON_BIN='/usr/local/bin/python'
+    export PYTHON_BIN='/usr/local/bin/python2'
 else
     echo "Cannot detect Linux/BSD distribution. Exit."
     echo "Please contact author iRedMail team <support@iredmail.org> to solve it."
