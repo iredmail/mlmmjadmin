@@ -119,6 +119,9 @@ if action == 'info':
     _json = r.json()
     if _json['_success']:
         for (k, v) in _json['_data'].items():
+            if k in ['footer_text', 'footer_html', 'name', 'subject_prefix']:
+                v = v.encode('utf-8')
+
             print '{0}={1}'.format(k, v)
     else:
         print "Error: {0}".format(_json['_msg'])
