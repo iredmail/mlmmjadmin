@@ -26,7 +26,7 @@ def api_acl(func):
         return api_render((False, 'NO_API_AUTH_TOKEN'))
 
     def invalid_auth_token(self, *args, **kw):
-        return api_render((False, 'INVALID_API_AUTH_TOKEN'))
+        return api_render((False, 'INVALID_MLMMJADMIN_API_AUTH_TOKEN'))
 
     try:
         client_ip = web.ctx.ip
