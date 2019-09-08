@@ -6,5 +6,8 @@ matrix:  # allow Python 3 to fail until web.py is Py3-ready
   allow_failures:
     - python: "3.7"
 before_install: pip install --upgrade pip
-install: pip install flake8 -r requirements.txt
-script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+install: pip install flake8 pytest -r requirements.txt
+before_script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+script:
+  - cd tests/
+  - bash main.sh
