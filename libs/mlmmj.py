@@ -9,6 +9,11 @@ from libs import utils, form_utils
 from libs.logger import logger
 import settings
 
+try:
+    basestring     # Python 2
+except NameError:  # Python 3
+    basestring = str
+
 
 subscription_versions = ['normal', 'nomail', 'digest']
 
@@ -51,7 +56,7 @@ def __remove_ml_sub_dir(mail, dirname):
         try:
             shutil.rmtree(_sub_dir)
             logger.debug("[{0}] {1}, removed sub-directory: {2}".format(web.ctx.ip, mail, _sub_dir))
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] {1}, error while removing sub-directory: {2}".format(web.ctx.ip, mail, _sub_dir))
             return (False, repr(e))
 
@@ -65,7 +70,7 @@ def __set_file_permission(path):
     try:
         os.chown(path, _uid, _gid)
         return (True, )
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))
 
 
@@ -75,7 +80,7 @@ def __copy_dir_files(src, dest, create_dest=True):
         if not os.path.exists(dest):
             try:
                 os.makedirs(dest, mode=settings.MLMMJ_FILE_PERMISSION)
-            except Exception, e:
+            except Exception as e:
                 return (False, repr(e))
 
     for fn in os.listdir(src):
@@ -126,7 +131,7 @@ def __remove_file(path):
     if os.path.exists(path):
         try:
             os.remove(path)
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] error while removing parameter file: {1}, {2}".format(web.ctx.ip, path, e))
             return (False, repr(e))
 
@@ -177,7 +182,7 @@ def __get_list_param_value(mail, param, is_email=False, param_file=None):
         except IOError:
             # No such file.
             pass
-        except Exception, e:
+        except Exception as e:
             logger.error('Error while getting (list) parameter value: {0} -> {1}'.format(param, e))
 
     _values.sort()
@@ -196,7 +201,7 @@ def __get_normal_param_value(mail, param, param_file=None):
     except IOError:
         # No such file.
         return ''
-    except Exception, e:
+    except Exception as e:
         logger.error("[{0}] {1}, error while getting parameter value: {2}, {3}".format(web.ctx.ip, mail, param, e))
         return ''
 
@@ -215,7 +220,7 @@ def __get_text_param_value(mail, param, param_file=None):
     except IOError:
         # No such file.
         return ''
-    except Exception, e:
+    except Exception as e:
         logger.error("[{0}] {1}, error while getting parameter value: {2}, {3}".format(web.ctx.ip, mail, param, e))
         return ''
 
@@ -323,7 +328,7 @@ def __update_boolean_param(mail,
                 _f = __get_param_file(mail=mail, param='moderated')
                 open(_f, 'a').close()
 
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] {1}, error while updating (boolean) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
@@ -367,7 +372,7 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
             with open(param_file, 'w') as f:
                 f.write(value + '\n')
 
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] {1}, error while updating (normal) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
@@ -384,7 +389,7 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
     if not param_file:
         param_file = __get_param_file(mail=mail, param=param)
 
-    if isinstance(value, (str, unicode)):
+    if isinstance(value, basestring):
         _values = __convert_web_param_value_to_list(value=value, is_email=is_email)
     else:
         _values = value
@@ -404,7 +409,7 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
                 f.write('\n'.join(_values) + '\n')
 
             logger.info("[{0}] {1}, updated: {2} -> {3}".format(web.ctx.ip, mail, param, ', '.join(_values)))
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] {1}, error while updating (list) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
@@ -438,7 +443,7 @@ def __update_text_param(mail,
             # the characters will be a mess.
             with open(param_file, 'w') as f:
                 f.write(value + '\n')
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] {1}, error while updating (normal) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
             return (False, repr(e))
@@ -619,7 +624,7 @@ def __archive_ml(mail):
         # Create archive directory
         try:
             os.makedirs(_new_dir, mode=settings.MLMMJ_FILE_PERMISSION)
-        except Exception, e:
+        except Exception as e:
             _msg = "error while creating directory under archive directory ({0}), {1}".format(_new_dir, repr(e))
             logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
             return (False, _msg)
@@ -630,7 +635,7 @@ def __archive_ml(mail):
 
             # Return new directory path
             return (True, _new_dir)
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] {1}, error while archiving: {2} ({3} -> {4})".format(web.ctx.ip, mail, e, _dir, _new_dir))
             return (False, repr(e))
 
@@ -668,7 +673,7 @@ def __remove_lines_in_file(path, lines):
                 return qr
 
         return (True, )
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))
 
 
@@ -699,7 +704,7 @@ def __add_lines_in_file(f, lines):
             nf.write(''.join(file_lines))
 
         return (True, )
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))
 
 
@@ -757,7 +762,7 @@ def __add_subscribers_with_confirm(mail,
             subprocess.Popen(_new_cmd, stdout=subprocess.PIPE)
 
             logger.debug("[{0}] {1}, queued confirm mail for {2}.".format(web.ctx.ip, mail, addr))
-        except Exception, e:
+        except Exception as e:
             logger.error("[{0}] {1}, error while subscribing {2}: {3}".format(web.ctx.ip, mail, addr, e))
             _error[addr] = repr(e)
 
@@ -893,7 +898,7 @@ def create_ml(mail, **kwargs):
     if not os.path.exists(_ml_dir):
         try:
             os.makedirs(_ml_dir, mode=settings.MLMMJ_FILE_PERMISSION)
-        except Exception, e:
+        except Exception as e:
             _msg = "error while creating base directory ({0}), {1}".format(_ml_dir, repr(e))
             logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
             return (False, _msg)
@@ -904,7 +909,7 @@ def create_ml(mail, **kwargs):
         if not os.path.exists(_sub_dir):
             try:
                 os.makedirs(_sub_dir, mode=settings.MLMMJ_FILE_PERMISSION)
-            except Exception, e:
+            except Exception as e:
                 _msg = "error while creating sub-directory ({0}), {1}".format(_sub_dir, repr(e))
                 logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
                 return (False, _msg)
@@ -955,7 +960,7 @@ def delete_ml(mail, archive=True):
             try:
                 shutil.rmtree(_ml_dir)
                 logger.info("[{0}] {1}, removed without archiving.".format(web.ctx.ip, mail))
-            except Exception, e:
+            except Exception as e:
                 return (False, repr(e))
     else:
         logger.info("[{0}] {1}, removed (no data on file system).".format(web.ctx.ip, mail))
@@ -1053,7 +1058,7 @@ def remove_all_subscribers(mail):
                 qr = __remove_file(path=_path)
                 if not qr[0]:
                     return qr
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))
 
     return (True, )

@@ -46,7 +46,7 @@ MLMMJ_ARCHIVE_DIR = '/var/spool/mlmmj-archive'
 MLMMJ_SKEL_DIR = '/usr/share/mlmmj/text.skel'
 
 # Default file permission for created files/directories
-MLMMJ_FILE_PERMISSION = 0700
+MLMMJ_FILE_PERMISSION = 0o700
 
 #
 # Absolute path to mlmmj commands. If empty, will try /usr/bin and

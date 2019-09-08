@@ -57,7 +57,7 @@ class LDAPWrap(object):
         try:
             # bind as vmailadmin
             self.conn.bind_s(settings.iredmail_ldap_bind_dn, settings.iredmail_ldap_bind_password)
-        except Exception, e:
+        except Exception as e:
             web.log_error('VMAILADMIN_INVALID_CREDENTIALS. Detail: %s' % repr(e))
 
     def __del__(self):
@@ -297,7 +297,7 @@ def __add_or_remove_attr_value(dn, attr, value, action, conn=None):
                 conn.modify_s(dn, [(ldap.MOD_ADD, attr, str(v))])
             except (ldap.NO_SUCH_OBJECT, ldap.TYPE_OR_VALUE_EXISTS):
                 pass
-            except Exception, e:
+            except Exception as e:
                 msg += str(e)
     elif action in ['del', 'delete', 'remove', 'disable']:
         for v in values:
@@ -305,7 +305,7 @@ def __add_or_remove_attr_value(dn, attr, value, action, conn=None):
                 conn.modify_s(dn, [(ldap.MOD_DELETE, attr, str(v))])
             except ldap.NO_SUCH_ATTRIBUTE:
                 pass
-            except Exception, e:
+            except Exception as e:
                 msg += str(e)
     else:
         return (False, 'UNKNOWN_ACTION')
@@ -344,7 +344,7 @@ def __get_primary_and_alias_domains(domain, with_primary_domain=True, conn=None)
             return (True, all_domains)
         else:
             return (False, 'INVALID_DOMAIN_NAME')
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))
 
 
@@ -411,7 +411,7 @@ def add_maillist(mail, form, conn=None):
         conn.add_s(dn_ml, ldif_ml)
         logger.info('Created: {0}.'.format(mail))
         return (True, )
-    except Exception, e:
+    except Exception as e:
         logger.error('Error while creating {0}: {1}'.format(mail, e))
         return (False, repr(e))
 
@@ -434,7 +434,7 @@ def remove_maillist(mail, conn=None):
         return (True, )
     except ldap.NO_SUCH_OBJECT:
         return (False, 'ACCOUNT_NOT_EXIST')
-    except Exception, e:
+    except Exception as e:
         logger.error("Error: {0}".format(e))
         return (False, repr(e))
 
@@ -491,7 +491,7 @@ def update_maillist(mail, form, conn=None):
             return (True, )
         except ldap.NO_SUCH_OBJECT:
             return (False, 'ACCOUNT_NOT_EXIST')
-        except Exception, e:
+        except Exception as e:
             return (False, repr(e))
     else:
         return (True, )
@@ -532,5 +532,5 @@ def get_existing_maillists(domains=None, conn=None):
             existing_lists.update(_addresses)
 
         return (True, existing_lists)
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))
