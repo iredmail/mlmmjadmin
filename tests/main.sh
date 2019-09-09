@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e  # exit immediately with a non-zero status if any command fails
+
 tmprootdir="$(dirname $0)"
 echo ${tmprootdir} | grep '^/' >/dev/null 2>&1
 if [ X"$?" == X"0" ]; then
