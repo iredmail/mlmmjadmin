@@ -384,7 +384,7 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
     if not param_file:
         param_file = __get_param_file(mail=mail, param=param)
 
-    if isinstance(value, (str, unicode)):
+    if isinstance(value, str):
         _values = __convert_web_param_value_to_list(value=value, is_email=is_email)
     else:
         _values = value

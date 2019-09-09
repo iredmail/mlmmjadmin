@@ -1,12 +1,16 @@
 language: python
-python:
-  - "2.7"
-  - "3.7"
 
-# allow py3 to fail due to no required MySQLdb-python module.
-matrix:
-  allow_failures:
-    - python: "3.7"
+# We need to run this program on different Linux/BSD distributions, each ships
+# different Python versions.
+python:
+  # CentOS 7
+  - "3.4"
+  # Debian 9
+  - "3.5"
+  # Ubuntu 18.04
+  - "3.6"
+  # Debian 10
+  - "3.7"
 
 install:
   - pip install -r requirements.txt
@@ -19,7 +23,8 @@ install: pip install flake8 pytest -r requirements.txt
 
 before_script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
-# Running unittests requires a fully-working iRedMail server.
+# TODO Run unittests without iRedMail SQL/LDAP backends.
+#   - Generate `settings.py`
 script:
   - cd tests/
 #  - bash main.sh

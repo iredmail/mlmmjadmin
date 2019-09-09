@@ -1,7 +1,6 @@
 # Version numbers of python modules in this file is mostly used by Travis CI,
 # iRedMail installs the binary packages from yum/apt/ports tree offerred by
 # Linux/BSD vendors directly, not from https://pypi.org/.
-MySQL-python==1.2.5; python_version < '3.0'
 mysql-connector-python==8.0.17; python_version >= '3.0'
 psycopg2==2.8.3
 python-ldap==3.2.0
