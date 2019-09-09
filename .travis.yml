@@ -1,8 +1,19 @@
 language: python
-install: pip install flake8
-script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 python:
-    - "2.7"
+  - "2.7"
+  - "3.7"
 
 install:
   - pip install -r requirements.txt
+
+matrix:  # allow Python 3 to fail until web.py is Py3-ready
+  allow_failures:
+    - python: "3.7"
+
+before_install: pip install --upgrade pip
+install: pip install flake8 pytest -r requirements.txt
+
+before_script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+script:
+  - cd tests/
+  - bash main.sh

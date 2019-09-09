@@ -8,7 +8,7 @@
 #
 # Required Python modules:
 #
-#   - `MySQLdb` for MySQL or MariaDB backends
+#   - `MySQL-python` for MySQL or MariaDB backends
 #   - `psycopg2` for PostgreSQL backend
 #
 # Required parameters in settings.py
