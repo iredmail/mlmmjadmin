@@ -9,6 +9,11 @@ from libs import utils, form_utils
 from libs.logger import logger
 import settings
 
+try:
+    unicode        # Python 2
+except NameError:
+    unicode = str  # Python 3
+
 
 subscription_versions = ['normal', 'nomail', 'digest']
 
