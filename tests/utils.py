@@ -1,5 +1,5 @@
 from . import get, post, delete, debug
-import data
+from . import data
 
 
 def remove_ml(archive=False):
