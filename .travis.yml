@@ -24,7 +24,25 @@ install: pip install flake8 pytest -r requirements.txt
 before_script: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
 # TODO Run unittests without iRedMail SQL/LDAP backends.
+#   - Install packages: mlmmj uwsgi uwsgi-plugin-python
+#   - Add unix user/group: mlmmj:mlmmj
+#   - Create directories: /var/vmail/mlmmj /var/vmail/mlmmj-archive
+#
+#groupadd mlmmj
+#useradd -m -g mlmmj -d /var/vmail/mlmmj -s /sbin/nologin mlmmj
+#mkdir /var/vmail/mlmmj-archive
+#chown -R mlmmj:mlmmj /var/vmail/mlmmj /var/vmail/mlmmj-archive
+#chmod -R 0700 /var/vmail/mlmmj /var/vmail/mlmmj-archive
+#chmod 0755 /var/vmail
+#
 #   - Generate `settings.py`
+#       - Generate api auth token and update `api_auth_tokens`
+#       - Add required parameters:
+#           - MLMMJ_SPOOL_DIR
+#           - MLMMJ_ARCHIVE_DIR
+#   - Generate SysV or systemd script to start this program
+#   - Run tests
+
 script:
   - cd tests/
 #  - bash main.sh
