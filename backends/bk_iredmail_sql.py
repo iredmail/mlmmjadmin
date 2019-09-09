@@ -56,7 +56,7 @@ class MYSQLWrap(object):
         except (AttributeError, MySQLdb.OperationalError):
             # Reconnect if error raised: MySQL server has gone away.
             self.conn = self.__connect()
-        except Exception, e:
+        except Exception as e:
             logger.error("SQL error: {0}".format(e))
 
 
@@ -77,7 +77,7 @@ class PGSQLWrap(object):
                                      user=settings.iredmail_sql_db_user,
                                      pw=settings.iredmail_sql_db_password)
             self.conn.supports_multiple_insert = True
-        except Exception, e:
+        except Exception as e:
             logger.error("SQL error: {0}".format(e))
 
 
@@ -121,7 +121,7 @@ def is_domain_exists(domain, conn=None):
 
         # Domain not exist
         return False
-    except Exception, e:
+    except Exception as e:
         # Return True as exist to not allow to create new domain/account.
         logger.error("SQL error: {0}".format(e))
         return True
@@ -159,7 +159,7 @@ def is_email_exists(mail, conn=None):
             return True
 
         return False
-    except Exception, e:
+    except Exception as e:
         logger.error("SQL error: {0}".format(e))
         return True
 
@@ -186,7 +186,7 @@ def is_maillist_exists(mail, conn=None):
             return True
 
         return False
-    except Exception, e:
+    except Exception as e:
         logger.error("SQL error: {0}".format(e))
         return True
 
@@ -305,7 +305,7 @@ def add_maillist(mail, form, conn=None):
 
         logger.info('Created: {0}.'.format(mail))
         return (True, )
-    except Exception, e:
+    except Exception as e:
         logger.error('Error while creating {0}: {1}'.format(mail, e))
         return (False, repr(e))
 
@@ -331,7 +331,7 @@ def remove_maillist(mail, conn=None):
                     where='address=$mail')
 
         return (True, )
-    except Exception, e:
+    except Exception as e:
         logger.error("SQL error: {0}".format(e))
         return (False, repr(e))
 
@@ -396,7 +396,7 @@ def update_maillist(mail, form, conn=None):
                 conn.multiple_insert('moderators', records)
 
         return (True, )
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))
 
 
@@ -432,5 +432,5 @@ def get_existing_maillists(domains=None, conn=None):
             existing_lists.add(_addr)
 
         return (True, list(existing_lists))
-    except Exception, e:
+    except Exception as e:
         return (False, repr(e))

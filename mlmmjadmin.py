@@ -26,7 +26,7 @@ for _dir in [settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_SKEL_DIR]:
         sys.exit("ERROR: directory doesn't exist or incorrect permission "
                  "(check parent directories also): {0}.".format(_dir))
 
-os.umask(0077)
+os.umask(0o077)
 
 # Get uid/gid of daemon user.
 uid = pwd.getpwnam(settings.run_as_user).pw_uid

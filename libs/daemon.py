@@ -52,7 +52,7 @@ import signal
 
 # Default daemon parameters.
 # File mode creation mask of the daemon.
-UMASK = 0077
+UMASK = 0o077
 
 # Default working directory for the daemon.
 WORKDIR = "/"
@@ -164,7 +164,7 @@ def daemonize(noClose=False):
         if not noClose:
             _redirectFileDescriptors()
 
-    except Exception, e:
+    except Exception as e:
         raise DaemonError('Error during daemonizing: {0} [{1}]'.format(e.strerror, e.errno))
 
 
@@ -175,7 +175,7 @@ def daemonize(noClose=False):
 def _fork():
     try:
         return os.fork()
-    except OSError, e:
+    except OSError as e:
         raise DaemonError('Cannot fork: {0} [{1}]'.format(e.strerror, e.errno))
 
 
@@ -196,10 +196,10 @@ def _redirectFileDescriptors():
 
         try:
             os.close(fd)
-        except OSError, e:
+        except OSError as e:
             # File descriptor wasn't open. Ignore.
             logging.info('Error in _redirectFileDescriptors 1: ({0}, {1})'.format(e.errno, e.strerror))
-        except Exception, e:
+        except Exception as e:
             logging.info('Error in _redirectFileDescriptors 2: ({0}, {1})'.format(e.errno, e.strerror))
 
     # Redirect standard input, output and error to something safe.

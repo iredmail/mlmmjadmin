@@ -1,3 +1,4 @@
+from __future__ import print_function
 import requests
 import settings
 
@@ -32,4 +33,4 @@ def delete(url, data=None):
 
 
 def debug(*msg):
-    print '[DEBUG]', msg
+    print('[DEBUG]', msg)

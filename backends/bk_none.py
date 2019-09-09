@@ -54,7 +54,7 @@ def get_existing_maillists(domains=None, *args, **kw):
         except OSError:
             # No such directory.
             pass
-        except Exception, e:
+        except Exception as e:
             return (False, repr(e))
 
         for fn in fns:
@@ -81,7 +81,7 @@ def get_existing_maillists(domains=None, *args, **kw):
         except OSError:
             # No such directory.
             pass
-        except Exception, e:
+        except Exception as e:
             return (False, repr(e))
 
     all_lists.sort()
