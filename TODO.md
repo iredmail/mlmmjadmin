@@ -2,6 +2,10 @@
 
 ## 2.0
 
+### Tests
+
+- Submit value with non-ascii / unicode characters. e.g. CJK.
+
 ### API
 
 - Rename a mailing list
