@@ -15,9 +15,6 @@ python:
 install:
   - pip install -r requirements.txt
 
-git:
-  depth: 1
-
 before_install: pip install --upgrade pip
 install: pip install flake8 pytest -r requirements.txt
 
