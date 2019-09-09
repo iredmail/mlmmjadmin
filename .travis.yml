@@ -15,10 +15,13 @@ python:
 addons:
   apt:
     update: true
+    packages:
+      - mlmmj
+      - uwsgi
+      - uwsgi-plugin-python
 
 before_install:
   - pip install --upgrade pip
-  - sudo apt-get install mlmmj uwsgi uwsgi-plugin-python
   - sudo mkdir -p /var/vmail
   - sudo chmod 0755 /var/vmail
   - sudo groupadd mlmmj
