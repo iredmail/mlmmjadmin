@@ -54,5 +54,6 @@ before_script:
 #   - Run tests
 
 script:
+  - pytest
   - cd tests/
 #  - bash main.sh
