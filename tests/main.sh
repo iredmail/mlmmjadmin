@@ -9,8 +9,8 @@ else
 fi
 
 modules="
-    test-mlmmj.py
-    test-cleanup.py
+    test_mlmmj.py
+    test_cleanup.py
 "
 
 # py.test command line arguments

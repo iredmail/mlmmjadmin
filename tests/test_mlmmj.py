@@ -1,7 +1,7 @@
 # encoding: utf-8
 from . import get, put, debug
-from utils import create_ml, remove_ml
-import data
+from .utils import create_ml, remove_ml
+from . import data
 
 
 def test_invalid_domain():
