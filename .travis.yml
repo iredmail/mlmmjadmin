@@ -1,7 +1,7 @@
 language: python
 
 # Use Ubuntu 18.04 (bionic) for testing, 16.04 is not supported by iRedMail.
-dist: bionic
+#dist: bionic
 
 # We need to run this program on different Linux/BSD distributions, each ships
 # different Python versions.

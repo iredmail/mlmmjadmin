@@ -20,7 +20,6 @@
 
 import uuid
 import ldap
-import web
 
 from libs import utils, form_utils
 from libs.logger import logger
@@ -58,7 +57,7 @@ class LDAPWrap(object):
             # bind as vmailadmin
             self.conn.bind_s(settings.iredmail_ldap_bind_dn, settings.iredmail_ldap_bind_password)
         except Exception as e:
-            web.log_error('VMAILADMIN_INVALID_CREDENTIALS. Detail: %s' % repr(e))
+            logger.error('VMAILADMIN_INVALID_CREDENTIALS. Detail: %s' % repr(e))
 
     def __del__(self):
         try:
@@ -322,7 +321,7 @@ def __get_primary_and_alias_domains(domain, with_primary_domain=True, conn=None)
     >>> get_primary_and_alias_domains(domain='example.com')
     (True, ['example.com', 'aliasdomain01.com', 'aliasdomain02.com', ...])
     '''
-    domain = web.safestr(domain).strip().lower()
+    domain = domain.strip().lower()
     if not utils.is_domain(domain):
         return (False, 'INVALID_DOMAIN_NAME')
 
