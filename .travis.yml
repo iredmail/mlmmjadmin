@@ -40,11 +40,11 @@ before_install:
   #
   # Generate uwsgi config file.
   #
-  - sudo cp rc_scripts/uwsgi/debian.ini uwsgi.ini
-  - sudo chmod 0777 uwsgi.ini
-  - sudo perl -pi -e 's#^(chdir = ).*#${1}/home/travis/mlmmjadmin#g' uwsgi.ini
-  # for debugging purpose
-  - sudo cat uwsgi.ini
+  #- sudo cp rc_scripts/uwsgi/debian.ini uwsgi.ini
+  #- sudo chmod 0777 uwsgi.ini
+  #- sudo perl -pi -e 's#^(chdir = ).*#${1}/home/travis/mlmmjadmin#g' uwsgi.ini
+  ## for debugging purpose
+  #- sudo cat uwsgi.ini
 
 install:
   - pip install flake8 pytest -r requirements.txt
@@ -52,8 +52,10 @@ install:
 before_script:
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
   # Start the program
-  - sudo uwsgi --daemonize --ini uwsgi.ini
+  - uwsgi --plugins=python --http-socket=127.0.0.1:7790 --wsgi-file mlmmjadmin.py --daemonize out.log
 
 script:
   - cd tests/
   - py.test -s -x test_mlmmj.py
+  # Try to get uwsgi log
+  - cat out.log
