@@ -43,19 +43,16 @@ before_install:
   - sudo cp rc_scripts/uwsgi/debian.ini uwsgi.ini
   - sudo chmod 0777 uwsgi.ini
   - sudo perl -pi -e 's#^(chdir = ).*#${1}/home/travis/mlmmjadmin#g' uwsgi.ini
-
-  # Start the program
-  - sudo uwsgi --daemonize --ini uwsgi.ini
+  # for debugging purpose
+  - sudo cat uwsgi.ini
 
 install:
   - pip install flake8 pytest -r requirements.txt
 
 before_script:
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-
-# TODO Run unittests without iRedMail SQL/LDAP backends.
-#   - Generate SysV or systemd script to start this program
-#   - Run tests
+  # Start the program
+  - sudo uwsgi --daemonize --ini uwsgi.ini
 
 script:
   - cd tests/
