@@ -29,11 +29,11 @@ before_install:
   - sudo chown -R mlmmj:mlmmj /var/vmail/mlmmj /var/vmail/mlmmj-archive
   - sudo chmod -R 0700 /var/vmail/mlmmj /var/vmail/mlmmj-archive
   - sudo cp settings.py.sample settings.py
-  - sudo echo 'backend_api = "bk_none"' >> settings.py
-  - sudo echo 'backend_cli = "bk_none"' >> settings.py
-  - sudo echo 'api_auth_tokens = ["b7bc9c619ca13bd09ef90f5f65e17d68"]' >> settings.py
-  - sudo echo 'MLMMJ_SPOOL_DIR = "/var/vmail/mlmmj"' >> settings.py
-  - sudo echo 'MLMMJ_ARCHIVE_DIR = "/var/vmail/mlmmj-archive"' >> settings.py
+  - sudo -s echo 'backend_api = "bk_none"' >> settings.py
+  - sudo -s echo 'backend_cli = "bk_none"' >> settings.py
+  - sudo -s echo 'api_auth_tokens = ["b7bc9c619ca13bd09ef90f5f65e17d68"]' >> settings.py
+  - sudo -s echo 'MLMMJ_SPOOL_DIR = "/var/vmail/mlmmj"' >> settings.py
+  - sudo -s echo 'MLMMJ_ARCHIVE_DIR = "/var/vmail/mlmmj-archive"' >> settings.py
 
 install:
   - pip install flake8 pytest -r requirements.txt
