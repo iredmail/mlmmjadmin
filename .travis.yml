@@ -28,6 +28,12 @@ before_install:
   - sudo mkdir -p /var/vmail/mlmmj-archive
   - sudo chown -R mlmmj:mlmmj /var/vmail/mlmmj /var/vmail/mlmmj-archive
   - sudo chmod -R 0700 /var/vmail/mlmmj /var/vmail/mlmmj-archive
+  - sudo cp settings.py.sample settings.py
+  - sudo echo 'backend_api = "bk_none"' >> settings.py
+  - sudo echo 'backend_cli = "bk_none"' >> settings.py
+  - sudo echo 'api_auth_tokens = ["b7bc9c619ca13bd09ef90f5f65e17d68"]' >> settings.py
+  - sudo echo 'MLMMJ_SPOOL_DIR = "/var/vmail/mlmmj"' >> settings.py
+  - sudo echo 'MLMMJ_ARCHIVE_DIR = "/var/vmail/mlmmj-archive"' >> settings.py
 
 install:
   - pip install flake8 pytest -r requirements.txt
@@ -36,25 +42,9 @@ before_script:
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
 # TODO Run unittests without iRedMail SQL/LDAP backends.
-#   - [x] Install packages: mlmmj uwsgi uwsgi-plugin-python
-#   - [x] Add unix user/group: mlmmj:mlmmj
-#   - [x] Create directories: /var/vmail/mlmmj /var/vmail/mlmmj-archive
-#
-#groupadd mlmmj
-#useradd -m -g mlmmj -d /var/vmail/mlmmj -s /sbin/nologin mlmmj
-#mkdir /var/vmail/mlmmj-archive
-#chown -R mlmmj:mlmmj /var/vmail/mlmmj /var/vmail/mlmmj-archive
-#chmod -R 0700 /var/vmail/mlmmj /var/vmail/mlmmj-archive
-#chmod 0755 /var/vmail
-#
-#   - Generate `settings.py`
-#       - Generate api auth token and update `api_auth_tokens`
-#       - Add required parameters:
-#           - MLMMJ_SPOOL_DIR
-#           - MLMMJ_ARCHIVE_DIR
 #   - Generate SysV or systemd script to start this program
 #   - Run tests
 
 script:
   - cd tests/
-#  - bash main.sh
+  - bash main.sh
