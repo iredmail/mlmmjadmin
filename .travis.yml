@@ -37,6 +37,16 @@ before_install:
   - sudo echo 'MLMMJ_SPOOL_DIR = "/var/vmail/mlmmj"' >> settings.py
   - sudo echo 'MLMMJ_ARCHIVE_DIR = "/var/vmail/mlmmj-archive"' >> settings.py
 
+  #
+  # Generate uwsgi config file.
+  #
+  - sudo cp rc_scripts/uwsgi/debian.ini uwsgi.ini
+  - sudo chmod 0777 uwsgi.ini
+  - sudo perl -pi -e 's#^(chdir = ).*#${1}/home/travis/mlmmjadmin#g' uwsgi.ini
+
+  # Start the program
+  - sudo uwsgi --daemonize --ini uwsgi.ini
+
 install:
   - pip install flake8 pytest -r requirements.txt
 
