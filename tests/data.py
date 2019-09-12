@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Testing data
 import settings
 
@@ -22,7 +24,7 @@ params_create_ml = {
     'moderate_non_subscriber_post': 'no',
     'notify_owner_when_sub_unsub': 'no',
     'notify_sender_when_moderated': 'no',
-    'subject_prefix': '[test-prefix] ',
+    'subject_prefix': '[测试] ',
     'disable_archive': 'no',
     'disable_digest_subscription': 'yes',
     'disable_digest_text': 'yes',
@@ -47,8 +49,8 @@ params_create_ml = {
     'footer_text': """Here is specified in bytes how big a mail can be and\n
 still be prepared for sending in memory. It is greatly reducing the amount of\n
 write system calls to prepare it in memory before sending it, but can also\n
-lead to denial of service attacks. Default is 16k (16384 bytes).""",
-    'footer_html': '<p>This is footer in html format.</p>',
+lead to denial of service attacks. Default is 16k (16384 bytes). 中文""",
+    'footer_html': '<p>This is footer in html format. 中文</p>',
 }
 
 params_create_verify = dict(params_create_ml)
@@ -76,7 +78,7 @@ params_update_ml = {
     'moderate_non_subscriber_post': 'yes',
     'notify_owner_when_sub_unsub': 'yes',
     'notify_sender_when_moderated': 'yes',
-    'subject_prefix': '[updated-prefix] ',
+    'subject_prefix': '[测试2] ',
     'disable_archive': 'yes',
     'disable_digest_subscription': 'no',
     'disable_digest_text': 'no',
@@ -90,6 +92,6 @@ params_update_ml = {
     'disable_notify_when_subscriber_only': 'no',
     'disable_notify_when_moderator_only': 'no',
     'moderate_subscription': 'no',
-    'footer_text': 'This if updated footer in plain text.',
-    'footer_html': """<p>This is updated footer in html format.</p>""",
+    'footer_text': 'This if updated footer in plain text. 中文',
+    'footer_html': """<p>This is updated footer in html format. 中文</p>""",
 }

@@ -23,7 +23,7 @@ class Profile(object):
         # Get specified profile parameters.
         # If parameters are given, get values of them instead of all profile
         # parameters.
-        form = web.input(_unicode=False)
+        form = web.input()
         _web_params = form.get('params', '').lower().strip().replace(' ', '').split(',')
         _web_params = [p for p in _web_params if p in settings.MLMMJ_WEB_PARAMS]
 

@@ -27,7 +27,7 @@ class Subscribers(object):
                             '<subscription3>': [<mail>, <mail>, ...]}
         """
         # Get extra parameters.
-        form = web.input(_unicode=False)
+        form = web.input()
         email_only = ('email_only' in form)
 
         qr = mlmmj.get_subscribers(mail=mail, email_only=email_only)
@@ -111,7 +111,7 @@ class SubscribedLists(object):
         subscriber = str(subscriber).lower()
         domain = subscriber.split('@', 1)[-1]
 
-        form = web.input(_unicode=False)
+        form = web.input()
 
         email_only = False
         if form.get('email_only') == 'yes':
@@ -163,7 +163,7 @@ class Subscribe(object):
         """
         subscriber = str(subscriber).lower()
 
-        form = web.input(_unicode=False)
+        form = web.input()
 
         subscription = form.get('subscription', 'normal')
         if subscription not in mlmmj.subscription_versions:

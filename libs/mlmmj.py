@@ -167,7 +167,7 @@ def __get_list_param_value(mail, param, is_email=False, param_file=None):
     _values = []
     if __has_param_file(param_file):
         try:
-            with open(param_file, 'r') as f:
+            with open(param_file, 'r', encoding='utf-8') as f:
                 _lines = f.readlines()
                 _lines = [_line.strip() for _line in _lines]  # remove line breaks
                 _values = [_line for _line in _lines if _line]  # remove empty values
@@ -190,7 +190,7 @@ def __get_normal_param_value(mail, param, param_file=None):
         param_file = __get_param_file(mail=mail, param=param)
 
     try:
-        with open(param_file, 'r') as f:
+        with open(param_file, 'r', encoding='utf-8') as f:
             # Remove newline but keep spaces.
             value = f.readline().rstrip('\n')
             return value
@@ -210,7 +210,7 @@ def __get_text_param_value(mail, param, param_file=None):
         param_file = __get_param_file(mail=mail, param=param)
 
     try:
-        with open(param_file, 'r') as f:
+        with open(param_file, 'r', encoding='utf-8') as f:
             value = f.read().rstrip('\n')
             return value
     except IOError:
@@ -309,9 +309,9 @@ def __update_boolean_param(mail,
     if value == 'yes':
         try:
             if touch_instead_of_create:
-                open(param_file, 'a').close()
+                open(param_file, 'a', encoding='utf-8').close()
             else:
-                open(param_file, 'w').close()
+                open(param_file, 'w', encoding='utf-8').close()
 
             # Avoid some conflicts
             if param == 'subonlypost':
@@ -322,7 +322,7 @@ def __update_boolean_param(mail,
 
                 # Create 'control/moderated' also
                 _f = __get_param_file(mail=mail, param='moderated')
-                open(_f, 'a').close()
+                open(_f, 'a', encoding='utf-8').close()
 
         except Exception as e:
             logger.error("[{0}] {1}, error while updating (boolean) parameter: {2} -> {3}, {4}".format(
@@ -363,7 +363,10 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
             if isinstance(value, int):
                 value = str(value)
 
-            with open(param_file, 'w') as f:
+            with open(param_file, 'w', encoding='utf-8') as f:
+                #value = value + '\n'
+                #value.encode('utf-8')
+                #f.write(value)
                 f.write(value + '\n')
 
         except Exception as e:
@@ -399,7 +402,7 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
                 # Prepend primary address (must be first one)
                 _values = [mail] + _values
 
-            with open(param_file, 'w') as f:
+            with open(param_file, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(_values) + '\n')
 
             logger.info("[{0}] {1}, updated: {2} -> {3}".format(web.ctx.ip, mail, param, ', '.join(_values)))
@@ -433,7 +436,7 @@ def __update_text_param(mail,
 
             # Footer text/html must ends with an empty line, otherwise
             # the characters will be a mess.
-            with open(param_file, 'w') as f:
+            with open(param_file, 'w', encoding='utf-8') as f:
                 f.write(value + '\n')
         except Exception as e:
             logger.error("[{0}] {1}, error while updating (normal) parameter: {2} -> {3}, {4}".format(
@@ -443,7 +446,7 @@ def __update_text_param(mail,
         if create_if_empty:
             # Footer text/html must ends with an empty line, otherwise
             # the characters will be a mess.
-            with open(param_file, 'w') as f:
+            with open(param_file, 'w', encoding='utf-8') as f:
                 f.write('\n')
         else:
             qr = __remove_file(path=param_file)
@@ -648,7 +651,7 @@ def __remove_lines_in_file(path, lines):
         return (True, )
 
     try:
-        with open(path, 'r') as _f:
+        with open(path, 'r', encoding='utf-8') as _f:
             _file_lines = _f.readlines()
             stripped_file_lines = [l.strip() for l in _file_lines]
 
@@ -656,7 +659,7 @@ def __remove_lines_in_file(path, lines):
         filtered_lines = set(stripped_file_lines) - set(given_lines)
 
         if filtered_lines:
-            with open(path, 'w') as f:
+            with open(path, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(filtered_lines) + '\n')
         else:
             # Remove file
@@ -683,7 +686,7 @@ def __add_lines_in_file(f, lines):
     file_lines = []
     try:
         if os.path.exists(f):
-            with open(f, 'r') as _f:
+            with open(f, 'r', encoding='utf-8') as _f:
                 file_lines = _f.readlines()
 
         lines = [i + '\n' for i in lines]
@@ -692,7 +695,7 @@ def __add_lines_in_file(f, lines):
         # Remove duplicate lines.
         file_lines = list(set(file_lines))
 
-        with open(f, 'w') as nf:
+        with open(f, 'w', encoding='utf-8') as nf:
             nf.write(''.join(file_lines))
 
         return (True, )
@@ -782,7 +785,7 @@ def has_subscriber(mail, subscriber, subscription=None):
         _sub_file = os.path.join(_sub_dir, subscriber[0])
 
         if os.path.exists(_sub_file):
-            with open(_sub_file, 'r') as f:
+            with open(_sub_file, 'r', encoding='utf-8') as f:
                 for line in f:
                     if line.strip() == subscriber:
                         return (True, subscription)
@@ -912,12 +915,12 @@ def create_ml(mail, **kwargs):
 
     # Create file `control/listaddress` with primary address
     _f = os.path.join(_ml_dir, 'control/listaddress')
-    with open(_f, 'w') as f:
+    with open(_f, 'w', encoding='utf-8') as f:
         f.write('{0}\n'.format(mail))
 
     # Create extra control file
     index_path = os.path.join(_ml_dir, 'index')
-    open(index_path, 'w').close()
+    open(index_path, 'w', encoding='utf-8').close()
 
     # Copy skel/language template files
     _sub_dir_text = os.path.join(_ml_dir, 'text')
