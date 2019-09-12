@@ -38,12 +38,22 @@ def create_ml(_remove_ml=False):
     _data = _json['_data']
     params = data.params_create_verify
     for _param in params:
-        # For debug purpose, print related data for troubleshooting
-        if _data[_param] != params[_param]:
-            debug(_data)
-            debug(_param, _data.get(_param), params.get(_param))
+        _expected = params[_param]
+        _real = _data[_param]
 
-        assert _data[_param] == params[_param]
+        if isinstance(_expected, list):
+            _expected.sort()
+
+        if isinstance(_real, list):
+            _real.sort()
+
+        # For debug purpose, print related data for troubleshooting
+        if _real != _expected:
+            # debug(_data)
+            debug('[{}] expected value: {}'.format(_param, _expected))
+            debug('[{}]     real value: {}'.format(_param, _real))
+
+        assert _real == _expected
 
     if _remove_ml:
         remove_ml()

@@ -33,4 +33,4 @@ def delete(url, data=None):
 
 
 def debug(*msg):
-    print('[DEBUG]', msg)
+    print('[DEBUG] {}'.format(msg))

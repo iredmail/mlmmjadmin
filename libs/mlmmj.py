@@ -191,7 +191,8 @@ def __get_normal_param_value(mail, param, param_file=None):
 
     try:
         with open(param_file, 'r') as f:
-            value = f.readline().strip()
+            # Remove newline but keep spaces.
+            value = f.readline().rstrip('\n')
             return value
     except IOError:
         # No such file.
@@ -210,7 +211,7 @@ def __get_text_param_value(mail, param, param_file=None):
 
     try:
         with open(param_file, 'r') as f:
-            value = f.read()
+            value = f.read().rstrip('\n')
             return value
     except IOError:
         # No such file.
@@ -362,8 +363,6 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
             if isinstance(value, int):
                 value = str(value)
 
-            value = value.encode('utf-8')
-
             with open(param_file, 'w') as f:
                 f.write(value + '\n')
 
@@ -431,8 +430,6 @@ def __update_text_param(mail,
                 value = str(value)
             else:
                 value = value.strip()
-
-            value = value.encode('utf-8')
 
             # Footer text/html must ends with an empty line, otherwise
             # the characters will be a mess.
