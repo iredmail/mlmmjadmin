@@ -17,7 +17,7 @@ modules="
 #  -s                    shortcut for --capture=no.
 #  -x, --exitfirst       exit instantly on first error or failed test.
 #  -v, --verbose         increase verbosity.
-py.test -s -x $@ ${modules}
+py.test-3 -s -x $@ ${modules}
 
 echo "* Clean up temporary files."
 find . -name '*pyc' | xargs rm -f {}

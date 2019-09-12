@@ -7,3 +7,4 @@ python-ldap==3.2.0
 requests==2.21.0 ; python_version <= '3.4'
 requests==2.22.0 ; python_version >= '3.5'
 web.py==0.40.dev1
+pytest==5.1.2
