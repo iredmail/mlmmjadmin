@@ -48,11 +48,12 @@ before_install:
 
 install:
   - pip install flake8 -r requirements.txt
+  - python3 -c "import web; print(web.__version__)"
 
 before_script:
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
   # Start the program
-  - uwsgi --plugins=python --http-socket=127.0.0.1:7790 --wsgi-file mlmmjadmin.py --daemonize out.log
+  - uwsgi --plugins=python --http-socket=127.0.0.1:7790 --wsgi-file mlmmjadmin.py --callable application --threads 2 &
 
 script:
   - cd tests/
