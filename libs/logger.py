@@ -10,7 +10,7 @@ _log_level = getattr(logging, str(settings.log_level).upper())
 logger.setLevel(_log_level)
 
 # Log format
-_formatter = logging.Formatter('%(name)s %(levelname)s %(message)s')
+_formatter = logging.Formatter('%(name)s %(message)s')
 
 if settings.SYSLOG_SERVER.startswith('/'):
     # Log to a local socket
