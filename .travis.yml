@@ -58,4 +58,4 @@ before_script:
 
 script:
   - cd tests/
-  - py.test -s -x -v test_mlmmj.py
+  - bash main.sh
