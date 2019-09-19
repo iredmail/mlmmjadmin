@@ -40,14 +40,14 @@ def __get_dict_for_list_params(mail, form, param):
 
         # Add default custom headers
         _new = []
-        _default_custom_header_names = [v.lower() for v in settings.MLMMJ_DEFAULT_CUSTOM_HEADERS.keys()]
+        _default_custom_header_names = [v.lower() for v in list(settings.MLMMJ_DEFAULT_CUSTOM_HEADERS.keys())]
         for v in _values:
             (_header, _v) = v.split(':')
             if _header.lower() not in _default_custom_header_names:
                 _new.append(v)
 
         _default_custom_headers = dict(settings.MLMMJ_DEFAULT_CUSTOM_HEADERS)
-        for (k, v) in _default_custom_headers.items():
+        for (k, v) in list(_default_custom_headers.items()):
             # for placeholder support
             v = v % {'mail': mail, 'domain': domain, 'listname': listname}
             _new.append('{0}: {1}'.format(k, v))

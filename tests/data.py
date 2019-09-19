@@ -63,7 +63,7 @@ params_create_verify['owner'] = ['1@x.io', '2@x.io', '3@x.io']
 
 # Add default custom headers
 _default_custom_headers = dict(settings.MLMMJ_DEFAULT_CUSTOM_HEADERS)
-for (k, v) in _default_custom_headers.items():
+for (k, v) in list(_default_custom_headers.items()):
     # for placeholder support
     v = v % {'mail': ml, 'listname': listname, 'domain': domain}
     params_create_verify['custom_headers'].append('{0}: {1}'.format(k, v))

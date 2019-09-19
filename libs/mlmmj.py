@@ -144,8 +144,8 @@ def __get_param_type(param):
     Possible param type must be one of: boolean, list, normal, text, or None (no such
     param).
     """
-    for (_type, _param_dict) in settings.MLMMJ_PARAM_TYPES.items():
-        if param in _param_dict.values():
+    for (_type, _param_dict) in list(settings.MLMMJ_PARAM_TYPES.items()):
+        if param in list(_param_dict.values()):
             return _type
 
     return None
@@ -522,7 +522,7 @@ def __update_mlmmj_params(mail, **kwargs):
     Parameters must be used by mlmmj directly, not the ones used by web form.
     """
     if kwargs:
-        for (k, v) in kwargs.items():
+        for (k, v) in list(kwargs.items()):
             qr = __update_mlmmj_param(mail=mail, param=k, value=v)
             if not qr[0]:
                 return qr
