@@ -17,7 +17,7 @@ addons:
     packages:
       - mlmmj
       - uwsgi
-      - uwsgi-plugin-python
+      - uwsgi-plugin-python3
 
 before_install:
   - pip install --upgrade pip
@@ -37,8 +37,8 @@ before_install:
   - sudo echo 'MLMMJ_SPOOL_DIR = "/var/vmail/mlmmj"' >> settings.py
   - sudo echo 'MLMMJ_ARCHIVE_DIR = "/var/vmail/mlmmj-archive"' >> settings.py
 
-  - git clone --depth=1 https://github.com/webpy/webpy.git
-  - cp -rf webpy/web .
+  #- git clone --depth=1 https://github.com/webpy/webpy.git
+  #- cp -rf webpy/web .
 
 install:
   - pip install flake8 -r requirements.txt
@@ -46,7 +46,7 @@ install:
 
 before_script:
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-  - uwsgi --plugins=python --http-socket=127.0.0.1:7790 --wsgi-file mlmmjadmin.py --callable application --threads 2 &
+  - uwsgi_python3 --plugins=python --http-socket=127.0.0.1:7790 --wsgi-file mlmmjadmin.py --callable application --uid root --threads 2 &
   - sleep 3
 
 script:

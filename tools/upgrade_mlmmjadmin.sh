@@ -46,6 +46,16 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
     elif [ -f /etc/debian_version ]; then
         # Debian
         export DISTRO='DEBIAN'
+
+        # Set distro code name and unsupported releases.
+        if grep '^9' /etc/debian_version &>/dev/null || \
+            grep -i '^stretch' /etc/debian_version &>/dev/null; then
+            export DISTRO_VERSION='9'
+        elif grep -i '^10' /etc/debian_version &>/dev/null; then
+            export DISTRO_VERSION='10'
+        else
+            echo "Unsupported Debian release, abort." && exit 255
+        fi
     elif [ -f /etc/SuSE-release ]; then
         # openSUSE
         export DISTRO='SUSE'
@@ -83,7 +93,7 @@ install_pkg()
     if [ X"${DISTRO}" == X'RHEL' ]; then
         yum -y install $@
     elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
-        apt-get install -y --force-yes $@
+        apt-get install -y $@
     elif [ X"${DISTRO}" == X'FREEBSD' ]; then
         cd /usr/ports/$@ && make install clean
     elif [ X"${DISTRO}" == X'OPENBSD' ]; then
@@ -101,8 +111,8 @@ install_py3()
         echo "* Python-3 is not installed. Installing..."
 
         [ X"${DISTRO}" == X'RHEL' ]     && install_pkg python${PYTHON_VER}
-        [ X"${DISTRO}" == X'DEBIAN' ]   && install_pkg python3
-        [ X"${DISTRO}" == X'UBUNTU' ]   && install_pkg python3
+        [ X"${DISTRO}" == X'DEBIAN' ]   && install_pkg python3 uwsgi-plugin-python3
+        [ X"${DISTRO}" == X'UBUNTU' ]   && install_pkg python3 uwsgi-plugin-python3
         [ X"${DISTRO}" == X'FREEBSD' ]  && install_pkg lang/python37
         [ X"${DISTRO}" == X'OPENBSD' ]  && install_pkg python%3
     fi
@@ -110,53 +120,59 @@ install_py3()
 
 install_py3_modules()
 {
-    #
-    # Check dependent packages. Prompt to install missed ones manually.
-    #
+    echo "* Check required Python-3 modules."
     py_mods=""
 
     if [[ X"${DISTRO}" == X"RHEL" ]]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-mysql"
+            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-mysql")
 
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-psycopg2"
+            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-psycopg2")
 
         [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]] && \
-            python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-ldap3"
+            (python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-ldap3")
 
         python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-ldap3"
     elif [[ X"${DISTRO}" == X"DEBIAN" ]] || [[ X"${DISTRO}" == X"UBUNTU" ]]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python3-mysql"
+            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python3-mysqldb")
 
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python3-psycopg2"
+            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python3-psycopg2")
 
-        [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]] && \
-            python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python3-ldap"
+        if [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
+            python3 -c "import ldap" &>/dev/null
+
+            # Debian 9 ships python3-ldap3.
+            if [[ X"${DISTRO_VERSION}" == X'9' ]]; then
+                [[ X"$?" == X'0' ]] || py_mods="${py_mods} python3-ldap3"
+            else
+                [[ X"$?" == X'0' ]] || py_mods="${py_mods} python3-ldap"
+            fi
+        fi
 
         python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python3-requests"
     elif [[ X"${DISTRO}" == X"FREEBSD" ]]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python3-mysql"
+            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python3-mysql")
 
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python3-psycopg2"
+            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python3-psycopg2")
 
         [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]] && \
-            python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python3-ldap"
+            (python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python3-ldap")
 
         python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python3-requests"
     elif [[ X"${DISTRO}" == X"OPENBSD" ]]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} py3-mysqlclient"
+            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} py3-mysqlclient")
 
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} py3-psycopg2"
+            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} py3-psycopg2")
 
         [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]] && \
-            python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python3-ldap"
+            (python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python3-ldap")
 
         python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python3-requests"
     fi
