@@ -37,8 +37,8 @@ before_install:
   - sudo echo 'MLMMJ_SPOOL_DIR = "/var/vmail/mlmmj"' >> settings.py
   - sudo echo 'MLMMJ_ARCHIVE_DIR = "/var/vmail/mlmmj-archive"' >> settings.py
 
-  #- git clone --depth=1 https://github.com/webpy/webpy.git
-  #- cp -rf webpy/web .
+  - git clone --depth=1 https://github.com/webpy/webpy.git
+  - cp -rf webpy/web .
 
 install:
   - pip install flake8 -r requirements.txt
