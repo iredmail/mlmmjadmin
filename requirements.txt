@@ -1,11 +1,15 @@
 # Version numbers of python modules in this file is mostly used by Travis CI,
 # iRedMail installs the binary packages from yum/apt/ports tree offerred by
 # Linux/BSD vendors directly, not from https://pypi.org/.
+
+# MySQL drier.
+#   - on OpenBSD, please install py3-mysqlclient.
 mysql-connector-python==8.0.17; python_version >= '3.4'
 psycopg2==2.8.3
 python-ldap==3.2.0
 requests==2.21.0 ; python_version <= '3.4'
 requests==2.22.0 ; python_version >= '3.5'
 web.py==0.40.dev1
+# For unit testing.
 pytest==4.6.5 ; python_version <= '3.4'
 pytest==5.1.2 ; python_version >= '3.5'

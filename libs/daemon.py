@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # $Id: daemon.py 7274 2008-03-05 01:00:09Z bmc $
 
