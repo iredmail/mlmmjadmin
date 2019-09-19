@@ -18,9 +18,14 @@ addons:
       - mlmmj
       - uwsgi
       - uwsgi-plugin-python3
+      - python3-mysql
+      - python3-psycopg2
+      - python3-ldap
+      - python3-requests
 
 before_install:
   - pip install --upgrade pip
+
   - sudo mkdir -p /var/vmail
   - sudo chmod 0755 /var/vmail
   - sudo groupadd mlmmj
@@ -40,15 +45,21 @@ before_install:
   - git clone --depth=1 https://github.com/webpy/webpy.git
   - cp -rf webpy/web .
 
+  # Copy to /opt/mlmmjadmin/
+  #- sudo mkdir -p /opt/mlmmjadmin/
+  #- sudo cp -rf * /opt/mlmmjadmin/
+  #- sudo cp -f rc_scripts/systemd/debian.service /etc/systemd/system/multi-user.target.wants/mlmmjadmin.service
+
 install:
-  - pip install flake8 -r requirements.txt
+  #- pip install flake8 -r requirements.txt
   - python3 -c "import web; print(web.__version__); print(web.__file__)"
 
 before_script:
   - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-  - uwsgi_python3 --plugins=python --http-socket=127.0.0.1:7790 --wsgi-file mlmmjadmin.py --callable application --uid root --threads 2 &
+  - sudo uwsgi_python3 --plugins=python --http-socket=127.0.0.1:7790 --wsgi-file mlmmjadmin.py --callable application --uid root --threads 2 &
+  #- sudo /bin/systemctl start mlmmjadmin
   - sleep 3
 
 script:
   - cd tests/
-  - py.test -s -x test_mlmmj.py
+  - py.test -s -x -v test_mlmmj.py
