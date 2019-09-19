@@ -18,6 +18,7 @@ addons:
       - mlmmj
       - uwsgi
       - uwsgi-plugin-python3
+      - python3-pytest
 
 before_install:
   - pip install --upgrade pip
@@ -58,4 +59,4 @@ before_script:
 
 script:
   - cd tests/
-  - bash main.sh
+  - py.test -s -x -v test_mlmmj.py

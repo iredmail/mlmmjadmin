@@ -14,7 +14,7 @@ requests==2.22.0 ; python_version >= '3.5'
 web.py==0.40.dev1
 
 # If you run mlmmjadmin with web.py's builtin web server.
-cheroot
+#cheroot
 
 # For unit testing.
 pytest==4.6.5 ; python_version <= '3.4'
