@@ -299,14 +299,16 @@ MLMMJ_DEFAULT_SUB_DIRS = [
 
 # Headers we need to always add to every email.
 # Available place holders:
-#   - %(mail)s - will be replaced by full email address of mailing list
-#   - %(domain)s - will be replaced by domain name of mailing list email address
-#   - %(listname)s - will be replaced by username part of mailing list email address
+#
+#   - %(mail)s - full email address of the mailing list
+#   - %(domain)s - domain name of the mailing list email address
+#   - %(listname)s - username part of the mailing list email address
 #
 # FYI: http://www.faqs.org/rfcs/rfc2369.html
 MLMMJ_DEFAULT_CUSTOM_HEADERS = {
     'Precedence': 'list',
-    'X-Mailing-List': '%(mail)s',
+    'Precedence': 'bulk',
+    'List-Id': '<%(mail)s>',
     #'Reply-To': '%(mail)s',
     'List-Subscribe': '<mailto:%(listname)s+subscribe@%(domain)s?subject=Subscribe>',
     'List-Unsubscribe': '<mailto:%(listname)s+unsubscribe@%(domain)s?subject=Unsubscribe>',
