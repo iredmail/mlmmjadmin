@@ -1,5 +1,7 @@
 # 3.0
     - Switch to Python-3 completely. Python-2 will be sunset on Jan 1, 2020.
+    - Simplify log format.
+    - Fixed: incorrect syslog id.
 
 # 2.1:
     - Fixed: don't return error if mailing list directory doesn't exist.
