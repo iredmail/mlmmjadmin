@@ -26,6 +26,8 @@ export PYTHON_BIN='/usr/bin/python3'
 export KERNEL_NAME="$(uname -s | tr '[a-z]' '[A-Z]')"
 
 if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
+    export DIR_RC_SCRIPTS='/etc/init.d'
+
     if [ -f /etc/redhat-release ]; then
         # RHEL/CentOS
         export DISTRO='RHEL'
@@ -66,9 +68,11 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
     fi
 elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
     export DISTRO='FREEBSD'
+    export DIR_RC_SCRIPTS='/usr/local/etc/rc.d'
     export PYTHON_BIN='/usr/local/bin/python3'
 elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
     export DISTRO='OPENBSD'
+    export DIR_RC_SCRIPTS='/etc/rc.d'
     export PYTHON_BIN='/usr/local/bin/python3'
 else
     echo "Cannot detect Linux/BSD distribution. Exit."
@@ -260,6 +264,47 @@ rm -f ${MA_ROOT_DIR}
 echo "* Creating symbol link: ${NEW_MA_ROOT_DIR} -> ${MA_ROOT_DIR}"
 cd ${MA_PARENT_DIR}
 ln -s ${NEW_MA_ROOT_DIR} ${MA_ROOT_DIR}
+
+export USE_SYSTEMD='NO'
+if which systemctl &>/dev/null; then
+    export USE_SYSTEMD='YES'
+    export SYSTEMD_SERVICE_DIR='/lib/systemd/system'
+    export SYSTEMD_SERVICE_DIR2='/etc/systemd/system'
+    export SYSTEMD_SERVICE_USER_DIR='/etc/systemd/system/multi-user.target.wants/'
+fi
+
+# Always copy init rc script.
+if [ X"${USE_SYSTEMD}" == X'YES' ]; then
+    echo "* Remove existing service files."
+    rm -f /etc/init.d/mlmmjadmin &>/dev/null
+    rm -f ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service &>/dev/null
+    rm -f ${SYSTEMD_SERVICE_DIR2}/mlmmjadmin.service &>/dev/null
+    rm -f ${SYSTEMD_SERVICE_USER_DIR}/mlmmjadmin.service &>/dev/null
+
+    echo "* Copy systemd service file: ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.service -> ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service."
+    cp -f ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
+    chmod -R 0644 ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
+    systemctl daemon-reload &>/dev/null
+    systemctl enable mlmmjadmin.service >/dev/null
+else
+    if [ -f "${DIR_RC_SCRIPTS}/mlmmjadmin" ]; then
+        echo "* Copy new SysV init script."
+        if [ X"${DISTRO}" == X'RHEL' ]; then
+            cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.rhel ${DIR_RC_SCRIPTS}/mlmmjadmin
+        elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+            cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.debian ${DIR_RC_SCRIPTS}/mlmmjadmin
+        elif [ X"${DISTRO}" == X"FREEBSD" ]; then
+            cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.freebsd ${DIR_RC_SCRIPTS}/mlmmjadmin
+        elif [ X"${DISTRO}" == X'OPENBSD' ]; then
+            cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.openbsd ${DIR_RC_SCRIPTS}/mlmmjadmin
+        fi
+
+        chmod 0755 ${DIR_RC_SCRIPTS}/mlmmjadmin
+    fi
+fi
+
+# For systems which use systemd
+systemctl daemon-reload &>/dev/null
 
 echo "* mlmmjadmin has been successfully upgraded."
 restart_mlmmjadmin
