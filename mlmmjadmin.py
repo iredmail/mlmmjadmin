@@ -19,6 +19,14 @@ from libs.logger import logger
 from controllers.urls import urls
 
 web.config.debug = settings.DEBUG
+
+
+# Make sure required directories exists.
+for _dir in [settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_SKEL_DIR]:
+    if not os.path.exists(_dir):
+        logger.error("ERROR: directory doesn't exist or incorrect permission "
+                     "(check parent directories also): {0}.".format(_dir))
+
 os.umask(0o077)
 
 # Get uid/gid of daemon user.
