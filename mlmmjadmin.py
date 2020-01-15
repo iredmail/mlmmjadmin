@@ -27,6 +27,9 @@ for _dir in [settings.MLMMJ_SPOOL_DIR, settings.MLMMJ_SKEL_DIR]:
         logger.error("ERROR: directory doesn't exist or incorrect permission "
                      "(check parent directories also): {0}.".format(_dir))
 
+        if settings.ABORT_IF_DIR_WRONG:
+            sys.exit(255)
+
 os.umask(0o077)
 
 # Get uid/gid of daemon user.

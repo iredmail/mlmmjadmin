@@ -28,6 +28,11 @@ RESTRICT_ACCESS = False
 # List all IP addresses of allowed client for http access.
 ACCEPTED_CLIENTS = []
 
+# Whlie launching program, it checks spool and archive directories, this
+# option controllers whether program should exit/abort if directory owner or
+# permission is wrong. Defaults to True (abort).
+ABORT_IF_DIR_WRONG = True
+
 # Directory used to store mlmmj mailing list data.
 MLMMJ_SPOOL_DIR = '/var/spool/mlmmj'
 
