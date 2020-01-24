@@ -1,6 +1,6 @@
 # Version numbers of python modules in this file is mostly used by Travis CI,
 # iRedMail installs the binary packages from yum/apt/ports tree offerred by
-# Linux/BSD vendors directly, not from https://pypi.org/.
+# Linux/BSD vendors directly, not from PyPi.
 
 # MySQL drier.
 #   - on OpenBSD, please install py3-mysqlclient.
@@ -11,7 +11,7 @@ python-ldap==3.2.0
 requests==2.21.0 ; python_version <= '3.4'
 requests==2.22.0 ; python_version >= '3.5'
 
-#web.py==0.40.dev1
+web.py==0.40
 
 # If you run mlmmjadmin with web.py's builtin web server.
 #cheroot
