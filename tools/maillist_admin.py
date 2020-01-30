@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # TODO list all mailing list accounts
 #   - if `backend` is `bk_none`, list all accounts under mlmmj spool directory.
 #   - if `backend` is not `bk_none`, query from backend.
