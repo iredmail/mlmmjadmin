@@ -20,7 +20,9 @@ MIT License.
       default, it must be owned by user/group `mlmmj:mlmmj` with permission
       `0700`. if you use a different directory, please override default setting
       by adding setting `MLMMJ_SPOOL_DIR = '<directory>'` in config file.
-* Python 2.6.x or 2.7.x, with extra modules:
+* The latest mlmmjadmin-2.1 requires Python 2.6.x or 2.7.x, newer releases
+  requires Python 3.
+* Extra Python modules:
     * [web.py](http://webpy.org/)
     * [requests](http://docs.python-requests.org/en/master/). Required by
       command line tool `tools/maillist_admin.py`.
@@ -36,7 +38,7 @@ sure it's working properly:
 
 ## Setup mlmmjadmin
 
-NOTE: We use version `1.0` for example below.
+NOTE: We use version `2.1` for example below.
 
 * Download the latest mlmmjadmin: <https://github.com/iredmail/mlmmjadmin/releases>
 * Uncompress downloaded mlmmjadmin package, copy it to `/opt/` directory.
@@ -44,7 +46,7 @@ NOTE: We use version `1.0` for example below.
 
 ```
 cd /opt
-ln -s mlmmjadmin-1.0 mlmmjadmin
+ln -s mlmmjadmin-2.1 mlmmjadmin
 ```
 
 * Generate config file by copying sample file, `settings.py.sample`:
