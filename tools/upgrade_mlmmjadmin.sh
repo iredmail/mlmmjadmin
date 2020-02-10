@@ -281,8 +281,14 @@ if [ X"${USE_SYSTEMD}" == X'YES' ]; then
     rm -f ${SYSTEMD_SERVICE_DIR2}/mlmmjadmin.service &>/dev/null
     rm -f ${SYSTEMD_SERVICE_USER_DIR}/mlmmjadmin.service &>/dev/null
 
-    echo "* Copy systemd service file: ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.service -> ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service."
-    cp -f ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
+    echo "* Copy systemd service file."
+
+    if [ X"${DISTRO}" == X'RHEL' ]; then
+        cp -vf ${MA_ROOT_DIR}/rc_scripts/systemd/rhel.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
+    elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+        cp -vf ${MA_ROOT_DIR}/rc_scripts/systemd/debian.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
+    fi
+
     chmod -R 0644 ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
     systemctl daemon-reload &>/dev/null
     systemctl enable mlmmjadmin.service >/dev/null
