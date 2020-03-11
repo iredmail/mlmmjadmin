@@ -1,5 +1,9 @@
 # TODO
 
+## Backends
+
+- `bk_iredmail_*`: Don't raise error or abort if account exists.
+
 ## API
 
 - Rename a mailing list

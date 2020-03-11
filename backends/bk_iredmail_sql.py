@@ -50,10 +50,9 @@ class MYSQLWrap(object):
         return conn
 
     def __init__(self):
-        import MySQLdb
         try:
             self.conn = self.__connect()
-        except (AttributeError, MySQLdb.OperationalError):
+        except AttributeError:  # should also catch `<db>.OperationalError`
             # Reconnect if error raised: MySQL server has gone away.
             self.conn = self.__connect()
         except Exception as e:
