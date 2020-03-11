@@ -3,6 +3,7 @@ import shutil
 import time
 import glob
 import subprocess
+
 import web
 
 from libs import utils, form_utils
@@ -620,18 +621,20 @@ def __archive_ml(mail):
         try:
             os.makedirs(_new_dir, mode=settings.MLMMJ_FILE_PERMISSION)
         except Exception as e:
-            _msg = "error while creating directory under archive directory ({0}), {1}".format(_new_dir, repr(e))
-            logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
+            _msg = f"error while creating directory under archive directory ({_new_dir}), {e}"
+            logger.error(f"[{web.ctx.ip}] {mail}, {_msg}")
             return (False, _msg)
 
         try:
-            os.rename(_dir, _new_dir)
-            logger.info("[{0}] {1}, archived: {2} -> {3}".format(web.ctx.ip, mail, _dir, _new_dir))
+            # Don't use `os.rename()` to handle this move, it raises error
+            # if src and dest directories are not on same disk partition.
+            shutil.move(_dir, _new_dir)
+            logger.info(f"[{web.ctx.ip}] {mail}, archived: {_dir} -> {_new_dir}")
 
             # Return new directory path
             return (True, _new_dir)
         except Exception as e:
-            logger.error("[{0}] {1}, error while archiving: {2} ({3} -> {4})".format(web.ctx.ip, mail, e, _dir, _new_dir))
+            logger.error(f"[{web.ctx.ip}] {mail}, error while archiving: {e} ({_dir} -> {_new_dir})")
             return (False, repr(e))
 
     return (True, )
@@ -954,8 +957,9 @@ def delete_ml(mail, archive=True):
         else:
             try:
                 shutil.rmtree(_ml_dir)
-                logger.info("[{0}] {1}, removed without archiving.".format(web.ctx.ip, mail))
+                logger.info(f"[{web.ctx.ip}] {mail}, removed without archiving.")
             except Exception as e:
+                logger.error(f"[{web.ctx.ip}] {mail}, error while removing list from file system: {e}")
                 return (False, repr(e))
     else:
         logger.info("[{0}] {1}, removed (no data on file system).".format(web.ctx.ip, mail))
