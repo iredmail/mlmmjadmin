@@ -194,6 +194,7 @@ def __generate_mlid():
     """Generate an server-wide unique uuid as mailing list id."""
     return str(uuid.uuid4())
 
+
 def __is_mlid_exists(mlid, conn=None):
     """Return True if mailing list id exists."""
     mlid = str(mlid).lower()
@@ -256,14 +257,15 @@ def add_maillist(mail, form, conn=None):
     if is_email_exists(mail=mail):
         return (False, 'ALREADY_EXISTS')
 
-    params = {}
-    params['active'] = 1
-    params['address'] = mail
-    params['domain'] = domain
-    params['name'] = form.get('name', '')
-    params['transport'] = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
-    params['mlid'] = __get_new_mlid(conn=conn)
-    params['maxmsgsize'] = form_utils.get_max_message_size(form)
+    params = {
+        'active': 1,
+        'address': mail,
+        'domain': domain,
+        'name': form.get('name', ''),
+        'transport': '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname),
+        'mlid': __get_new_mlid(conn=conn),
+        'maxmsgsize': form_utils.get_max_message_size(form),
+    }
 
     if 'only_moderator_can_post' in form:
         params['accesspolicy'] = 'moderatorsonly'
@@ -273,12 +275,14 @@ def add_maillist(mail, form, conn=None):
     try:
         conn.insert('maillists', **params)
 
-        params = {}
-        params['active'] = 1
-        params['address'] = mail
-        params['domain'] = domain
-        params['forwarding'] = mail
-        params['dest_domain'] = domain
+        params = {
+            'active': 1,
+            'address': mail,
+            'domain': domain,
+            'forwarding': mail,
+            'dest_domain': domain,
+        }
+
         conn.insert('forwardings', **params)
 
         # Get moderators, store in SQL table `vmail.moderators`
@@ -293,17 +297,19 @@ def add_maillist(mail, form, conn=None):
             if moderators:
                 records = []
                 for _addr in moderators:
-                    params = {}
-                    params['address'] = mail
-                    params['domain'] = domain
-                    params['moderator'] = _addr
-                    params['dest_domain'] = _addr.split('@', 1)[-1]
+                    params = {
+                        'address': mail,
+                        'domain': domain,
+                        'moderator': _addr,
+                        'dest_domain': _addr.split('@', 1)[-1],
+                    }
+
                     records.append(params)
 
                 conn.multiple_insert('moderators', records)
 
         logger.info('Created: {0}.'.format(mail))
-        return (True, )
+        return (True,)
     except Exception as e:
         logger.error('Error while creating {0}: {1}'.format(mail, e))
         return (False, repr(e))
@@ -329,7 +335,7 @@ def remove_maillist(mail, conn=None):
                     vars={'mail': mail},
                     where='address=$mail')
 
-        return (True, )
+        return (True,)
     except Exception as e:
         logger.error("SQL error: {0}".format(e))
         return (False, repr(e))
@@ -356,8 +362,9 @@ def update_maillist(mail, form, conn=None):
         _wrap = SQLWrap()
         conn = _wrap.conn
 
-    params = {}
-    params['name'] = form.get('name', '')
+    params = {
+        'name': form.get('name', ''),
+    }
 
     if 'max_message_size' in form:
         params['maxmsgsize'] = form_utils.get_max_message_size(form)
@@ -385,16 +392,18 @@ def update_maillist(mail, form, conn=None):
             if moderators:
                 records = []
                 for _addr in moderators:
-                    params = {}
-                    params['address'] = mail
-                    params['domain'] = domain
-                    params['moderator'] = _addr
-                    params['dest_domain'] = _addr.split('@', 1)[-1]
+                    params = {
+                        'address': mail,
+                        'domain': domain,
+                        'moderator': _addr,
+                        'dest_domain': _addr.split('@', 1)[-1],
+                    }
+
                     records.append(params)
 
                 conn.multiple_insert('moderators', records)
 
-        return (True, )
+        return (True,)
     except Exception as e:
         return (False, repr(e))
 

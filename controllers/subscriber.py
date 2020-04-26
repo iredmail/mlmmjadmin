@@ -20,11 +20,11 @@ class Subscribers(object):
 
         Available HTTP query parameters:
 
-        :param email_only: if set to `yes`, return a list of subscribers' mail
-                           addresses. otherwise return a dict:
-                           {'<subscription1>': [<mail>, <mail>, ...],
-                            '<subscription2>': [<mail>, <mail>, ...],
-                            '<subscription3>': [<mail>, <mail>, ...]}
+        `email_only`: if present, return a list of subscribers' mail addresses.
+                      otherwise return a dict:
+                       {'<subscription1>': [<mail>, <mail>, ...],
+                        '<subscription2>': [<mail>, <mail>, ...],
+                        '<subscription3>': [<mail>, <mail>, ...]}
         """
         # Get extra parameters.
         form = web.input()
@@ -40,11 +40,11 @@ class Subscribers(object):
 
         :param mail: email address of the mailing list account
 
-        Available parameters:
+        Available form parameters:
 
-        :param subscribers: email address of subscriber. Multiple subscribers
-                            must be separated by comma.
-        :param subscription: possible subscription versions: normal, digest, nomail.
+        `subscribers`: subscribers' email addresses.
+                       Multiple subscribers must be separated by comma.
+        `subscription`: subscription version. either `normal`, `digest` or `nomail`.
         """
         form = web.input()
 
@@ -102,11 +102,14 @@ class SubscribedLists(object):
     def GET(self, subscriber):
         """Get mailing lists which the given subscriber subscribed to.
 
-        HTTP GET Parameters:
+        :param subscriber: subscriber's email address.
 
-        :param query_all_lists: If set to 'yes', will check all available
-                                mailing lists on server. If 'no', check only
-                                lists under same domain.
+        HTTP form parameters:
+
+        `email_only`: if set to `yes`, return list of email addresses of subscribed lists.
+        `query_all_lists`: If set to 'yes', will check all available mailing
+                           lists on server. If 'no', check only lists under same
+                           domain.
         """
         subscriber = str(subscriber).lower()
         domain = subscriber.split('@', 1)[-1]
@@ -150,16 +153,16 @@ class Subscribe(object):
         """
         Add one subscriber to multiple mailing lists.
 
-        :param mail: email address of the subscriber
+        :param subscriber: email address of the subscriber
 
-        Available POST parameters:
+        Available form parameters:
 
-        :param lists: mailing lists. Multilple mailing lists must be separated
+        `lists`: mailing lists. Multilple mailing lists must be separated
                       by comma.
-        :param require_confirm: [yes|no]. If set to `no`, will not send
-                                subscription confirm to subscriber. Defaults to
-                                `yes`.
-        :param subscription: possible subscription versions: normal, digest, nomail.
+        `require_confirm`: [yes|no]. If set to `no`, will not send
+                           subscription confirm to subscriber. Defaults to
+                           `yes`.
+        `subscription`: possible subscription versions: normal, digest, nomail.
         """
         subscriber = str(subscriber).lower()
 

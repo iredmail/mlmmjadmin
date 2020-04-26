@@ -53,7 +53,7 @@ def get_existing_maillists(domains=None, *args, **kw):
             fns = [i for i in fns if not i.startswith('.')]
         except OSError:
             # No such directory.
-            pass
+            return (True, [])
         except Exception as e:
             return (False, repr(e))
 

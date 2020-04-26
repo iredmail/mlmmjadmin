@@ -1,11 +1,6 @@
 # encoding: utf-8
-import sys
+import json
 import web
-
-if sys.version_info >= (2, 6):
-    import json
-else:
-    import simplejson as json
 
 from libs import regxes
 import settings
@@ -52,7 +47,7 @@ def is_domain(s):
     except:
         return False
 
-    if len(set(s) & set('~!#$%^&*()+\\/\ ')) > 0 or '.' not in s:
+    if len(set(s) & set(r'~!#$%^&*()+\/ ')) > 0 or ('.' not in s):
         return False
 
     if regxes.cmp_domain.match(s):

@@ -101,6 +101,7 @@ def is_domain_exists(domain, conn=None):
         # Account 'EXISTS' (fake) if lookup failed.
         return True
 
+
 # Check whether account exist or not.
 # Return True if account is invalid or exist.
 def is_email_exists(mail, conn=None):
@@ -171,6 +172,7 @@ def __generate_mlid():
     """Generate an server-wide unique uuid as mailing list id."""
     return str(uuid.uuid4())
 
+
 def __is_mlid_exists(mlid, conn=None):
     """Return True if mailing list id exists."""
     mlid = str(mlid).lower()
@@ -213,6 +215,7 @@ def __get_new_mlid(conn=None):
             mlid = __generate_mlid()
 
     return mlid
+
 
 def __ldif_ml(mail,
               mlid,
@@ -310,17 +313,17 @@ def __add_or_remove_attr_value(dn, attr, value, action, conn=None):
         return (False, 'UNKNOWN_ACTION')
 
     if not msg:
-        return (True, )
+        return (True,)
     else:
         return (False, msg)
 
 
 def __get_primary_and_alias_domains(domain, with_primary_domain=True, conn=None):
-    '''Get list of domainName and domainAliasName by quering domainName.
+    """Get list of domainName and domainAliasName by quering domainName.
 
-    >>> get_primary_and_alias_domains(domain='example.com')
+    >>> __get_primary_and_alias_domains(domain='example.com')
     (True, ['example.com', 'aliasdomain01.com', 'aliasdomain02.com', ...])
-    '''
+    """
     domain = domain.strip().lower()
     if not utils.is_domain(domain):
         return (False, 'INVALID_DOMAIN_NAME')
@@ -409,7 +412,7 @@ def add_maillist(mail, form, conn=None):
 
         conn.add_s(dn_ml, ldif_ml)
         logger.info('Created: {0}.'.format(mail))
-        return (True, )
+        return (True,)
     except Exception as e:
         logger.error('Error while creating {0}: {1}'.format(mail, e))
         return (False, repr(e))
@@ -430,7 +433,7 @@ def remove_maillist(mail, conn=None):
     try:
         dn = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
         conn.delete_s(dn)
-        return (True, )
+        return (True,)
     except ldap.NO_SUCH_OBJECT:
         return (False, 'ACCOUNT_NOT_EXIST')
     except Exception as e:
@@ -487,13 +490,13 @@ def update_maillist(mail, form, conn=None):
         try:
             dn = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
             conn.modify_s(dn, mod_attrs)
-            return (True, )
+            return (True,)
         except ldap.NO_SUCH_OBJECT:
             return (False, 'ACCOUNT_NOT_EXIST')
         except Exception as e:
             return (False, repr(e))
     else:
-        return (True, )
+        return (True,)
 
 
 def get_existing_maillists(domains=None, conn=None):

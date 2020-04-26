@@ -13,6 +13,7 @@ import settings
 
 subscription_versions = ['normal', 'nomail', 'digest']
 
+
 def __get_ml_dir(mail):
     """Get absolute path of the root directory of mailing list account."""
     if not utils.is_email(mail):
@@ -202,8 +203,6 @@ def __get_normal_param_value(mail, param, param_file=None):
         logger.error("[{0}] {1}, error while getting parameter value: {2}, {3}".format(web.ctx.ip, mail, param, e))
         return ''
 
-    return ''
-
 
 def __get_text_param_value(mail, param, param_file=None):
     # Full content is used by mlmmj.
@@ -220,8 +219,6 @@ def __get_text_param_value(mail, param, param_file=None):
     except Exception as e:
         logger.error("[{0}] {1}, error while getting parameter value: {2}, {3}".format(web.ctx.ip, mail, param, e))
         return ''
-
-    return ''
 
 
 def __get_other_param_value(mail, param):
@@ -283,12 +280,13 @@ def __get_param_value(mail, param):
     if _param_type == 'boolean':
         _ret['value'] = 'yes'
     else:
-        if _param_type == 'normal':
-            _func = __get_normal_param_value
-        elif _param_type == 'text':
+        if _param_type == 'text':
             _func = __get_text_param_value
         elif _param_type == 'list':
             _func = __get_list_param_value
+        else:
+            # _param_type == 'normal':
+            _func = __get_normal_param_value
 
         _ret['value'] = _func(mail=mail, param=param, param_file=_param_file)
 
@@ -365,9 +363,6 @@ def __update_normal_param(mail, param, value, param_file=None, is_email=False):
                 value = str(value)
 
             with open(param_file, 'w', encoding='utf-8') as f:
-                #value = value + '\n'
-                #value.encode('utf-8')
-                #f.write(value)
                 f.write(value + '\n')
 
         except Exception as e:
@@ -656,9 +651,9 @@ def __remove_lines_in_file(path, lines):
     try:
         with open(path, 'r', encoding='utf-8') as _f:
             _file_lines = _f.readlines()
-            stripped_file_lines = [l.strip() for l in _file_lines]
+            stripped_file_lines = [line.strip() for line in _file_lines]
 
-        given_lines = [l.strip() for l in lines]
+        given_lines = [line.strip() for line in lines]
         filtered_lines = set(stripped_file_lines) - set(given_lines)
 
         if filtered_lines:
@@ -1008,10 +1003,7 @@ def remove_subscribers(mail, subscribers):
     """Remove multiple subscribers from given mailing list.
 
     :param mail: mail address of mailing list account
-    :sparam ubscribers: a list/tuple/set of subscribers' email addresses
-    :sparam ubscription: subscription version: normal, nomail, digest. If set
-                         to None, will try to remove subscribers from all
-                         subscription versions.
+    :param subscribers: a list/tuple/set of subscribers' mail addresses.
     """
     mail = mail.lower()
     subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
@@ -1132,8 +1124,8 @@ def subscribe_to_lists(subscriber,
     if not lists:
         return (True, )
 
-    for l in lists:
-        qr = add_subscribers(mail=l,
+    for ml in lists:
+        qr = add_subscribers(mail=ml,
                              subscribers=[subscriber],
                              subscription=subscription,
                              require_confirm=require_confirm)

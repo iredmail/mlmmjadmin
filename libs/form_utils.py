@@ -16,8 +16,6 @@ def __get_dict_for_boolean_params(form, param):
 
 
 def __get_dict_for_list_params(mail, form, param):
-    kv = {}
-
     mail = str(mail).lower()
     (listname, domain) = mail.split('@', 1)
 
@@ -74,8 +72,6 @@ def __get_dict_for_list_params(mail, form, param):
 
 
 def __get_dict_for_normal_params(form, param):
-    kv = {}
-
     v = form.get(param, '')
 
     # Always return a dict even value is empty.
@@ -85,8 +81,6 @@ def __get_dict_for_normal_params(form, param):
 
 
 def __get_dict_for_text_params(form, param):
-    kv = {}
-
     v = form.get(param, '')
 
     # Always return a dict even value is empty.

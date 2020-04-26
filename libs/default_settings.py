@@ -75,7 +75,7 @@ CMD_MLMMJ_SUB = ''
 #   - A "text" parameter/file, means entire content of file is used as value.
 #
 MLMMJ_BOOLEAN_WEB_PARAMS = {
-    #'addtohdr': 'addtohdr',
+    # 'addtohdr': 'addtohdr',
 
     # Define the list is open or closed.
     # If it's closed, subscription and unsubscription via mail is disabled.
@@ -108,7 +108,7 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
     # only send the moderation mails to that address. In practice this means that
     # a moderator sending mail to the list won't bother all the other moderators
     # with his mail.
-    #'ifmodsendonlymodmoderate': 'ifmodsendonlymodmoderate',
+    # 'ifmodsendonlymodmoderate': 'ifmodsendonlymodmoderate',
 
     # Either parameter `owner` or `moderators` is required.
     # If both exists, `moderators` has higher priority.
@@ -151,7 +151,7 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
 }
 
 MLMMJ_LIST_WEB_PARAMS = {
-    #'access': 'access',
+    # 'access': 'access',
     'custom_headers': 'customheaders',
     'remove_headers': 'delheaders',
     'extra_addresses': 'listaddress',
@@ -160,20 +160,20 @@ MLMMJ_LIST_WEB_PARAMS = {
 }
 
 MLMMJ_NORMAL_WEB_PARAMS = {
-    #'bouncelife': 'bouncelife',
-    #'delimiter': 'delimiter',
-    #'digestinterval': 'digestinterval',
-    #'digestmaxmails': 'digestmaxmails',
+    # 'bouncelife': 'bouncelife',
+    # 'delimiter': 'delimiter',
+    # 'digestinterval': 'digestinterval',
+    # 'digestmaxmails': 'digestmaxmails',
     'max_message_size': 'maxmailsize',
-    #'maxverprecips': 'maxverprecips',
-    #'memorymailsize': 'memorymailsize',
-    #'modreqlife': 'modreqlife',
+    # 'maxverprecips': 'maxverprecips',
+    # 'memorymailsize': 'memorymailsize',
+    # 'modreqlife': 'modreqlife',
     'subject_prefix': 'prefix',
     'relay_host': 'relayhost',
     'smtp_helo': 'smtphelo',
     'smtp_port': 'smtpport',
-    #'staticbounceaddr': 'staticbounceaddr',
-    #'verp': 'verp',
+    # 'staticbounceaddr': 'staticbounceaddr',
+    # 'verp': 'verp',
 }
 
 # mlmmj's built-in footer support is very bad, so we don't support parameter
@@ -258,7 +258,7 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     # domains and don't want to list all <listname>@<alias-domain> in the
     # `control/listaddress` file.
     'tocc': 'yes',
-    #'disable_send_copy_to_sender': 'yes',
+    # 'disable_send_copy_to_sender': 'yes',
     'only_subscriber_can_post': 'yes',
     'only_moderator_can_post': 'no',
     'moderate_non_subscriber_post': 'no',
@@ -269,15 +269,15 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     'disable_retrieving_old_posts': 'yes',
     'only_subscriber_can_get_old_posts': 'yes',
     # moderate subscription
-    #'moderate_subscription': 'yes',
+    # 'moderate_subscription': 'yes',
     # different subscription types
-    #'disable_digest_subscription': 'yes',
-    #'disable_nomail_subscription': 'yes',
+    # 'disable_digest_subscription': 'yes',
+    # 'disable_nomail_subscription': 'yes',
     # notification about postings being denied
-    #'disable_notify_when_missing_listaddress': 'yes',
-    #'disable_notify_when_access_denied': 'yes',
-    #'disable_notify_when_subscriber_only': 'yes',
-    #'disable_notify_when_moderator_only': 'yes',
+    # 'disable_notify_when_missing_listaddress': 'yes',
+    # 'disable_notify_when_access_denied': 'yes',
+    # 'disable_notify_when_subscriber_only': 'yes',
+    # 'disable_notify_when_moderator_only': 'yes',
 }
 
 # Ignore values submitted from API client, always set certain parameters to
@@ -311,15 +311,14 @@ MLMMJ_DEFAULT_SUB_DIRS = [
 #
 # FYI: http://www.faqs.org/rfcs/rfc2369.html
 MLMMJ_DEFAULT_CUSTOM_HEADERS = {
-    'Precedence': 'list',
     'Precedence': 'bulk',
     'List-Id': '<%(mail)s>',
-    #'Reply-To': '%(mail)s',
+    # 'Reply-To': '%(mail)s',
     'List-Post': '<mailto:%(mail)s>',
     'List-Subscribe': '<mailto:%(listname)s+subscribe@%(domain)s?subject=Subscribe>',
     'List-Unsubscribe': '<mailto:%(listname)s+unsubscribe@%(domain)s?subject=Unsubscribe>',
-    #'List-Help': '<mailto:%(listname)s+help@%(domain)s?subject=help>',
-    #'List-Owner': '<mailto:%(listname)s+owner@%(domain)s>',
+    # 'List-Help': '<mailto:%(listname)s+help@%(domain)s?subject=help>',
+    # 'List-Owner': '<mailto:%(listname)s+owner@%(domain)s>',
 }
 
 # Headers we need to remove from received emails.
@@ -327,6 +326,6 @@ MLMMJ_DEFAULT_CUSTOM_HEADERS = {
 #   - must be in title format like 'X-Abc-Def:' (first character is upper case)
 #   - must end with ':'
 MLMMJ_DEFAULT_REMOVED_HEADERS = [
-    #'DKIM-Signature:',
-    #'Authentication-Results:',
+    # 'DKIM-Signature:',
+    # 'Authentication-Results:',
 ]
