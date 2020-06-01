@@ -1,21 +1,15 @@
-# Version numbers of python modules in this file is mostly used by Travis CI,
-# iRedMail installs the binary packages from yum/apt/ports tree offerred by
-# Linux/BSD vendors directly, not from PyPi.
-
-# MySQL drier.
-#   - on OpenBSD, please install py3-mysqlclient.
-mysql-connector-python == 8.0.17; python_version >= '3.4'
-psycopg2 == 2.8.3
-python-ldap == 3.2.0
-
-requests == 2.21.0 ; python_version <= '3.4'
+# Required modules.
+web.py == 0.51
 requests >= 2.23.0 ; python_version >= '3.5'
 
-web.py == 0.51
+#
+# Optional.
+#
+# MySQL driver.
+#   - on OpenBSD, please install py3-mysqlclient.
+PyMySQL >= 0.9.3
+psycopg2 >= 2.8.3
+python-ldap >= 3.2.0
 
-# If you run mlmmjadmin with web.py's builtin web server.
-#cheroot
-
-# For unit testing.
-pytest==4.6.5 ; python_version <= '3.4'
-pytest>=5.1.2 ; python_version >= '3.5'
+# Unittest.
+pytest>=5.1.2
