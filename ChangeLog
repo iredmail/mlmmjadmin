@@ -1,5 +1,5 @@
 # 3.0
-    - mlmmjadmin-3.0 now works with ONLY Python-3.
+    - mlmmjadmin-3.0 now works with ONLY Python-3.5+.
       Python-2 is end-of-life after Jan 1st 2020, time to move to Python 3.
     - Simplify log format.
     - Fixed: incorrect syslog id.
