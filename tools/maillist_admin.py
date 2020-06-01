@@ -97,7 +97,7 @@ if action not in ['info', 'create', 'update', 'delete',
                   'has_subscriber',
                   'subscribers', 'subscribed',
                   'add_subscribers', 'remove_subscribers']:
-    print(f'<ERROR> Invalid action: {action}. Usage:\n\n{usage}')
+    print("<ERROR> Invalid action: {0}. Usage:\n\n{1}".format(action, usage))
     sys.exit()
 
 mail = sys.argv[2]
@@ -124,16 +124,16 @@ if action == 'info':
             if k in ['footer_text', 'footer_html', 'name', 'subject_prefix']:
                 v = v.encode('utf-8')
 
-            print(f'{k}={v}')
+            print("{0}={1}".format(k, v))
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))
 
 elif action == 'create':
     if run_backend_cli:
         # Create account in backend
         qr = backend.add_maillist(mail=mail, form=arg_kvs)
         if not qr[0]:
-            print(f"Error while interactive with backend: {qr[1]}")
+            print("Error while interactive with backend: {0}".format(qr[1]))
             sys.exit()
 
     r = requests.post(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
@@ -141,13 +141,13 @@ elif action == 'create':
     if _json['_success']:
         print("Created.")
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))
 
 elif action == 'update':
     if run_backend_cli:
         qr = backend.update_maillist(mail=mail, form=arg_kvs)
         if not qr[0]:
-            print(f"Error while interactive with backend: {qr[1]}")
+            print("Error while interactive with backend: {0}".format(qr[1]))
             sys.exit()
 
     r = requests.put(api_url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
@@ -155,13 +155,13 @@ elif action == 'update':
     if _json['_success']:
         print("Updated.")
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))
 
 elif action == 'delete':
     if run_backend_cli:
         qr = backend.remove_maillist(mail=mail)
         if not qr[0]:
-            print(f"Error while interactive with backend: {qr[1]}")
+            print("Error while interactive with backend: {0}".format(qr[1]))
             sys.exit()
 
     api_url = api_url + '?' + urlencode(arg_kvs)
@@ -169,11 +169,11 @@ elif action == 'delete':
     _json = r.json()
     if _json['_success']:
         if arg_kvs.get('archive') in ['yes', None]:
-            print(f"Removed {mail} (archived).")
+            print("Removed {0} (archived).".format(mail))
         else:
-            print(f"Removed {mail} (without archive).")
+            print("Removed {0} (without archive).".format(mail))
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))
 
 elif action == 'has_subscriber':
     _subscriber = args[0]
@@ -181,12 +181,12 @@ elif action == 'has_subscriber':
     r = requests.get(url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
-        print(f"[YES] Mailing list <{mail}> has subscriber <{_subscriber}>.")
+        print("[YES] Mailing list <{0}> has subscriber <{1}>.".format(mail, _subscriber))
     else:
         if '_msg' in _json:
-            print(f"Error: {_json['_msg']}")
+            print("Error: {0}".format(_json['_msg']))
         else:
-            print(f"[NO] Mailing list <{mail}> does NOT have subscriber <{_subscriber}>.")
+            print("[NO] Mailing list <{0}> does NOT have subscriber <{1}>.".format(mail, _subscriber))
 
 elif action == 'subscribers':
     url = api_url + '/subscribers'
@@ -194,9 +194,9 @@ elif action == 'subscribers':
     _json = r.json()
     if _json['_success']:
         for i in _json['_data']:
-            print(f"{i['mail']}, '({i['subscription']})")
+            print("{0}, '({1})".format(i['mail'], i['subscription']))
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))
 
 elif action == 'subscribed':
     url = api_subscriber_url + '/subscribed' + '?' + 'query_all_lists=yes'
@@ -204,9 +204,9 @@ elif action == 'subscribed':
     _json = r.json()
     if _json['_success']:
         for i in _json['_data']:
-            print(f"{i['mail']}, '({i['subscription']})")
+            print("{0}, '({1})".format(i['mail'], i['subscription']))
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))
 
 elif action == 'add_subscribers':
     url = api_url + '/subscribers'
@@ -222,7 +222,7 @@ elif action == 'add_subscribers':
     if _json['_success']:
         print("Added.")
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))
 
 elif action == 'remove_subscribers':
     url = api_url + '/subscribers'
@@ -238,4 +238,4 @@ elif action == 'remove_subscribers':
     if _json['_success']:
         print("Removed.")
     else:
-        print(f"Error: {_json['_msg']}")
+        print("Error: {0}".format(_json['_msg']))

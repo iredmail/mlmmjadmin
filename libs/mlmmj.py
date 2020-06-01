@@ -169,7 +169,7 @@ def __get_list_param_value(mail, param, is_email=False, param_file=None):
     _values = []
     if __has_param_file(param_file):
         try:
-            with open(param_file, 'r', encoding='utf-8') as f:
+            with open(param_file, "r", encoding="utf-8") as f:
                 _lines = f.readlines()
                 _lines = [_line.strip() for _line in _lines]  # remove line breaks
                 _values = [_line for _line in _lines if _line]  # remove empty values
@@ -616,20 +616,20 @@ def __archive_ml(mail):
         try:
             os.makedirs(_new_dir, mode=settings.MLMMJ_FILE_PERMISSION)
         except Exception as e:
-            _msg = f"error while creating directory under archive directory ({_new_dir}), {e}"
-            logger.error(f"[{web.ctx.ip}] {mail}, {_msg}")
+            _msg = "error while creating directory under archive directory ({0}), {1}".format(_new_dir, repr(e))
+            logger.error("[{0}] {1}, {2}".format(web.ctx.ip, mail, _msg))
             return (False, _msg)
 
         try:
             # Don't use `os.rename()` to handle this move, it raises error
             # if src and dest directories are not on same disk partition.
             shutil.move(_dir, _new_dir)
-            logger.info(f"[{web.ctx.ip}] {mail}, archived: {_dir} -> {_new_dir}")
+            logger.info("[{0}] {1}, archived: {2} -> {3}".format(web.ctx.ip, mail, _dir, _new_dir))
 
             # Return new directory path
             return (True, _new_dir)
         except Exception as e:
-            logger.error(f"[{web.ctx.ip}] {mail}, error while archiving: {e} ({_dir} -> {_new_dir})")
+            logger.error("[{0}] {1}, error while archiving: {2} ({3} -> {4})".format(web.ctx.ip, mail, repr(e), _dir, _new_dir))
             return (False, repr(e))
 
     return (True, )
@@ -952,9 +952,9 @@ def delete_ml(mail, archive=True):
         else:
             try:
                 shutil.rmtree(_ml_dir)
-                logger.info(f"[{web.ctx.ip}] {mail}, removed without archiving.")
+                logger.info("[{0}] {1}, removed without archiving.".format(web.ctx.ip, mail))
             except Exception as e:
-                logger.error(f"[{web.ctx.ip}] {mail}, error while removing list from file system: {e}")
+                logger.error("[{0}] {1}, error while removing list from file system: {2}".format(web.ctx.ip, mail, repr(e)))
                 return (False, repr(e))
     else:
         logger.info("[{0}] {1}, removed (no data on file system).".format(web.ctx.ip, mail))
