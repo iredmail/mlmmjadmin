@@ -33,7 +33,10 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         export DISTRO='RHEL'
 
         # Get distribution version
-        if grep '\ 7' /etc/redhat-release &>/dev/null; then
+        if grep '\ 8' /etc/redhat-release &>/dev/null; then
+            export DISTRO_VERSION='8'
+            export PYTHON_VER='36'
+        elif grep '\ 7' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='7'
             export PYTHON_VER='36'
         elif grep '\ 6' /etc/redhat-release &>/dev/null; then
@@ -129,7 +132,7 @@ install_py3_modules()
 
     if [[ X"${DISTRO}" == X"RHEL" ]]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-mysql")
+            (python3 -c "import pymysql" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-mysql")
 
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
             (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-psycopg2")
