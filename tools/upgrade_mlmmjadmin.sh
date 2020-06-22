@@ -20,13 +20,19 @@ export MA_CONF="${MA_ROOT_DIR}/settings.py"
 export MA_CUSTOM_CONF="${MA_ROOT_DIR}/custom_settings.py"
 
 # Path to some programs.
-export PYTHON_BIN='/usr/bin/python3'
+export CMD_PYTHON3='/usr/bin/python3'
+export CMD_PIP3='pip3'
 
 # Check OS to detect some necessary info.
 export KERNEL_NAME="$(uname -s | tr '[a-z]' '[A-Z]')"
 
 if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
-    export DIR_RC_SCRIPTS='/etc/init.d'
+    # systemd
+    export USE_SYSTEMD='YES'
+    export SYSTEMD_SERVICE_DIR='/lib/systemd/system'
+    export SYSTEMD_SERVICE_DIR2='/etc/systemd/system'
+    export SYSTEMD_SERVICE_USER_DIR='/etc/systemd/system/multi-user.target.wants/'
+
 
     if [ -f /etc/redhat-release ]; then
         # RHEL/CentOS
@@ -35,51 +41,83 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         # Get distribution version
         if grep '\ 8' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='8'
-            export PYTHON_VER='36'
+            export PYTHON_VER='38'
+            export CMD_PIP3='/usr/bin/pip3.8'
+            # uwsgi plugin is not required since uwsgi is installed with pip.
         elif grep '\ 7' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='7'
             export PYTHON_VER='36'
-        elif grep '\ 6' /etc/redhat-release &>/dev/null; then
-            export DISTRO_VERSION='6'
-            export PYTHON_VER='34'
+            export UWSGI_PY3_PLUGIN_NAME='python36'
         else
-            echo "Unsupported RHEL/CentOS release, abort." && exit 255
+            export UNSUPPORTED_RELEASE="YES"
         fi
     elif [ -f /etc/lsb-release ]; then
         # Ubuntu
         export DISTRO='UBUNTU'
+
+        # Ubuntu version number and code name:
+        #   - 18.04: bionic
+        #   - 20.04: focal
+        export DISTRO_VERSION="$(awk -F'=' '/^DISTRIB_RELEASE/ {print $2}' /etc/lsb-release)"
+        export DISTRO_CODENAME="$(awk -F'=' '/^DISTRIB_CODENAME/ {print $2}' /etc/lsb-release)"
+
+        if [ X"${DISTRO_CODENAME}" == X'focal' ]; then
+            # Ubuntu 20.04: Installed with pip2.
+            export CMD_UWSGI='/usr/local/bin/uwsgi'
+            export UWSGI_PY3_PLUGIN_NAME='python38'
+        elif [ X"${DISTRO_CODENAME}" == X'bionic' ]; then
+            # Ubuntu 18.04
+            export UWSGI_PY3_PLUGIN_NAME='python36'
+        else
+            export UNSUPPORTED_RELEASE="YES"
+        fi
     elif [ -f /etc/debian_version ]; then
         # Debian
         export DISTRO='DEBIAN'
 
         # Set distro code name and unsupported releases.
-        if grep '^9' /etc/debian_version &>/dev/null || \
+        if grep -i '^10' /etc/debian_version &>/dev/null; then
+            export DISTRO_VERSION='10'
+            export UWSGI_PY3_PLUGIN_NAME='python37'
+        elif grep '^9' /etc/debian_version &>/dev/null || \
             grep -i '^stretch' /etc/debian_version &>/dev/null; then
             export DISTRO_VERSION='9'
-        elif grep -i '^10' /etc/debian_version &>/dev/null; then
-            export DISTRO_VERSION='10'
+            export UWSGI_PY3_PLUGIN_NAME='python35'
         else
-            echo "Unsupported Debian release, abort." && exit 255
+            export UNSUPPORTED_RELEASE="YES"
         fi
-    elif [ -f /etc/SuSE-release ]; then
-        # openSUSE
-        export DISTRO='SUSE'
     else
         echo "<<< ERROR >>> Cannot detect Linux distribution name. Exit."
-        echo "Please contact support@iredmail.org to solve it."
+        echo "<<< ERROR >>> Please contact support@iredmail.org to solve it."
         exit 255
     fi
 elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
     export DISTRO='FREEBSD'
     export DIR_RC_SCRIPTS='/usr/local/etc/rc.d'
-    export PYTHON_BIN='/usr/local/bin/python3'
+    export CMD_PYTHON3='/usr/local/bin/python3'
 elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
     export DISTRO='OPENBSD'
     export DIR_RC_SCRIPTS='/etc/rc.d'
-    export PYTHON_BIN='/usr/local/bin/python3'
+    export CMD_PYTHON3='/usr/local/bin/python3'
+
+    if [ -x /usr/local/bin/pip3 ]; then
+        :
+    else
+        for version in 3.7 3.6 3.5; do
+            if [ -x /usr/local/bin/pip${version} ]; then
+                export CMD_PIP3="/usr/local/bin/pip${version}"
+                break
+            fi
+        done
+    fi
 else
     echo "Cannot detect Linux/BSD distribution. Exit."
     echo "Please contact author iRedMail team <support@iredmail.org> to solve it."
+    exit 255
+fi
+
+if [ X"${UNSUPPORTED_RELEASE}" == X'YES' ]; then
+    echo "Unsupported Linux/BSD distribution or release, abort."
     exit 255
 fi
 
@@ -93,7 +131,7 @@ else
     echo "Can not detect iRedMail backend (MySQL, PostgreSQL, OpenLDAP). Abort."
 fi
 
-install_pkg()
+install_pkgs()
 {
     echo "Install package: $@"
 
@@ -102,98 +140,27 @@ install_pkg()
     elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
         apt-get install -y $@
     elif [ X"${DISTRO}" == X'FREEBSD' ]; then
-        cd /usr/ports/$@ && make install clean
+        echo "Install package: ${_port}"
+        cd /usr/ports/$@
+        make USES=python:3.5+ install clean
     elif [ X"${DISTRO}" == X'OPENBSD' ]; then
         pkg_add -r $@
     else
-        echo "<< ERROR >> Please install package(s) manually: $@"
+        echo "<< ERROR >> Failed to install package, please install it manually: $@"
+        exit 255
     fi
 }
 
-install_py3()
+has_python_module()
 {
-    if [[ -x ${PYTHON_BIN} ]]; then
-        echo "* Python-3: ${PYTHON_BIN}."
-    else
-        echo "* Python-3 is not installed. Installing..."
-
-        [ X"${DISTRO}" == X'RHEL' ]     && install_pkg python${PYTHON_VER}
-        [ X"${DISTRO}" == X'DEBIAN' ]   && install_pkg python3 uwsgi-plugin-python3
-        [ X"${DISTRO}" == X'UBUNTU' ]   && install_pkg python3 uwsgi-plugin-python3
-        [ X"${DISTRO}" == X'FREEBSD' ]  && install_pkg lang/python37
-        [ X"${DISTRO}" == X'OPENBSD' ]  && install_pkg python%3
-    fi
-}
-
-install_py3_modules()
-{
-    echo "* Check required Python-3 modules."
-    py_mods=""
-
-    if [[ X"${DISTRO}" == X"RHEL" ]]; then
-        [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            (python3 -c "import pymysql" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-mysql")
-
-        [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-psycopg2")
-
-        [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]] && \
-            (python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-ldap3")
-
-        python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python${PYTHON_VER}-ldap3"
-    elif [[ X"${DISTRO}" == X"DEBIAN" ]] || [[ X"${DISTRO}" == X"UBUNTU" ]]; then
-        [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python3-mysqldb")
-
-        [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python3-psycopg2")
-
-        if [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
-            python3 -c "import ldap" &>/dev/null
-
-            # Debian 9 ships python3-ldap3.
-            if [[ X"${DISTRO_VERSION}" == X'9' ]]; then
-                [[ X"$?" == X'0' ]] || py_mods="${py_mods} python3-ldap3"
-            else
-                [[ X"$?" == X'0' ]] || py_mods="${py_mods} python3-ldap"
-            fi
+    for mod in $@; do
+        ${CMD_PYTHON3} -c "import $mod" &>/dev/null
+        if [ X"$?" == X'0' ]; then
+            echo 'YES'
+        else
+            echo 'NO'
         fi
-
-        python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python3-requests"
-    elif [[ X"${DISTRO}" == X"FREEBSD" ]]; then
-        [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} python3-mysql")
-
-        [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} python3-psycopg2")
-
-        [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]] && \
-            (python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python3-ldap")
-
-        python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python3-requests"
-    elif [[ X"${DISTRO}" == X"OPENBSD" ]]; then
-        [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && \
-            (python3 -c "import MySQLdb" &>/dev/null || py_mods="${py_mods} py3-mysqlclient")
-
-        [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && \
-            (python3 -c "import psycopg2" &>/dev/null || py_mods="${py_mods} py3-psycopg2")
-
-        [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]] && \
-            (python3 -c "import ldap" &>/dev/null || py_mods="${py_mods} python3-ldap")
-
-        python3 -c "import requests" &>/dev/null || py_mods="${py_mods} python3-requests"
-    fi
-
-    if [[ X"${py_mods}" != X'' ]]; then
-        echo "Install required Python-3 modules: ${py_mods}"
-        install_pkg ${py_mods}
-
-        if [[ X"$?" != X'0' ]]; then
-            echo "Installation failed. Please try to fix it manually, or post this"
-            echo "issue to iRedMail forum to get help: https://forum.iredmail.org/"
-            exit 255
-        fi
-    fi
+    done
 }
 
 restart_mlmmjadmin()
@@ -212,8 +179,128 @@ restart_mlmmjadmin()
 
 echo "* Detected Linux/BSD distribution: ${DISTRO}"
 
-install_py3
-install_py3_modules
+#
+# Check dependent packages. Prompt to install missed ones manually.
+#
+DEP_PKGS=""
+DEP_PIP3_MODS=""
+
+# Install python3.
+if [ ! -x ${CMD_PYTHON3} ]; then
+    if [ X"${DISTRO}" == X'RHEL' ]; then
+        [[ X"${DISTRO_VERSION}" == X'7' ]] && DEP_PKGS="${DEP_PKGS} python3 python3-pip"
+        [[ X"${DISTRO_VERSION}" == X'8' ]] && DEP_PKGS="${DEP_PKGS} python38 python38-pip"
+    fi
+
+    [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3 python3-pip"
+    [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3 python3-pip"
+    [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} lang/python38 devel/py-pip"
+
+    if [ X"${DISTRO}" == X'OPENBSD' ]; then
+        # Create symbol link.
+        for v in 3.7 3.6 3.5 3.4; do
+            if [ -x /usr/local/bin/python${v} ]; then
+                ln -sf /usr/local/bin/python${v} /usr/local/bin/python3
+                break
+            fi
+        done
+    else
+        # OpenBSD 6.6, 6.7 should use Python 3.7 because all `py3-*` binary
+        # packages were built against Python 3.7.
+        DEP_PKGS="${DEP_PKGS} python%3.7"
+    fi
+fi
+
+echo "* Checking dependent Python modules:"
+
+if [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]]; then
+    # MySQL/MariaDB backend
+    echo "  + [required] pymysql"
+    if [ X"$(has_python_module pymysql)" == X'NO' ]; then
+        if [ X"${DISTRO}" == X'RHEL' ]; then
+            if [ X"${DISTRO_VERSION}" == X'7' ]; then
+                DEP_PKGS="${DEP_PKGS} python36-PyMySQL"
+            else
+                DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
+            fi
+        fi
+
+        [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-pymysql"
+        [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-pymysql"
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} databases/py-pymysql"
+        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-mysqlclient"
+    fi
+elif [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]]; then
+    # PostgreSQL backend
+    echo "  + [required] psycopg2"
+    if [ X"$(has_python_module psycopg2)" == X'NO' ]; then
+        if [ X"${DISTRO}" == X'RHEL' ]; then
+            if [ X"${DISTRO_VERSION}" == X'7' ]; then
+                DEP_PKGS="${DEP_PKGS} python36-psycopg2"
+            else
+                DEP_PKGS="${DEP_PKGS} python3-psycopg2"
+            fi
+        fi
+
+        [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
+        [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} databases/py-psycopg2"
+        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-psycopg2"
+    fi
+elif [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
+    # LDAP backend
+    if [ X"$(has_python_module ldap)" == X'NO' ]; then
+        if [ X"${DISTRO}" == X'RHEL' ]; then
+            if [ X"${DISTRO_VERSION}" == X'7' ]; then
+                DEP_PKGS="${DEP_PKGS} python36-PyMySQL"
+            else
+                DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
+            fi
+        fi
+
+        if [ X"${DISTRO}" == X'DEBIAN' ]; then
+            DEP_PKGS="${DEP_PKGS} python3-pymysql"
+            if [ X"${DISTRO_VERSION}" == X'9' ]; then
+                DEP_PKGS="${DEP_PKGS} python3-pyldap"
+            else
+                DEP_PKGS="${DEP_PKGS} python3-ldap"
+            fi
+        fi
+
+        [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-ldap python3-pymysql"
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} net/py-ldap databases/py-pymysql"
+        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-ldap py3-mysqlclient"
+    fi
+fi
+
+
+echo "  + [required] requests"
+if [ X"$(has_python_module requests)" == X'NO' ]; then
+    if [ X"${DISTRO}" == X'RHEL' ]; then
+        [ X"${DISTRO_VERSION}" == X'7' ] && DEP_PKGS="${DEP_PKGS} python36-requests"
+        [ X"${DISTRO_VERSION}" == X'8' ] && DEP_PKGS="${DEP_PKGS} python3-requests"
+    fi
+
+    [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-requests"
+    [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-requests"
+    [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} dns/py-requests"
+    [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-requests"
+fi
+
+echo "  + [required] web.py"
+if [ X"$(has_python_module web)" == X'NO' ]; then
+    # FreeBSD ports has 0.40. So we install the latest with pip.
+    DEP_PIP3_MODS="${DEP_PIP3_MODS} web.py>=0.51"
+fi
+
+if [ X"${DEP_PKGS}" != X'' ]; then
+    install_pkgs ${DEP_PKGS}
+fi
+
+if [ X"${DEP_PIP3_MODS}" != X'' ]; then
+    ${CMD_PIP3} install -U ${DEP_PIP3_MODS}
+fi
+
 
 if [ -L ${MA_ROOT_DIR} ]; then
     export MA_ROOT_REAL_DIR="$(readlink ${MA_ROOT_DIR})"
@@ -268,17 +355,8 @@ echo "* Creating symbol link: ${NEW_MA_ROOT_DIR} -> ${MA_ROOT_DIR}"
 cd ${MA_PARENT_DIR}
 ln -s ${NEW_MA_ROOT_DIR} ${MA_ROOT_DIR}
 
-export USE_SYSTEMD='NO'
-if which systemctl &>/dev/null; then
-    export USE_SYSTEMD='YES'
-    export SYSTEMD_SERVICE_DIR='/lib/systemd/system'
-    export SYSTEMD_SERVICE_DIR2='/etc/systemd/system'
-    export SYSTEMD_SERVICE_USER_DIR='/etc/systemd/system/multi-user.target.wants/'
-fi
-
-# Always copy init rc script.
+# Always copy systemd or sysv script.
 if [ X"${USE_SYSTEMD}" == X'YES' ]; then
-    echo "* Remove existing service files."
     rm -f /etc/init.d/mlmmjadmin &>/dev/null
     rm -f ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service &>/dev/null
     rm -f ${SYSTEMD_SERVICE_DIR2}/mlmmjadmin.service &>/dev/null
@@ -288,8 +366,14 @@ if [ X"${USE_SYSTEMD}" == X'YES' ]; then
 
     if [ X"${DISTRO}" == X'RHEL' ]; then
         cp -vf ${MA_ROOT_DIR}/rc_scripts/systemd/rhel.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
+        if [ X"${UWSGI_PY3_PLUGIN_NAME}" != X'' ]; then
+            perl -pi -e 's#(^plugins.*)python,(.*)#${1}$ENV{UWSGI_PY3_PLUGIN_NAME},${2}#g' ${MA_ROOT_DIR}/rc_scripts/uwsgi/rhel.ini
+        fi
     elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
         cp -vf ${MA_ROOT_DIR}/rc_scripts/systemd/debian.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
+        if [ X"${UWSGI_PY3_PLUGIN_NAME}" != X'' ]; then
+            perl -pi -e 's#(^plugins.*)python,(.*)#${1}$ENV{UWSGI_PY3_PLUGIN_NAME},${2}#g' ${MA_ROOT_DIR}/rc_scripts/uwsgi/debian.ini
+        fi
     fi
 
     chmod -R 0644 ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
@@ -297,12 +381,9 @@ if [ X"${USE_SYSTEMD}" == X'YES' ]; then
     systemctl enable mlmmjadmin.service >/dev/null
 else
     if [ -f "${DIR_RC_SCRIPTS}/mlmmjadmin" ]; then
-        echo "* Copy new SysV init script."
-        if [ X"${DISTRO}" == X'RHEL' ]; then
-            cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.rhel ${DIR_RC_SCRIPTS}/mlmmjadmin
-        elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
-            cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.debian ${DIR_RC_SCRIPTS}/mlmmjadmin
-        elif [ X"${DISTRO}" == X"FREEBSD" ]; then
+        echo "* Copy SysV init script."
+
+        if [ X"${DISTRO}" == X"FREEBSD" ]; then
             cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.freebsd ${DIR_RC_SCRIPTS}/mlmmjadmin
         elif [ X"${DISTRO}" == X'OPENBSD' ]; then
             cp ${MA_ROOT_DIR}/rc_scripts/mlmmjadmin.openbsd ${DIR_RC_SCRIPTS}/mlmmjadmin
