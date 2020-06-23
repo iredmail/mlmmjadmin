@@ -186,6 +186,7 @@ DEP_PKGS=""
 DEP_PIP3_MODS=""
 
 # Install python3.
+echo "* Checking Python 3."
 if [ ! -x ${CMD_PYTHON3} ]; then
     if [ X"${DISTRO}" == X'RHEL' ]; then
         [[ X"${DISTRO_VERSION}" == X'7' ]] && DEP_PKGS="${DEP_PKGS} python3 python3-pip"
@@ -204,10 +205,12 @@ if [ ! -x ${CMD_PYTHON3} ]; then
                 break
             fi
         done
-    else
-        # OpenBSD 6.6, 6.7 should use Python 3.7 because all `py3-*` binary
-        # packages were built against Python 3.7.
-        DEP_PKGS="${DEP_PKGS} python%3.7"
+
+        if [ ! -x ${CMD_PYTHON3} ]; then
+            # OpenBSD 6.6, 6.7 should use Python 3.7 because all `py3-*` binary
+            # packages were built against Python 3.7.
+            DEP_PKGS="${DEP_PKGS} python%3.7"
+        fi
     fi
 fi
 
@@ -252,9 +255,10 @@ elif [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
     if [ X"$(has_python_module ldap)" == X'NO' ]; then
         if [ X"${DISTRO}" == X'RHEL' ]; then
             if [ X"${DISTRO_VERSION}" == X'7' ]; then
-                DEP_PKGS="${DEP_PKGS} python36-PyMySQL"
+                DEP_PKGS="${DEP_PKGS} python36-PyMySQL openldap-devel"
+                DEP_PIP3_MODS="${DEP_PIP3_MODS} python-ldap>=3.3.0"
             else
-                DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
+                DEP_PKGS="${DEP_PKGS} python3-ldap python3-PyMySQL"
             fi
         fi
 
@@ -295,10 +299,20 @@ fi
 
 if [ X"${DEP_PKGS}" != X'' ]; then
     install_pkgs ${DEP_PKGS}
+
+    if [ X"$?" != X'0' ]; then
+        echo "<<< ERROR >>> Failed to install required packages, please try to install them manually: ${DEP_PKGS}"
+        exit 255
+    fi
 fi
 
 if [ X"${DEP_PIP3_MODS}" != X'' ]; then
     ${CMD_PIP3} install -U ${DEP_PIP3_MODS}
+
+    if [ X"$?" != X'0' ]; then
+        echo "<<< ERROR >>> Failed to install Python 3 modules, please try to install them manually: ${DEP_PIP3_MODS}"
+        exit 255
+    fi
 fi
 
 
