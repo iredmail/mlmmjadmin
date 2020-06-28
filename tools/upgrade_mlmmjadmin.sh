@@ -21,7 +21,7 @@ export MA_CUSTOM_CONF="${MA_ROOT_DIR}/custom_settings.py"
 
 # Path to some programs.
 export CMD_PYTHON3='/usr/bin/python3'
-export CMD_PIP3='pip3'
+export CMD_PIP3='/usr/bin/pip3'
 
 # Check OS to detect some necessary info.
 export KERNEL_NAME="$(uname -s | tr '[a-z]' '[A-Z]')"
@@ -95,12 +95,14 @@ elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
     export DISTRO='FREEBSD'
     export DIR_RC_SCRIPTS='/usr/local/etc/rc.d'
     export CMD_PYTHON3='/usr/local/bin/python3'
+    export CMD_PIP3='/usr/local/bin/pip3'
 elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
     export DISTRO='OPENBSD'
     export DIR_RC_SCRIPTS='/etc/rc.d'
     export CMD_PYTHON3='/usr/local/bin/python3'
+    export CMD_PIP3='/usr/local/bin/pip3'
 
-    if [ -x /usr/local/bin/pip3 ]; then
+    if [ -x ${CMD_PIP3} ]; then
         :
     else
         for version in 3.7 3.6 3.5; do
@@ -129,6 +131,7 @@ elif [[ -d /etc/postfix/ldap ]] || [[ -d /usr/local/etc/postfix/ldap ]]; then
     export IREDMAIL_BACKEND='LDAP'
 else
     echo "Can not detect iRedMail backend (MySQL, PostgreSQL, OpenLDAP). Abort."
+    exit 255
 fi
 
 install_pkgs()
@@ -212,6 +215,18 @@ if [ ! -x ${CMD_PYTHON3} ]; then
             DEP_PKGS="${DEP_PKGS} python%3.7"
         fi
     fi
+fi
+
+if [ ! -x ${CMD_PIP3} ]; then
+    if [ X"${DISTRO}" == X'RHEL' ]; then
+        [[ X"${DISTRO_VERSION}" == X'7' ]] && DEP_PKGS="${DEP_PKGS} python3-pip"
+        [[ X"${DISTRO_VERSION}" == X'8' ]] && DEP_PKGS="${DEP_PKGS} python38-pip"
+    fi
+
+    [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-pip"
+    [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-pip"
+    [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} devel/py-pip"
+    [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-pip"
 fi
 
 echo "* Checking dependent Python modules:"
