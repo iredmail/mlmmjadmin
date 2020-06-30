@@ -43,7 +43,6 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
             export DISTRO_VERSION='8'
             export PYTHON_VER='38'
             export CMD_PIP3='/usr/bin/pip3.8'
-            # uwsgi plugin is not required since uwsgi is installed with pip.
         elif grep '\ 7' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='7'
             export PYTHON_VER='36'
@@ -137,15 +136,36 @@ fi
 install_pkgs()
 {
     echo "Install package: $@"
+    _missing_pkgs=""
 
     if [ X"${DISTRO}" == X'RHEL' ]; then
-        yum -y install $@
+        for _pkg in $@; do
+            if ! rpm -q ${_pkg} &>/dev/null; then
+                _missing_pkgs="${_missing_pkgs} ${_pkg}"
+            fi
+        done
+
+        if [ X"${_missing_pkgs}" != X'' ]; then
+            echo "Install required packages: ${_missing_pkgs}"
+            yum -y install ${_missing_pkgs}
+        fi
     elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
-        apt-get install -y $@
+        for _pkg in $@; do
+            if ! dpkg -l ${_pkg} &>/dev/null; then
+                _missing_pkgs="${_missing_pkgs} ${_pkg}"
+            fi
+        done
+
+        if [ X"${_missing_pkgs}" != X'' ]; then
+            echo "Install required packages: ${_missing_pkgs}"
+            apt-get install -y ${_missing_pkgs}
+        fi
     elif [ X"${DISTRO}" == X'FREEBSD' ]; then
-        echo "Install package: ${_port}"
-        cd /usr/ports/$@
-        make USES=python:3.5+ install clean
+        for _port in $@; do
+            echo "Install package: ${_port}"
+            cd /usr/ports/$@
+            make USES=python:3.5+ install clean
+        done
     elif [ X"${DISTRO}" == X'OPENBSD' ]; then
         pkg_add -r $@
     else
@@ -166,8 +186,7 @@ has_python_module()
     done
 }
 
-restart_mlmmjadmin()
-{
+restart_mlmmjadmin() {
     echo "* Restarting service: mlmmjadmin."
     if [ X"${KERNEL_NAME}" == X'LINUX' -o X"${KERNEL_NAME}" == X'FREEBSD' ]; then
         service mlmmjadmin restart
@@ -182,101 +201,35 @@ restart_mlmmjadmin()
 
 echo "* Detected Linux/BSD distribution: ${DISTRO}"
 
-#
-# Check dependent packages. Prompt to install missed ones manually.
-#
-DEP_PKGS=""
-DEP_PIP3_MODS=""
+# Check required packages.
+export DEP_PKGS=""
+export DEP_PIP3_MODS=""
 
-# Install python3.
-echo "* Checking Python 3."
-if [ ! -x ${CMD_PYTHON3} ]; then
-    if [ X"${DISTRO}" == X'RHEL' ]; then
-        [[ X"${DISTRO_VERSION}" == X'7' ]] && DEP_PKGS="${DEP_PKGS} python3 python3-pip"
-        [[ X"${DISTRO_VERSION}" == X'8' ]] && DEP_PKGS="${DEP_PKGS} python38 python38-pip"
-    fi
+if [ X"${DISTRO}" == X'RHEL' ]; then
+    if [ X"${DISTRO_VERSION}" == X'7' ]; then
+        DEP_PKGS="${DEP_PKGS} python3 python3-pip uwsgi-plugin-python36 python36-requests"
 
-    [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3 python3-pip"
-    [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3 python3-pip"
-    [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} lang/python38 devel/py-pip"
-
-    if [ X"${DISTRO}" == X'OPENBSD' ]; then
-        # Create symbol link.
-        for v in 3.7 3.6 3.5 3.4; do
-            if [ -x /usr/local/bin/python${v} ]; then
-                ln -sf /usr/local/bin/python${v} /usr/local/bin/python3
-                break
-            fi
-        done
-
-        if [ ! -x ${CMD_PYTHON3} ]; then
-            # OpenBSD 6.6, 6.7 should use Python 3.7 because all `py3-*` binary
-            # packages were built against Python 3.7.
-            DEP_PKGS="${DEP_PKGS} python%3.7"
+        [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python36-PyMySQL"
+        [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python36-psycopg2"
+        if [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
+            DEP_PKGS="${DEP_PKGS} python36-PyMySQL openldap-devel"
+            DEP_PIP3_MODS="${DEP_PIP3_MODS} python-ldap>=3.3.0"
         fi
+    else
+        # CentOS 8
+        DEP_PKGS="${DEP_PKGS} python38 python38-pip python3-requests"
+
+        [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
+        [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
+        [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]  && DEP_PKGS="${DEP_PKGS} python3-ldap python3-PyMySQL"
     fi
-fi
 
-if [ ! -x ${CMD_PIP3} ]; then
-    if [ X"${DISTRO}" == X'RHEL' ]; then
-        [[ X"${DISTRO_VERSION}" == X'7' ]] && DEP_PKGS="${DEP_PKGS} python3-pip"
-        [[ X"${DISTRO_VERSION}" == X'8' ]] && DEP_PKGS="${DEP_PKGS} python38-pip"
-    fi
+elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+    DEP_PKGS="${DEP_PKGS} python3 python3-pip python3-requests"
 
-    [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-pip"
-    [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-pip"
-    [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} devel/py-pip"
-    [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-pip"
-fi
-
-echo "* Checking dependent Python modules:"
-
-if [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]]; then
-    # MySQL/MariaDB backend
-    echo "  + [required] pymysql"
-    if [ X"$(has_python_module pymysql)" == X'NO' ]; then
-        if [ X"${DISTRO}" == X'RHEL' ]; then
-            if [ X"${DISTRO_VERSION}" == X'7' ]; then
-                DEP_PKGS="${DEP_PKGS} python36-PyMySQL"
-            else
-                DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
-            fi
-        fi
-
-        [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-pymysql"
-        [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-pymysql"
-        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} databases/py-pymysql"
-        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-mysqlclient"
-    fi
-elif [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]]; then
-    # PostgreSQL backend
-    echo "  + [required] psycopg2"
-    if [ X"$(has_python_module psycopg2)" == X'NO' ]; then
-        if [ X"${DISTRO}" == X'RHEL' ]; then
-            if [ X"${DISTRO_VERSION}" == X'7' ]; then
-                DEP_PKGS="${DEP_PKGS} python36-psycopg2"
-            else
-                DEP_PKGS="${DEP_PKGS} python3-psycopg2"
-            fi
-        fi
-
-        [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
-        [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
-        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} databases/py-psycopg2"
-        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-psycopg2"
-    fi
-elif [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
-    # LDAP backend
-    if [ X"$(has_python_module ldap)" == X'NO' ]; then
-        if [ X"${DISTRO}" == X'RHEL' ]; then
-            if [ X"${DISTRO_VERSION}" == X'7' ]; then
-                DEP_PKGS="${DEP_PKGS} python36-PyMySQL openldap-devel"
-                DEP_PIP3_MODS="${DEP_PIP3_MODS} python-ldap>=3.3.0"
-            else
-                DEP_PKGS="${DEP_PKGS} python3-ldap python3-PyMySQL"
-            fi
-        fi
-
+    [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-pymysql"
+    [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
+    if [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
         if [ X"${DISTRO}" == X'DEBIAN' ]; then
             DEP_PKGS="${DEP_PKGS} python3-pymysql"
             if [ X"${DISTRO_VERSION}" == X'9' ]; then
@@ -286,30 +239,71 @@ elif [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
             fi
         fi
 
-        [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-ldap python3-pymysql"
-        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} net/py-ldap databases/py-pymysql"
-        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-ldap py3-mysqlclient"
+        [ X"${DISTRO}" == X'UBUNTU' ] && DEP_PKGS="${DEP_PKGS} python3-ldap python3-pymysql"
     fi
-fi
+else
+    # Install python3.
+    echo "* Checking Python 3."
+    if [ ! -x ${CMD_PYTHON3} ]; then
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} lang/python38 devel/py-pip"
 
+        if [ X"${DISTRO}" == X'OPENBSD' ]; then
+            # Create symbol link.
+            for v in 3.7 3.6 3.5 3.4; do
+                if [ -x /usr/local/bin/python${v} ]; then
+                    ln -sf /usr/local/bin/python${v} /usr/local/bin/python3
+                    break
+                fi
+            done
 
-echo "  + [required] requests"
-if [ X"$(has_python_module requests)" == X'NO' ]; then
-    if [ X"${DISTRO}" == X'RHEL' ]; then
-        [ X"${DISTRO_VERSION}" == X'7' ] && DEP_PKGS="${DEP_PKGS} python36-requests"
-        [ X"${DISTRO_VERSION}" == X'8' ] && DEP_PKGS="${DEP_PKGS} python3-requests"
+            if [ ! -x ${CMD_PYTHON3} ]; then
+                # OpenBSD 6.6, 6.7 should use Python 3.7 because all `py3-*` binary
+                # packages were built against Python 3.7.
+                DEP_PKGS="${DEP_PKGS} python%3.7"
+            fi
+        fi
     fi
 
-    [ X"${DISTRO}" == X'DEBIAN' ]   && DEP_PKGS="${DEP_PKGS} python3-requests"
-    [ X"${DISTRO}" == X'UBUNTU' ]   && DEP_PKGS="${DEP_PKGS} python3-requests"
-    [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} dns/py-requests"
-    [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-requests"
-fi
+    if [ ! -x ${CMD_PIP3} ]; then
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} devel/py-pip"
+        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-pip"
+    fi
 
-echo "  + [required] web.py"
-if [ X"$(has_python_module web)" == X'NO' ]; then
-    # FreeBSD ports has 0.40. So we install the latest with pip.
-    DEP_PIP3_MODS="${DEP_PIP3_MODS} web.py>=0.51"
+    echo "* Checking required Python(-3) modules:"
+    if [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]]; then
+        # MySQL/MariaDB backend
+        echo "  + [required] pymysql"
+        if [ X"$(has_python_module pymysql)" == X'NO' ]; then
+            [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} databases/py-pymysql"
+            [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-mysqlclient"
+        fi
+    elif [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]]; then
+        # PostgreSQL backend
+        echo "  + [required] psycopg2"
+        if [ X"$(has_python_module psycopg2)" == X'NO' ]; then
+            [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} databases/py-psycopg2"
+            [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-psycopg2"
+        fi
+    elif [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
+        # LDAP backend
+        echo "  + [required] ldap"
+        if [ X"$(has_python_module ldap)" == X'NO' ]; then
+            [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} net/py-ldap databases/py-pymysql"
+            [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-ldap py3-mysqlclient"
+        fi
+    fi
+
+    if [ X"$(has_python_module requests)" == X'NO' ]; then
+        echo "  + [required] requests"
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} dns/py-requests"
+        [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-requests"
+    fi
+
+    echo "  + [required] web.py"
+    if [ X"$(has_python_module web)" == X'NO' ]; then
+        # FreeBSD ports has 0.40. So we install the latest with pip.
+        DEP_PIP3_MODS="${DEP_PIP3_MODS} web.py>=0.51"
+    fi
 fi
 
 if [ X"${DEP_PKGS}" != X'' ]; then
