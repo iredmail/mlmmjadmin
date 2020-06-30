@@ -225,7 +225,7 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
     fi
 
 elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
-    DEP_PKGS="${DEP_PKGS} python3 python3-pip python3-requests"
+    DEP_PKGS="${DEP_PKGS} python3 python3-pip python3-requests uwsgi-plugin-python3"
 
     [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-pymysql"
     [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
