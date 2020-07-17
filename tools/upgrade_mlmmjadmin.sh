@@ -212,8 +212,8 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python36-PyMySQL"
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python36-psycopg2"
         if [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]; then
-            DEP_PKGS="${DEP_PKGS} python36-PyMySQL openldap-devel"
-            DEP_PIP3_MODS="${DEP_PIP3_MODS} python-ldap>=3.3.0"
+            DEP_PKGS="${DEP_PKGS} python36-PyMySQL openldap-devel python3-devel"
+            DEP_PIP3_MODS="${DEP_PIP3_MODS} python-ldap>=3.3.1"
         fi
     else
         # CentOS 8
