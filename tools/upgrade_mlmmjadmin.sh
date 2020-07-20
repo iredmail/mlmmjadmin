@@ -41,11 +41,9 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         # Get distribution version
         if grep '\ 8' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='8'
-            export PYTHON_VER='38'
             export CMD_PIP3='/usr/bin/pip3.8'
         elif grep '\ 7' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='7'
-            export PYTHON_VER='36'
             export UWSGI_PY3_PLUGIN_NAME='python36'
         else
             export UNSUPPORTED_RELEASE="YES"
@@ -217,7 +215,7 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
         fi
     else
         # CentOS 8
-        DEP_PKGS="${DEP_PKGS} python38 python38-pip python3-requests"
+        DEP_PKGS="${DEP_PKGS} python36 python3-pip python3-requests"
 
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
