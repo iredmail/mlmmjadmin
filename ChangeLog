@@ -1,4 +1,7 @@
-# 3.1
+# 3.0.2
+    - Fixed: can not create new mailing list for OpenLDAP backend.
+
+# 3.0.1
     - Fixed: not install required package `python3-devel` on CentOS 7, it's
       used for compiling python module `python-ldap`.
 
