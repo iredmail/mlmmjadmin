@@ -19,6 +19,7 @@
 #   - iredmail_ldap_bind_password: password of bind dn in plain text.
 
 import uuid
+from typing import List, Dict
 import ldap
 
 from libs import utils, form_utils
@@ -217,6 +218,62 @@ def __get_new_mlid(conn=None):
     return mlid
 
 
+def __str2bytes(s) -> bytes:
+    """Convert `s` from string to bytes."""
+    if isinstance(s, bytes):
+        return s
+    elif isinstance(s, str):
+        return s.encode()
+    elif isinstance(s, (int, float)):
+        return str(s).encode()
+    else:
+        return bytes(s)
+
+
+def __attr_ldif(attr, value, default=None) -> List:
+    """Generate a list of LDIF data with given attribute name and value.
+    Returns empty list if no valid value.
+
+    Value is properly handled with str/bytes/list/tuple/set types, and
+    converted to list of bytes at the end.
+
+    To generate ldif list with ldap modification like `ldap.MOD_REPLACE`,
+    please use function `mod_replace()` instead.
+    """
+    v = value or default
+    if v:
+        if isinstance(value, (list, tuple, set)):
+            lst = []
+            for i in v:
+                # Avoid duplicate element.
+                if i in lst:
+                    continue
+
+                if isinstance(i, bytes):
+                    lst.append(i)
+                else:
+                    lst.append(__str2bytes(i))
+
+            ldif = [(attr, lst)]
+        elif isinstance(value, (int, float)):
+            ldif = [(attr, [str(v).encode()])]
+        else:
+            v = __str2bytes(v)
+            ldif = [(attr, [v])]
+    else:
+        ldif = []
+
+    return ldif
+
+
+def __attrs_ldif(kvs: Dict) -> List:
+    lst = []
+    for (k, v) in kvs.items():
+        lst += __attr_ldif(k, v)
+
+    return lst
+
+
 def __ldif_ml(mail,
               mlid,
               name=None,
@@ -239,37 +296,39 @@ def __ldif_ml(mail,
     listname, domain = mail.split('@', 1)
     transport = '%s:%s/%s' % (settings.MTA_TRANSPORT_NAME, domain, listname)
 
-    ldif = [('objectClass', ['mailList']),
-            ('mail', [mail]),
-            ('mtaTransport', [transport]),
-            ('mailingListID', [mlid]),
-            ('accountStatus', ['active']),
-            ('enabledService', ['mail', 'deliver', 'mlmmj'])]
+    ldif = __attrs_ldif({
+        'objectClass': 'mailList',
+        'mail': mail,
+        'mtaTransport': transport,
+        'mailingListID': mlid,
+        'accountStatus': 'active',
+        'enabledService': ['mail', 'deliver', 'mlmmj'],
+    })
 
     if name:
-        ldif += [('cn', [name.encode('utf-8')])]
+        ldif += __attr_ldif('cn', name)
 
     if access_policy:
         p = str(access_policy).lower()
-        ldif += [('accessPolicy', [p])]
+        ldif += __attr_ldif('accessPolicy', p)
 
     if max_message_size and isinstance(max_message_size, int):
-        ldif += [('maxMessageSize', [str(max_message_size)])]
+        ldif += __attr_ldif('maxMessageSize', max_message_size)
 
     if alias_domains:
         alias_domains = [str(d).lower() for d in alias_domains if utils.is_domain(d)]
         shadow_addresses = [listname + '@' + d for d in alias_domains]
 
         if shadow_addresses:
-            ldif += [('shadowAddress', shadow_addresses)]
+            ldif += __attr_ldif('shadowAddress', shadow_addresses)
 
     if domain_status != 'active':
-        ldif += [('domainStatus', ['disabled'])]
+        ldif += __attr_ldif('domainStatus', 'disabled')
 
     if moderators:
         _addresses = [str(i).strip().lower() for i in moderators if utils.is_email(i)]
         if _addresses:
-            ldif += [('listAllowedUser', _addresses)]
+            ldif += __attr_ldif('listAllowedUser', _addresses)
 
     return ldif
 
