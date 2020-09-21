@@ -1,3 +1,6 @@
+# 3.0.3
+    - Fixed: can not update mailing list profile for OpenLDAP backend.
+
 # 3.0.2
     - Fixed: can not create new mailing list for OpenLDAP backend.
 

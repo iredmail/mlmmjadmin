@@ -19,7 +19,7 @@
 #   - iredmail_ldap_bind_password: password of bind dn in plain text.
 
 import uuid
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import ldap
 
 from libs import utils, form_utils
@@ -230,7 +230,7 @@ def __str2bytes(s) -> bytes:
         return bytes(s)
 
 
-def __attr_ldif(attr, value, default=None) -> List:
+def __attr_ldif(attr, value, default=None, mode=None) -> List:
     """Generate a list of LDIF data with given attribute name and value.
     Returns empty list if no valid value.
 
@@ -238,9 +238,10 @@ def __attr_ldif(attr, value, default=None) -> List:
     converted to list of bytes at the end.
 
     To generate ldif list with ldap modification like `ldap.MOD_REPLACE`,
-    please use function `mod_replace()` instead.
+    please use function `__mod_replace()` instead.
     """
     v = value or default
+    _ldif = []
     if v:
         if isinstance(value, (list, tuple, set)):
             lst = []
@@ -254,16 +255,29 @@ def __attr_ldif(attr, value, default=None) -> List:
                 else:
                     lst.append(__str2bytes(i))
 
-            ldif = [(attr, lst)]
+            v = lst
         elif isinstance(value, (int, float)):
-            ldif = [(attr, [str(v).encode()])]
+            v = [str(v).encode()]
         else:
-            v = __str2bytes(v)
-            ldif = [(attr, [v])]
-    else:
-        ldif = []
+            v = [__str2bytes(v)]
 
-    return ldif
+    if mode == 'replace':
+        if v:
+            _ldif = [(ldap.MOD_REPLACE, attr, v)]
+        else:
+            _ldif = [(ldap.MOD_REPLACE, attr, None)]
+    elif mode == 'add':
+        if v:
+            _ldif = [(ldap.MOD_ADD, attr, v)]
+    elif mode == 'delete':
+        if v:
+            _ldif = [(ldap.MOD_DELETE, attr, v)]
+    else:
+        if v:
+            # Used for adding ldap object.
+            _ldif = [(attr, v)]
+
+    return _ldif
 
 
 def __attrs_ldif(kvs: Dict) -> List:
@@ -273,6 +287,35 @@ def __attrs_ldif(kvs: Dict) -> List:
 
     return lst
 
+
+# Return list of `ldap.MOD_REPLACE` operation.
+def __mod_replace(attr, value, default=None) -> List[Tuple]:
+    """Return list of (only one) `ldap.MOD_REPLACE` used to remove of update
+    LDAP value.
+
+    When final value is `None` or empty list/tuple/set, LDAP
+    attribute `attr` will be removed.
+
+    >>> __mod_replace(attr='name', value=None)
+    [(2, 'name', None)]
+    >>> __mod_replace(attr='name', value='')
+    [(2, 'name', None)]
+    >>> __mod_replace(attr='name', value=[])
+    [(2, 'name', None)]
+    >>> __mod_replace(attr='name', value='', default=None)
+    [(2, 'name', None)]
+    >>> __mod_replace(attr='name', value='my name')
+    [(2, 'name', [b'my name'])]
+    >>> __mod_replace(attr='aint', value=5)
+    [(2, 'aint', ['5'])]
+    >>> __mod_replace(attr='alist', value=['elm1', 'elm2'])
+    [(2, 'alist', [b'elm1', b'elm2'])]
+    >>> __mod_replace(attr='atuple', value=('elm1', 'elm2'))
+    [(2, 'atuple', [b'elm1', b'elm2'])]
+    >>> __mod_replace(attr='aset', value={'elm1', 'elm2'})
+    [(2, 'aset', [b'elm1', b'elm2'])]
+    """
+    return __attr_ldif(attr=attr, value=value, default=default, mode='replace')
 
 def __ldif_ml(mail,
               mlid,
@@ -355,7 +398,8 @@ def __add_or_remove_attr_value(dn, attr, value, action, conn=None):
     if action in ['add', 'assign', 'enable']:
         for v in values:
             try:
-                conn.modify_s(dn, [(ldap.MOD_ADD, attr, str(v))])
+                mod_attr = __attr_ldif(attr, v, mode='add')
+                conn.modify_s(dn, mod_attr)
             except (ldap.NO_SUCH_OBJECT, ldap.TYPE_OR_VALUE_EXISTS):
                 pass
             except Exception as e:
@@ -363,7 +407,8 @@ def __add_or_remove_attr_value(dn, attr, value, action, conn=None):
     elif action in ['del', 'delete', 'remove', 'disable']:
         for v in values:
             try:
-                conn.modify_s(dn, [(ldap.MOD_DELETE, attr, str(v))])
+                mod_attr = __attr_ldif(attr, v, mode='delete')
+                conn.modify_s(dn, mod_attr)
             except ldap.NO_SUCH_ATTRIBUTE:
                 pass
             except Exception as e:
@@ -517,29 +562,22 @@ def update_maillist(mail, form, conn=None):
 
     name = form.get('name')
     if name:
-        mod_attrs += [(ldap.MOD_REPLACE, 'cn', [name.encode('utf-8')])]
+        mod_attrs += __mod_replace('cn', name)
     else:
-        mod_attrs += [(ldap.MOD_REPLACE, 'cn', None)]
+        mod_attrs += __mod_replace('cn', None)
 
     if 'only_moderator_can_post' in form:
-        mod_attrs += [(ldap.MOD_REPLACE, 'accessPolicy', ['moderatorsonly'])]
+        mod_attrs += __mod_replace('accessPolicy', 'moderatorsonly')
     elif 'only_subscriber_can_post' in form:
-        mod_attrs += [(ldap.MOD_REPLACE, 'accessPolicy', ['membersonly'])]
+        mod_attrs += __mod_replace('accessPolicy', 'membersonly')
 
     if 'max_message_size' in form:
-        max_mail_size = form_utils.get_max_message_size(form)
-        if max_mail_size:
-            mod_attrs += [(ldap.MOD_REPLACE, 'maxMessageSize', [str(max_mail_size)])]
-        else:
-            mod_attrs += [(ldap.MOD_REPLACE, 'maxMessageSize', None)]
+        mod_attrs += __mod_replace('maxMessageSize', form_utils.get_max_message_size(form))
 
     if 'moderators' in form:
         moderators = form.get('moderators', '').split(',')
         moderators = [str(i).strip().lower() for i in moderators if utils.is_email(i)]
-        if moderators:
-            mod_attrs += [(ldap.MOD_REPLACE, 'listAllowedUser', moderators)]
-        else:
-            mod_attrs += [(ldap.MOD_REPLACE, 'listAllowedUser', None)]
+        mod_attrs += __mod_replace('listAllowedUser', moderators)
 
     if mod_attrs:
         if not conn:
