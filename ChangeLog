@@ -1,3 +1,7 @@
+# 3.0.4
+    - Fixed: not correctly handle str <-> bytes convert while updating LDAP
+      account.
+
 # 3.0.3
     - Fixed: can not update mailing list profile for OpenLDAP backend.
 

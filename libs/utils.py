@@ -1,5 +1,6 @@
 # encoding: utf-8
 import json
+from typing import Union, List, Tuple, Set, Dict, Any
 import web
 
 from libs import regxes
@@ -7,6 +8,81 @@ import settings
 
 # API AUTH token name in http request header
 auth_token_name = 'HTTP_' + settings.API_AUTH_TOKEN_HEADER_NAME.replace('-', '_').upper()
+
+def str2bytes(s) -> bytes:
+    """Convert `s` from string to bytes."""
+    if isinstance(s, bytes):
+        return s
+    elif isinstance(s, str):
+        return s.encode()
+    elif isinstance(s, (int, float)):
+        return str(s).encode()
+    else:
+        return bytes(s)
+
+
+def __bytes2str(b) -> str:
+    """Convert object `b` to string.
+
+    >>> __bytes2str("a")
+    'a'
+    >>> __bytes2str(b"a")
+    'a'
+    >>> __bytes2str(["a"])  # list: return `repr()`
+    "['a']"
+    >>> __bytes2str(("a",)) # tuple: return `repr()`
+    "('a',)"
+    >>> __bytes2str({"a"})  # set: return `repr()`
+    "{'a'}"
+    """
+    if isinstance(b, str):
+        return b
+
+    if isinstance(b, (bytes, bytearray)):
+        return b.decode()
+    elif isinstance(b, memoryview):
+        return b.tobytes().decode()
+    else:
+        return repr(b)
+
+
+def bytes2str(b: Union[bytes, str, List, Tuple, Set, Dict])\
+        -> Union[str, List[str], Tuple[str], Dict[Any, str]]:
+    """Convert `b` from bytes-like type to string.
+
+    - If `b` is a string object, returns original `b`.
+    - If `b` is a bytes, returns `b.decode()`.
+
+    bytes-like object, return `repr(b)` directly.
+
+    >>> bytes2str("a")
+    'a'
+    >>> bytes2str(b"a")
+    'a'
+    >>> bytes2str(["a"])
+    ['a']
+    >>> bytes2str((b"a",))
+    ('a',)
+    >>> bytes2str({b"a"})
+    {'a'}
+    >>> bytes2str({"a": b"a"})      # used to convert LDAP query result.
+    {'a': 'a'}
+    """
+    if isinstance(b, list):
+        s = [bytes2str(i) for i in b]
+    elif isinstance(b, tuple):
+        s = tuple([bytes2str(i) for i in b])
+    elif isinstance(b, set):
+        s = {bytes2str(i) for i in b}
+    elif isinstance(b, dict):
+        new_dict = {}
+        for (k, v) in list(b.items()):
+            new_dict[k] = bytes2str(v)  # v could be list/tuple/dict
+        s = new_dict
+    else:
+        s = __bytes2str(b)
+
+    return s
 
 
 def strip_mail_ext_address(mail, delimiters=None):

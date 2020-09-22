@@ -19,7 +19,7 @@
 #   - iredmail_ldap_bind_password: password of bind dn in plain text.
 
 import uuid
-from typing import List, Dict, Tuple
+from typing import List, Tuple, Dict
 import ldap
 
 from libs import utils, form_utils
@@ -218,18 +218,6 @@ def __get_new_mlid(conn=None):
     return mlid
 
 
-def __str2bytes(s) -> bytes:
-    """Convert `s` from string to bytes."""
-    if isinstance(s, bytes):
-        return s
-    elif isinstance(s, str):
-        return s.encode()
-    elif isinstance(s, (int, float)):
-        return str(s).encode()
-    else:
-        return bytes(s)
-
-
 def __attr_ldif(attr, value, default=None, mode=None) -> List:
     """Generate a list of LDIF data with given attribute name and value.
     Returns empty list if no valid value.
@@ -253,13 +241,13 @@ def __attr_ldif(attr, value, default=None, mode=None) -> List:
                 if isinstance(i, bytes):
                     lst.append(i)
                 else:
-                    lst.append(__str2bytes(i))
+                    lst.append(utils.str2bytes(i))
 
             v = lst
         elif isinstance(value, (int, float)):
             v = [str(v).encode()]
         else:
-            v = [__str2bytes(v)]
+            v = [utils.str2bytes(v)]
 
     if mode == 'replace':
         if v:
@@ -444,7 +432,9 @@ def __get_primary_and_alias_domains(domain, with_primary_domain=True, conn=None)
                            ['domainName', 'domainAliasName'])
 
         if qr:
-            all_domains = qr[0][1].get('domainName', []) + qr[0][1].get('domainAliasName', [])
+            (_dn, _ldif) = qr[0]
+            _ldif = utils.bytes2str(_ldif)
+            all_domains = _ldif.get('domainName', []) + _ldif.get('domainAliasName', [])
             if not with_primary_domain:
                 all_domains.remove(domain)
             return (True, all_domains)
@@ -486,8 +476,9 @@ def add_maillist(mail, form, conn=None):
                            '(objectClass=*)')
 
         if qr:
-            _ldif = qr[0][1]
-            domain_status = _ldif.get('accountStatus', ['disabled'])[0]
+            (_dn, _ldif) = qr[0]
+            _ldif = utils.bytes2str(_ldif)
+            domain_status = _ldif.get('accountStatus', ['active'])[0]
 
             alias_domains = _ldif.get('domainAliasName', [])
             alias_domains = [str(i).lower() for i in alias_domains if utils.is_domain(i)]
@@ -626,6 +617,7 @@ def get_existing_maillists(domains=None, conn=None):
                            ['mail'])
 
         for (_dn, _ldif) in qr:
+            _ldif = utils.bytes2str(_ldif)
             _addresses = _ldif.get('mail', [])
             _addresses = [str(i).lower() for i in _addresses]
             existing_lists.update(_addresses)
