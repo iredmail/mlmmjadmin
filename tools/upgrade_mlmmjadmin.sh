@@ -299,8 +299,11 @@ else
 
     echo "  + [required] web.py"
     if [ X"$(has_python_module web)" == X'NO' ]; then
-        # FreeBSD ports has 0.40. So we install the latest with pip.
-        DEP_PIP3_MODS="${DEP_PIP3_MODS} web.py>=0.51"
+        if [ X"${KERNEL_NAME}" == X'LINUX' -o X"${KERNEL_NAME}" == X'OPENBSD' ]; then
+            DEP_PIP3_MODS="${DEP_PIP3_MODS} web.py>=0.61"
+        elif [ X"${DISTRO}" == X'FREEBSD' ]; then
+            DEP_PKGS="${DEP_PKGS} www/webpy"
+        fi
     fi
 fi
 
