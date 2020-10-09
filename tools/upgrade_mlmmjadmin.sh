@@ -60,7 +60,6 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
 
         if [ X"${DISTRO_CODENAME}" == X'focal' ]; then
             # Ubuntu 20.04: Installed with pip2.
-            export CMD_UWSGI='/usr/local/bin/uwsgi'
             export UWSGI_PY3_PLUGIN_NAME='python38'
         elif [ X"${DISTRO_CODENAME}" == X'bionic' ]; then
             # Ubuntu 18.04
