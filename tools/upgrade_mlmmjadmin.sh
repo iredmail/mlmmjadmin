@@ -41,7 +41,6 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         # Get distribution version
         if grep '\ 8' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='8'
-            export CMD_PIP3='/usr/bin/pip3.8'
         elif grep '\ 7' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='7'
             export UWSGI_PY3_PLUGIN_NAME='python36'
@@ -215,6 +214,7 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
     else
         # CentOS 8
         DEP_PKGS="${DEP_PKGS} python36 python3-pip python3-requests"
+        DEP_PIP3_MODS="${DEP_PIP3_MODS} uwsgi"
 
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
@@ -391,6 +391,9 @@ if [ X"${USE_SYSTEMD}" == X'YES' ]; then
         cp -vf ${MA_ROOT_DIR}/rc_scripts/systemd/rhel.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
         if [ X"${UWSGI_PY3_PLUGIN_NAME}" != X'' ]; then
             perl -pi -e 's#(^plugins.*)python,(.*)#${1}$ENV{UWSGI_PY3_PLUGIN_NAME},${2}#g' ${MA_ROOT_DIR}/rc_scripts/uwsgi/rhel.ini
+        fi
+        if [ X"${DISTRO_VERSION}" == X'8' ]; then
+            perl -pi -e 's#/usr/sbin/uwsgi#/usr/local/bin/uwsgi#g' ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
         fi
     elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
         cp -vf ${MA_ROOT_DIR}/rc_scripts/systemd/debian.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service

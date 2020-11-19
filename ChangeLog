@@ -1,3 +1,6 @@
+# 3.0.5
+    - Fixed: not correctly update systemd service file on CentOS 8.
+
 # 3.0.4
     - Fixed: not correctly handle str <-> bytes convert while updating LDAP
       account.
