@@ -1,3 +1,6 @@
+# 3.0.6
+    - Fixed: tools/maillist_admin.py: not handle duplicate moderators.
+
 # 3.0.5
     - Fixed: not correctly update systemd service file on CentOS 8.
 

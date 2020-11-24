@@ -390,8 +390,23 @@ def update_maillist(mail, form, conn=None):
                         where='address=$address')
 
             if moderators:
+                # Exclude non-existing moderators under same domain.
+                _external_mods = {i for i in moderators if not i.endswith("@" + domain)}
+                _internal_mods = {i for i in moderators if i.endswith("@" + domain)}
+
+                valid_moderators = set()
+                valid_moderators.update(_external_mods)
+
+                qr = conn.select("forwardings",
+                                 vars={'addresses': list(_internal_mods)},
+                                 what="address",
+                                 where="address IN $addresses")
+
+                for i in qr:
+                    valid_moderators.add(i["address"])
+
                 records = []
-                for _addr in moderators:
+                for _addr in valid_moderators:
                     params = {
                         'address': mail,
                         'domain': domain,
