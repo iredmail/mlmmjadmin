@@ -41,6 +41,7 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         # Get distribution version
         if grep '\ 8' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='8'
+            export UWSGI_PY3_PLUGIN_NAME='none'
         elif grep '\ 7' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='7'
             export UWSGI_PY3_PLUGIN_NAME='python36'
@@ -389,7 +390,9 @@ if [ X"${USE_SYSTEMD}" == X'YES' ]; then
 
     if [ X"${DISTRO}" == X'RHEL' ]; then
         cp -vf ${MA_ROOT_DIR}/rc_scripts/systemd/rhel.service ${SYSTEMD_SERVICE_DIR}/mlmmjadmin.service
-        if [ X"${UWSGI_PY3_PLUGIN_NAME}" != X'' ]; then
+        if [ X"${UWSGI_PY3_PLUGIN_NAME}" == X'none' ]; then
+            perl -pi -e 's/^(plugins.*)/#${1}/g' ${MA_ROOT_DIR}/rc_scripts/uwsgi/rhel.ini
+        else
             perl -pi -e 's#(^plugins.*)python,(.*)#${1}$ENV{UWSGI_PY3_PLUGIN_NAME},${2}#g' ${MA_ROOT_DIR}/rc_scripts/uwsgi/rhel.ini
         fi
         if [ X"${DISTRO_VERSION}" == X'8' ]; then
