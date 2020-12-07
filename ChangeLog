@@ -1,3 +1,7 @@
+# 3.0.7:
+    - Fixed: not correctly verify http auth token for each request.
+      Thanks @TerjeBr for the report (#14) and patch (#15).
+
 # 3.0.6
     - Fixed: tools/maillist_admin.py: not handle duplicate moderators.
     - Fixed: tools/upgrade_mlmmjadmin.sh: not handle uwsgi plugin name on CentOS 8.

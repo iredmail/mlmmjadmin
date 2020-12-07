@@ -14,38 +14,26 @@ def _is_allowed_client(ip):
 
 def api_acl(func):
     def proxyfunc(self, *args, **kw):
+        try:
+            client_ip = web.ctx.ip
+        except:
+            # No `ip` attr before starting http service.
+            return None
+
+        if not _is_allowed_client(client_ip):
+            logger.error('[{0}] Blocked request from disallowed client.'.format(client_ip))
+            return api_render((False, 'NOT_AUTHORIZED_API_CLIENT'))
+
+        _auth_token = get_auth_token()
+        if not _auth_token:
+            return api_render((False, 'NO_API_AUTH_TOKEN'))
+        else:
+            logger.debug('[{0}] API AUTH TOKEN: {1:.8}...'.format(client_ip, _auth_token))
+
+        if _auth_token not in settings.api_auth_tokens:
+            logger.error('[{0}] Blocked request with invalid auth token: {1}.'.format(client_ip, _auth_token))
+            return api_render((False, 'INVALID_MLMMJADMIN_API_AUTH_TOKEN'))
+
         return func(self, *args, **kw)
-
-    def empty(self, *args, **kw):
-        return None
-
-    def not_allowed_client(self, *args, **kw):
-        return api_render((False, 'NOT_AUTHORIZED_API_CLIENT'))
-
-    def no_auth_token(self, *args, **kw):
-        return api_render((False, 'NO_API_AUTH_TOKEN'))
-
-    def invalid_auth_token(self, *args, **kw):
-        return api_render((False, 'INVALID_MLMMJADMIN_API_AUTH_TOKEN'))
-
-    try:
-        client_ip = web.ctx.ip
-    except:
-        # No `ip` attr before starting http service.
-        return empty
-
-    if not _is_allowed_client(client_ip):
-        logger.error('[{0}] Blocked request from disallowed client.'.format(client_ip))
-        return not_allowed_client
-
-    _auth_token = get_auth_token()
-    if not _auth_token:
-        return no_auth_token
-    else:
-        logger.debug('[{0}] API AUTH TOKEN: {1:.8}...'.format(client_ip, _auth_token))
-
-    if _auth_token not in settings.api_auth_tokens:
-        logger.error('[{0}] Blocked request with invalid auth token: {1}.'.format(client_ip, _auth_token))
-        return invalid_auth_token
 
     return proxyfunc
