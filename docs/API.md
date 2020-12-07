@@ -19,6 +19,14 @@ POST    | `/api/<mail>/subscribers` | Add or remove subscribers.
 GET | `/api/subscriber/<subscriber>/subscribed` | Get subscribed mailing lists of given subscriber. It queries mailing lists under same domain by default, if you want to query all available mailing lists on server, please append query parameter `query_all_lists=yes`.
 POST | `/api/subscriber/<subscriber>/subscribe` | Subscribe `<subscriber>` to multiple mailing lists.
 
+## Send API request with `curl`
+
+Sample command to get mailing list profile:
+
+```
+curl -X GET -H "X_MLMMJADMIN_API_AUTH_TOKEN: <token>" http://127.0.0.1:7790/api/<mail>
+```
+
 ## Parameters used to create or update mailing list account
 
 Parameters used to create (`POST /api/<mail>`) or update (`PUT /api/<mail>`) mailing list account:
