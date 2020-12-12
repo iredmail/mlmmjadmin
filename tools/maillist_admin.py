@@ -194,7 +194,7 @@ elif action == 'subscribers':
     _json = r.json()
     if _json['_success']:
         for i in _json['_data']:
-            print("{0}, '({1})".format(i['mail'], i['subscription']))
+            print("{0}, ({1})".format(i['mail'], i['subscription']))
     else:
         print("Error: {0}".format(_json['_msg']))
 
