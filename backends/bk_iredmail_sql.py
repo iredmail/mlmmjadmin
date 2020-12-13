@@ -239,6 +239,99 @@ def __get_new_mlid(conn=None):
     return mlid
 
 
+def __exclude_non_existing_addresses(domain, addresses, conn):
+    """Exclude non-existing addresses under given (locally hosted) domain."""
+    _externals = {i for i in addresses if not i.endswith("@" + domain)}
+    _internals = {i for i in addresses if i.endswith("@" + domain)}
+
+    valid_addrs = set()
+    valid_addrs.update(_externals)
+
+    qr = conn.select(
+        "forwardings",
+        vars={'addresses': list(_internals)},
+        what="address",
+        where="address IN $addresses",
+    )
+
+    for i in qr:
+        valid_addrs.add(i["address"])
+
+    return valid_addrs
+
+
+def __reset_moderators(mail, form, conn):
+    # Get moderators, store in SQL table `vmail.moderators`
+    if 'moderators' in form:
+        domain = mail.split('@', 1)[-1]
+
+        moderators = [i.strip() for i in form.get('moderators', '').split(',')]
+        moderators = [i.lower() for i in moderators if utils.is_email(i)]
+
+        try:
+            conn.delete('moderators',
+                        vars={'address': mail},
+                        where='address=$address')
+        except Exception as e:
+            return (False, repr(e))
+
+        if moderators:
+            _moderators = __exclude_non_existing_addresses(domain=domain, addresses=moderators, conn=conn)
+
+            records = []
+            for _addr in _moderators:
+                params = {
+                    'address': mail,
+                    'domain': domain,
+                    'moderator': _addr,
+                    'dest_domain': _addr.split('@', 1)[-1],
+                }
+
+                records.append(params)
+
+            try:
+                conn.multiple_insert('moderators', records)
+            except Exception as e:
+                return (False, repr(e))
+
+    return (True, )
+
+
+def __reset_owners(mail, form, conn):
+    if 'owner' in form:
+        # Reset all owners.
+        try:
+            conn.delete("maillist_owners",
+                        vars={'mail': mail},
+                        where="address=$mail")
+        except Exception as e:
+            return (False, repr(e))
+
+        owners = [i.strip().lower() for i in form.get('owner', '').split(',') if utils.is_email(i)]
+
+        domain = mail.split("@", 1)[-1]
+        owners = __exclude_non_existing_addresses(domain=domain, addresses=owners, conn=conn)
+
+        if owners:
+            records = []
+            for _addr in owners:
+                params = {
+                    'address': mail,
+                    'domain': mail.split('@', 1)[-1],
+                    'owner': _addr,
+                    'owner_domain': _addr.split('@', 1)[-1],
+                }
+
+                records.append(params)
+
+            try:
+                conn.multiple_insert('maillist_owners', records)
+            except Exception as e:
+                return (False, repr(e))
+
+    return (True, )
+
+
 def add_maillist(mail, form, conn=None):
     """Add required SQL records to add a mailing list account."""
     mail = str(mail).lower()
@@ -287,26 +380,12 @@ def add_maillist(mail, form, conn=None):
 
         # Get moderators, store in SQL table `vmail.moderators`
         if 'moderators' in form:
-            moderators = [i.strip() for i in form.get('moderators', '').split(',')]
-            moderators = [i.lower() for i in moderators if utils.is_email(i)]
+            qr = __reset_moderators(mail=mail, form=form, conn=conn)
 
-            conn.delete('moderators',
-                        vars={'address': mail},
-                        where='address=$address')
-
-            if moderators:
-                records = []
-                for _addr in moderators:
-                    params = {
-                        'address': mail,
-                        'domain': domain,
-                        'moderator': _addr,
-                        'dest_domain': _addr.split('@', 1)[-1],
-                    }
-
-                    records.append(params)
-
-                conn.multiple_insert('moderators', records)
+        if 'owner' in form:
+            qr = __reset_owners(mail=mail, form=form, conn=conn)
+            if not qr[0]:
+                return qr
 
         logger.info('Created: {0}.'.format(mail))
         return (True,)
@@ -354,7 +433,6 @@ def update_maillist(mail, form, conn=None):
     - only_subscriber_can_post
     """
     mail = str(mail).lower()
-    domain = mail.split('@', 1)[-1]
 
     if not utils.is_email(mail):
         return (False, 'INVALID_EMAIL')
@@ -383,64 +461,14 @@ def update_maillist(mail, form, conn=None):
 
         # Get moderators, store in SQL table `vmail.moderators`
         if 'moderators' in form:
-            moderators = [i.strip() for i in form.get('moderators', '').split(',')]
-            moderators = [i.lower() for i in moderators if utils.is_email(i)]
+            qr = __reset_moderators(mail=mail, form=form, conn=conn)
+            if not qr[0]:
+                return qr
 
-            conn.delete('moderators',
-                        vars={'address': mail},
-                        where='address=$address')
-
-            if moderators:
-                # Exclude non-existing moderators under same domain.
-                _external_mods = {i for i in moderators if not i.endswith("@" + domain)}
-                _internal_mods = {i for i in moderators if i.endswith("@" + domain)}
-
-                valid_moderators = set()
-                valid_moderators.update(_external_mods)
-
-                qr = conn.select("forwardings",
-                                 vars={'addresses': list(_internal_mods)},
-                                 what="address",
-                                 where="address IN $addresses")
-
-                for i in qr:
-                    valid_moderators.add(i["address"])
-
-                records = []
-                for _addr in valid_moderators:
-                    params = {
-                        'address': mail,
-                        'domain': domain,
-                        'moderator': _addr,
-                        'dest_domain': _addr.split('@', 1)[-1],
-                    }
-
-                    records.append(params)
-
-                conn.multiple_insert('moderators', records)
-
-        # Get owners, store in SQL table `vmail.maillist_owners`
         if 'owner' in form:
-            # TODO exclude non-existing internal addresses.
-            # Reset all owners.
-            conn.delete("maillist_owners",
-                        vars={'mail': mail},
-                        where="address=$mail")
-
-            owners = [i.strip().lower() for i in form.get('owner', '').split(',') if utils.is_email(i)]
-            if owners:
-                records = []
-                for _addr in owners:
-                    params = {
-                        'address': mail,
-                        'domain': domain,
-                        'owner': _addr,
-                        'owner_domain': _addr.split('@', 1)[-1],
-                    }
-
-                    records.append(params)
-
-                conn.multiple_insert('maillist_owners', records)
+            qr = __reset_owners(mail=mail, form=form, conn=conn)
+            if not qr[0]:
+                return qr
 
         return (True,)
     except Exception as e:
@@ -515,19 +543,20 @@ def add_subscribers(mail, subscribers, conn=None):
                     vars={'address': mail, 'members': subscribers},
                     where='address=$address AND member IN $members')
 
-        # TODO Exclude non-existing internal addresses.
-        records = []
-        for _addr in subscribers:
-            params = {
-                'address': mail,
-                'domain': domain,
-                'member': _addr,
-                'member_domain': _addr.split('@', 1)[-1],
-            }
+        subscribers = __exclude_non_existing_addresses(domain=domain, addresses=subscribers, conn=conn)
+        if subscribers:
+            records = []
+            for _addr in subscribers:
+                params = {
+                    'address': mail,
+                    'domain': domain,
+                    'member': _addr,
+                    'member_domain': _addr.split('@', 1)[-1],
+                }
 
-            records.append(params)
+                records.append(params)
 
-        conn.multiple_insert('maillist_members', records)
+            conn.multiple_insert('maillist_members', records)
 
         logger.info('Added subscribers: {0}.'.format(mail))
         return (True,)
