@@ -349,6 +349,7 @@ def update_maillist(mail, form, conn=None):
 
     - name
     - moderators
+    - owner
     - only_moderator_can_post
     - only_subscriber_can_post
     """
@@ -417,6 +418,29 @@ def update_maillist(mail, form, conn=None):
                     records.append(params)
 
                 conn.multiple_insert('moderators', records)
+
+        # Get owners, store in SQL table `vmail.maillist_owners`
+        if 'owner' in form:
+            # TODO exclude non-existing internal addresses.
+            # Reset all owners.
+            conn.delete("maillist_owners",
+                        vars={'mail': mail},
+                        where="address=$mail")
+
+            owners = [i.strip().lower() for i in form.get('owner', '').split(',') if utils.is_email(i)]
+            if owners:
+                records = []
+                for _addr in owners:
+                    params = {
+                        'address': mail,
+                        'domain': domain,
+                        'owner': _addr,
+                        'owner_domain': _addr.split('@', 1)[-1],
+                    }
+
+                    records.append(params)
+
+                conn.multiple_insert('maillist_owners', records)
 
         return (True,)
     except Exception as e:
