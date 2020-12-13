@@ -319,7 +319,7 @@ def __reset_owners(mail, form, conn):
                     'address': mail,
                     'domain': mail.split('@', 1)[-1],
                     'owner': _addr,
-                    'owner_domain': _addr.split('@', 1)[-1],
+                    'dest_domain': _addr.split('@', 1)[-1],
                 }
 
                 records.append(params)
@@ -551,7 +551,7 @@ def add_subscribers(mail, subscribers, conn=None):
                     'address': mail,
                     'domain': domain,
                     'member': _addr,
-                    'member_domain': _addr.split('@', 1)[-1],
+                    'dest_domain': _addr.split('@', 1)[-1],
                 }
 
                 records.append(params)
