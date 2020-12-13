@@ -625,3 +625,7 @@ def get_existing_maillists(domains=None, conn=None):
         return (True, existing_lists)
     except Exception as e:
         return (False, repr(e))
+
+# TODO
+# def add_subscribers(mail, subscribers, conn=None):
+# def remove_subscribers(mail, subscribers, conn=None):

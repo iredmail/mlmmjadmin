@@ -87,3 +87,9 @@ def get_existing_maillists(domains=None, *args, **kw):
     all_lists.sort()
 
     return (True, all_lists)
+
+def add_subscribers(mail, *args, **kw):
+    return (True, )
+
+def remove_subscribers(mail, *args, **kw):
+    return (True, )

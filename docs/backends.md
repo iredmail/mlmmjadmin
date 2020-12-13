@@ -3,7 +3,7 @@
 * File `libs/mlmmj.py` handles mlmmj related data on file system. Usually you
   don't need to modify this file.
 
-* File `backends/bk_xxx.py` handles mailing list account related data on
+* File `backends/bk_<X>.py` handles mailing list account related data on
   your SQL/LDAP/... backend, so that your MTA (e.g. Postfix) knows it's a
   mailing list account and calls `mlmmj-receive` program to deliver the email.
 
@@ -36,3 +36,11 @@
 
         Remove related SQL/LDAP/... data in your backend to remove a mailing list
         account.
+
+    - `def add_subscribers(mail, subscribers, conn=None):`
+
+        Add new subscribers to mailing list.
+
+    - `def remove_subscribers(mail, subscribers, conn=None):`
+
+        Remove subscribers from mailing list.

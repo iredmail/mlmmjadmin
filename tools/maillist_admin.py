@@ -209,12 +209,18 @@ elif action == 'subscribed':
         print("Error: {0}".format(_json['_msg']))
 
 elif action == 'add_subscribers':
-    url = api_url + '/subscribers'
-
     _subscribers = set([str(i).lower() for i in args if is_email(i)])
     if not _subscribers:
         print("Error: No subscribers given.")
         sys.exit()
+
+    if run_backend_cli:
+        qr = backend.add_subscribers(mail=mail, subscribers=_subscribers)
+        if not qr[0]:
+            print("Error while interactive with backend: {0}".format(qr[1]))
+            sys.exit()
+
+    url = api_url + '/subscribers'
 
     arg_kvs['add_subscribers'] = ','.join(_subscribers)
     r = requests.post(url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
@@ -225,13 +231,18 @@ elif action == 'add_subscribers':
         print("Error: {0}".format(_json['_msg']))
 
 elif action == 'remove_subscribers':
-    url = api_url + '/subscribers'
-
     _subscribers = set([str(i).lower() for i in args if is_email(i)])
     if not _subscribers:
         print("Error: No subscribers given.")
         sys.exit()
 
+    if run_backend_cli:
+        qr = backend.remove_subscribers(mail=mail, subscribers=_subscribers)
+        if not qr[0]:
+            print("Error while interactive with backend: {0}".format(qr[1]))
+            sys.exit()
+
+    url = api_url + '/subscribers'
     arg_kvs['remove_subscribers'] = ','.join(_subscribers)
     r = requests.post(url, data=arg_kvs, headers=api_headers, verify=verify_ssl)
     _json = r.json()
