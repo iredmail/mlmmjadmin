@@ -1078,8 +1078,8 @@ def add_subscribers(mail,
                                             subscription=subscription)
 
         if not qr[0]:
-            logger.error('[{0}] {1} Failed to add subscribers (require '
-                         'confirm): error={2}'.format(web.ctx.ip, mail, qr[1]))
+            logger.error("[{0}] {1} Failed to add subscribers (require "
+                         "confirm): error={2}".format(web.ctx.ip, mail, qr[1]))
             return qr
     else:
         grouped_subscribers = {}

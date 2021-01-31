@@ -52,9 +52,9 @@ class Subscribers(object):
             subscribers = form.get('add_subscribers', '').replace(' ', '').split(',')
             subscribers = [str(i).lower() for i in subscribers if utils.is_email(i)]
 
-            require_confirm = True
-            if form.get('require_confirm') != 'yes':
-                require_confirm = False
+            require_confirm = False
+            if form.get('require_confirm') == 'yes':
+                require_confirm = True
 
             subscription = form.get('subscription', 'normal')
             if subscription not in ['normal', 'digest', 'nomail']:

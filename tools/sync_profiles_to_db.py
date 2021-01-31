@@ -2,7 +2,6 @@
 # Sync few mailing list profiles to SQL/LDAP db, including:
 #
 #   - moderators (SQL table: vmail.moderators)
-#   - members (SQL table: vmail.maillist_members)
 #   - owners (SQL table: vmail.maillist_owners)
 
 import sys
@@ -156,33 +155,6 @@ def sync_moderators(mail, moderators):
                    sql_column="moderator")
 
 
-def sync_members(mail, member_profiles):
-    if backend == "sql":
-        conn.delete("maillist_members",
-                    vars={"mail": mail},
-                    where="address=$mail")
-
-        if member_profiles:
-            rows = []
-            for profile in member_profiles:
-                addr = profile['mail'].lower()
-
-                row = {
-                    "address": mail,
-                    "member": addr,
-                    "subscription": profile['subscription'],
-                    "domain": mail.split("@", 1)[-1],
-                    "dest_domain": addr.split("@", 1)[-1],
-                }
-                rows.append(row)
-
-            try:
-                conn.multiple_insert("maillist_members", rows)
-            except Exception as e:
-                print("Error while updating maillist_members: {}".format(repr(e)))
-                sys.exit(255)
-
-
 for mail in mls:
     p = get_profile(mail)
     print("Syncing {}".format(mail))
@@ -192,6 +164,3 @@ for mail in mls:
 
     moderators = p.get("moderators", [])
     sync_moderators(mail, moderators)
-
-    member_profiles = get_member_profiles(mail)
-    sync_members(mail, member_profiles)
