@@ -36,11 +36,3 @@
 
         Remove related SQL/LDAP/... data in your backend to remove a mailing list
         account.
-
-    - `def add_subscribers(mail, subscribers, conn=None):`
-
-        Add new subscribers to mailing list.
-
-    - `def remove_subscribers(mail, subscribers, conn=None):`
-
-        Remove subscribers from mailing list.

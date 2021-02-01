@@ -115,7 +115,7 @@ def get_member_profiles(mail):
         print("Error while getting members: {0}".format(_json['_msg']))
 
 
-def sync_addresses(mail, addresses, sql_table, sql_column):
+def __sync_addresses(mail, addresses, sql_table, sql_column):
     addresses = [i.lower() for i in addresses if is_email(i)]
 
     if backend == "sql":
@@ -142,17 +142,17 @@ def sync_addresses(mail, addresses, sql_table, sql_column):
 
 
 def sync_owners(mail, owners):
-    sync_addresses(mail=mail,
-                   addresses=owners,
-                   sql_table="maillist_owners",
-                   sql_column="owner")
+    __sync_addresses(mail=mail,
+                     addresses=owners,
+                     sql_table="maillist_owners",
+                     sql_column="owner")
 
 
 def sync_moderators(mail, moderators):
-    sync_addresses(mail=mail,
-                   addresses=moderators,
-                   sql_table="moderators",
-                   sql_column="moderator")
+    __sync_addresses(mail=mail,
+                     addresses=moderators,
+                     sql_table="moderators",
+                     sql_column="moderator")
 
 
 for mail in mls:
