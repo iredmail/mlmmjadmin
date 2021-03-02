@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Sync few mailing list profiles to SQL/LDAP db, including:
+# Purpose: Sync few mailing list profiles to SQL/LDAP db, including:
 #
 #   - moderators (SQL table: vmail.moderators)
 #   - owners (SQL table: vmail.maillist_owners)
@@ -13,7 +13,7 @@ web.config.debug = False
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../backends')
 
-from libs.utils import is_email
+from libs.utils import is_email, is_domain, bytes2str, str2bytes
 import settings
 
 usage = """Usage:
@@ -61,6 +61,7 @@ if settings.backend_api == 'bk_iredmail_sql' or settings.backend_cli == 'bk_ired
     _wrap = SQLWrap()
     conn = _wrap.conn
 elif settings.backend_api == 'bk_iredmail_ldap' or settings.backend_cli == 'bk_iredmail_ldap':
+    import ldap
     backend = "ldap"
 
     from bk_iredmail_ldap import LDAPWrap
@@ -70,9 +71,11 @@ else:
     print("mlmmjadmin is not configured to interactive with SQL/LDAP. Abort.")
     sys.exit()
 
+# Available mailing lists.
 mls = []
+
 args = sys.argv[1:]
-if args[0] == '-A':
+if "-A" in args:
     # Query db to get all mailing lists.
     if backend == "sql":
         qr = conn.select("maillists", what="address", where="active=1")
@@ -80,18 +83,55 @@ if args[0] == '-A':
             addr = i["address"].lower()
             mls.append(addr)
     elif backend == "ldap":
-        # TODO Query LDAP
-        pass
+        _filter = "(&(objectClass=mailList)(accountStatus=active)(enabledService=mlmmj))"
+        try:
+            qr = conn.search_s(settings.iredmail_ldap_basedn,
+                               ldap.SCOPE_SUBTREE,
+                               _filter,
+                               ["mail"])
+            for (_dn, _ldif) in qr:
+                mls += [bytes2str(i).lower() for i in _ldif["mail"]]
+        except Exception as e:
+            print("Error while querying: {}".format(repr(e)))
 
     if not mls:
         print("No mailing list found. Abort.")
         sys.exit()
 else:
-    # Get target MLs from command line.
+    # Get domain names and mailing lists.
+    domains = [i.lower() for i in args if is_domain(i)]
     mls = [i.lower() for i in args if is_email(i)]
+
+    # Query SQL/LDAP to get all mailing lists under specified domains.
+    if domains:
+        print("Querying mailing lists under given domain(s): {}".format(", ".join(domains)))
+
+        if backend == "sql":
+            qr = conn.select("maillists",
+                             vars={'domains': domains},
+                             what="address",
+                             where="domain IN $domains AND active=1")
+            for i in qr:
+                addr = i["address"].lower()
+                mls.append(addr)
+        elif backend == "ldap":
+            for d in domains:
+                _filter = "(&(objectClass=mailList)(accountStatus=active)(enabledService=mlmmj))"
+                try:
+                    qr = conn.search_s("domainName={},{}".format(d, settings.iredmail_ldap_basedn),
+                                       ldap.SCOPE_SUBTREE,
+                                       _filter,
+                                       ["mail"])
+                    for (_dn, _ldif) in qr:
+                        mls += [bytes2str(i).lower() for i in _ldif["mail"]]
+                except Exception as e:
+                    print("Error while querying domain {}: {}".format(d, repr(e)))
+
     if not mls:
         print("No valid email address(es) of mailing lists given on command line. Abort.")
         sys.exit()
+
+    print("Syncing {} mailing lists.".format(len(mls)))
 
 
 # Get profile of mailing list.
@@ -115,10 +155,28 @@ def get_member_profiles(mail):
         print("Error while getting members: {0}".format(_json['_msg']))
 
 
-def __sync_addresses(mail, addresses, sql_table, sql_column):
+def __sync_addresses(mail, addresses, address_type):
+    msg = ""
+    if address_type not in ["owner", "moderator"]:
+        msg = "Unsupported address type: {}.".format(address_type)
+        return (False, msg)
+
     addresses = [i.lower() for i in addresses if is_email(i)]
 
     if backend == "sql":
+        _map = {
+            "owner": {
+                "table": "maillist_owners",
+                "column": "owner",
+            },
+            "moderator": {
+                "table": "moderators",
+                "column": "moderator",
+            },
+        }
+        sql_table = _map[address_type]["table"]
+        sql_column = _map[address_type]["column"]
+
         conn.delete(sql_table,
                     vars={"mail": mail},
                     where="address=$mail")
@@ -137,30 +195,57 @@ def __sync_addresses(mail, addresses, sql_table, sql_column):
             try:
                 conn.multiple_insert(sql_table, rows)
             except Exception as e:
-                print("Error while updating {}: {}".format(sql_table, repr(e)))
-                sys.exit(255)
+                msg = "Error while updating {}: {}".format(sql_table, repr(e))
+                return (False, msg)
+
+    elif backend == "ldap":
+        _domain = mail.split("@", 1)[-1]
+        ldn = "mail={},ou=Groups,domainName={},{}".format(mail, _domain, settings.iredmail_ldap_basedn)
+
+        if not addresses:
+            # Remove attribute.
+            addresses = None
+
+        if address_type == "owner":
+            mod_attr = [(ldap.MOD_REPLACE, "listOwner", str2bytes(addresses))]
+        elif address_type == "moderator":
+            mod_attr = [(ldap.MOD_REPLACE, "listModerator", str2bytes(addresses))]
+
+        try:
+            conn.modify_s(ldn, mod_attr)
+        except Exception as e:
+            msg = "Error while updating {} of mailing list {}: {}".format(address_type, mail, repr(e))
+            print("ERROR {}".format(msg))
+            return (False, msg)
+
+    return (True, )
 
 
 def sync_owners(mail, owners):
-    __sync_addresses(mail=mail,
-                     addresses=owners,
-                     sql_table="maillist_owners",
-                     sql_column="owner")
+    return __sync_addresses(mail=mail,
+                            addresses=owners,
+                            address_type="owner")
 
 
 def sync_moderators(mail, moderators):
-    __sync_addresses(mail=mail,
-                     addresses=moderators,
-                     sql_table="moderators",
-                     sql_column="moderator")
+    return __sync_addresses(mail=mail,
+                            addresses=moderators,
+                            address_type="moderator")
 
 
 for mail in mls:
     p = get_profile(mail)
-    print("Syncing {}".format(mail))
 
     owners = p.get("owners", [])
-    sync_owners(mail, owners)
+    qr = sync_owners(mail, owners)
+    if qr[0]:
+        print("[OK] {}: Synced owners.".format(mail))
+    else:
+        print("<<< ERROR >>> {}: Failed to sync owners: {}".format(mail, qr[1]))
 
     moderators = p.get("moderators", [])
-    sync_moderators(mail, moderators)
+    qr = sync_moderators(mail, moderators)
+    if qr[0]:
+        print("[OK] {}: Synced moderators.".format(mail))
+    else:
+        print("<<< ERROR >>> {}: Failed to sync moderators: {}".format(mail, qr[1]))

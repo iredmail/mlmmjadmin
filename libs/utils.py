@@ -9,7 +9,8 @@ import settings
 # API AUTH token name in http request header
 auth_token_name = 'HTTP_' + settings.API_AUTH_TOKEN_HEADER_NAME.replace('-', '_').upper()
 
-def str2bytes(s) -> bytes:
+
+def __str2bytes(s) -> bytes:
     """Convert `s` from string to bytes."""
     if isinstance(s, bytes):
         return s
@@ -19,6 +20,25 @@ def str2bytes(s) -> bytes:
         return str(s).encode()
     else:
         return bytes(s)
+
+
+def str2bytes(s) -> bytes:
+    """Convert `s` from string to bytes."""
+    if isinstance(s, (list, web.db.ResultSet)):
+        s = [str2bytes(i) for i in s]
+    elif isinstance(s, tuple):
+        s = tuple([str2bytes(i) for i in s])
+    elif isinstance(s, set):
+        s = {str2bytes(i) for i in s}
+    elif isinstance(s, (dict, web.utils.Storage)):
+        new_dict = {}
+        for (k, v) in list(s.items()):
+            new_dict[k] = str2bytes(v)  # v could be list/tuple/dict
+        s = new_dict
+    else:
+        s = __str2bytes(s)
+
+    return s
 
 
 def __bytes2str(b) -> str:

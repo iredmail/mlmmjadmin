@@ -1,3 +1,7 @@
+# 3.1:
+    - tools/sync_profiles_to_db.py: Sync mailing list profiles to SQL/LDAP.
+      Currently only owners and moderators are synced.
+
 # 3.0.7:
     - Fixed: not correctly verify http auth token for each request.
       Thanks @TerjeBr for the report (#14) and patch (#15).
