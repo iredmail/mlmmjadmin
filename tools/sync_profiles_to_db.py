@@ -215,7 +215,6 @@ def __sync_addresses(mail, addresses, address_type):
             conn.modify_s(ldn, mod_attr)
         except Exception as e:
             msg = "Error while updating {} of mailing list {}: {}".format(address_type, mail, repr(e))
-            print("ERROR {}".format(msg))
             return (False, msg)
 
     return (True, )
