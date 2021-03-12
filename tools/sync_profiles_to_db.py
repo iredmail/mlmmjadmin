@@ -213,6 +213,14 @@ def __sync_addresses(mail, addresses, address_type):
 
         try:
             conn.modify_s(ldn, mod_attr)
+        except ldap.OBJECT_CLASS_VIOLATION:
+            print("<<< ERROR >>> Seems your OpenLDAP server doesn't support "
+                  "`listOwner` and `listModerator` attributes which were "
+                  "introduced in iRedMail-1.4.0, please follow iRedMail "
+                  "upgrade tutorial to update LDAP schema file "
+                  "`iredmail.schema` first: "
+                  "https://docs.iredmail.org/iredmail.releases.html")
+            sys.exit()
         except Exception as e:
             msg = "Error while updating {} of mailing list {}: {}".format(address_type, mail, repr(e))
             return (False, msg)
@@ -240,11 +248,17 @@ for mail in mls:
     if qr[0]:
         print("[OK] {}: Synced owners.".format(mail))
     else:
-        print("<<< ERROR >>> {}: Failed to sync owners: {}".format(mail, qr[1]))
+        if qr[1] == "OBJECT_CLASS_VIOLATION":
+            print("<<< SKIP >>> Please update OpenLDAP schema file `iredmail.schema` first.")
+        else:
+            print("<<< ERROR >>> {}: Failed to sync owners: {}".format(mail, qr[1]))
 
     moderators = p.get("moderators", [])
     qr = sync_moderators(mail, moderators)
     if qr[0]:
         print("[OK] {}: Synced moderators.".format(mail))
     else:
-        print("<<< ERROR >>> {}: Failed to sync moderators: {}".format(mail, qr[1]))
+        if qr[1] == "OBJECT_CLASS_VIOLATION":
+            print("<<< SKIP >>> Please update OpenLDAP schema file `iredmail.schema` first.")
+        else:
+            print("<<< ERROR >>> {}: Failed to sync moderators: {}".format(mail, qr[1]))

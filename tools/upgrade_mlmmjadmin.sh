@@ -432,6 +432,9 @@ restart_mlmmjadmin
 cd ${NEW_MA_ROOT_DIR}/
 rm -f settings.py{c,o} tools/settings.py{,c,o}
 
+echo "* Sync mailing list profiles to SQL/LDAP."
+${CMD_PYTHON3} tools/sync_profiles_to_db.py -A
+
 echo "* Upgrading completed."
 
 cat <<EOF

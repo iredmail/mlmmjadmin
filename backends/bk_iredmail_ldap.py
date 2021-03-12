@@ -312,7 +312,8 @@ def __ldif_ml(mail,
               max_message_size=None,
               alias_domains=None,
               domain_status=None,
-              moderators=None):
+              moderators=None,
+              owners=None):
     """Generate LDIF (a dict) for a new (mlmmj) mailing list account.
 
     :param mail: mail address of new (mlmmj) mailing list account
@@ -356,10 +357,21 @@ def __ldif_ml(mail,
     if domain_status != 'active':
         ldif += __attr_ldif('domainStatus', 'disabled')
 
+    _allowed_users = set()
     if moderators:
         _addresses = [str(i).strip().lower() for i in moderators if utils.is_email(i)]
         if _addresses:
-            ldif += __attr_ldif('listAllowedUser', _addresses)
+            _allowed_users.update(_addresses)
+            ldif += __attr_ldif('listModerator', _addresses)
+
+    if owners:
+        _addresses = [str(i).strip().lower() for i in owners if utils.is_email(i)]
+        if _addresses:
+            _allowed_users.update(_addresses)
+            ldif += __attr_ldif('listOwner', _addresses)
+
+    if _allowed_users:
+        ldif += __attr_ldif('listAllowedUser', list(_allowed_users))
 
     return ldif
 
@@ -494,6 +506,7 @@ def add_maillist(mail, form, conn=None):
         max_message_size = form_utils.get_max_message_size(form)
 
         moderators = form.get('moderators', '').split(',')
+        owners = form.get('owner', '').split(',')
 
         dn_ml = 'mail=%s,ou=Groups,domainName=%s,%s' % (mail, domain, settings.iredmail_ldap_basedn)
         ldif_ml = __ldif_ml(mail=mail,
@@ -503,7 +516,8 @@ def add_maillist(mail, form, conn=None):
                             max_message_size=max_message_size,
                             alias_domains=alias_domains,
                             domain_status=domain_status,
-                            moderators=moderators)
+                            moderators=moderators,
+                            owners=owners)
 
         conn.add_s(dn_ml, ldif_ml)
         logger.info('Created: {0}.'.format(mail))
@@ -565,10 +579,23 @@ def update_maillist(mail, form, conn=None):
     if 'max_message_size' in form:
         mod_attrs += __mod_replace('maxMessageSize', form_utils.get_max_message_size(form))
 
+    _allowed_users = set()
     if 'moderators' in form:
         moderators = form.get('moderators', '').split(',')
         moderators = [str(i).strip().lower() for i in moderators if utils.is_email(i)]
-        mod_attrs += __mod_replace('listAllowedUser', moderators)
+        mod_attrs += __mod_replace('listModerator', moderators)
+
+        _allowed_users.update(moderators)
+
+    if 'owner' in form:
+        owners = form.get('owner', '').split(',')
+        owners = [str(i).strip().lower() for i in owners if utils.is_email(i)]
+        mod_attrs += __mod_replace('listOwner', owners)
+
+        _allowed_users.update(owners)
+
+    if _allowed_users:
+        mod_attrs += __mod_replace('listAllowedUser', list(moderators))
 
     if mod_attrs:
         if not conn:
