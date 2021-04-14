@@ -140,9 +140,9 @@ def get_profile(mail):
     r = requests.get(url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
-        return _json['_data']
+        return (True, _json["_data"])
     else:
-        print("Error while getting profiles: {0}".format(_json['_msg']))
+        return (False, _json["_msg"])
 
 
 def get_member_profiles(mail):
@@ -241,8 +241,12 @@ def sync_moderators(mail, moderators):
 
 
 for mail in mls:
-    p = get_profile(mail)
+    qr = get_profile(mail)
+    if not qr[0]:
+        print("Error while getting profile: {} -> {}".format(mail, qr[1]))
+        continue
 
+    p = qr[1]
     owners = p.get("owners", [])
     qr = sync_owners(mail, owners)
     if qr[0]:
