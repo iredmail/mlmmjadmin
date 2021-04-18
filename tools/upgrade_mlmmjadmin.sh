@@ -293,7 +293,7 @@ else
 
     if [ X"$(has_python_module requests)" == X'NO' ]; then
         echo "  + [required] requests"
-        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} dns/py-requests"
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} www/py-requests"
         [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-requests"
     fi
 
