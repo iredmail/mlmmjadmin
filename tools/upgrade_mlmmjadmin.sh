@@ -160,7 +160,7 @@ install_pkgs()
     elif [ X"${DISTRO}" == X'FREEBSD' ]; then
         for _port in $@; do
             echo "Install package: ${_port}"
-            cd /usr/ports/$@
+            cd /usr/ports/$_port
             make USES=python:3.5+ install clean
         done
     elif [ X"${DISTRO}" == X'OPENBSD' ]; then
