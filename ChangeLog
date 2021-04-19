@@ -1,3 +1,7 @@
+# 3.1.1:
+    - tools/upgrade_mlmmjadmin.sh: Fix incorrect variable and port path for
+      FreeBSD. Thanks @CiaranOMara for the contribution. #17
+
 # 3.1:
     - tools/sync_profiles_to_db.py: Sync mailing list profiles to SQL/LDAP.
       Currently only owners and moderators are synced.
