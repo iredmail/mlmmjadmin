@@ -160,7 +160,7 @@ install_pkgs()
     elif [ X"${DISTRO}" == X'FREEBSD' ]; then
         for _port in $@; do
             echo "Install package: ${_port}"
-            cd /usr/ports/$@
+            cd /usr/ports/$_port
             make USES=python:3.5+ install clean
         done
     elif [ X"${DISTRO}" == X'OPENBSD' ]; then
@@ -293,7 +293,7 @@ else
 
     if [ X"$(has_python_module requests)" == X'NO' ]; then
         echo "  + [required] requests"
-        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} dns/py-requests"
+        [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} www/py-requests"
         [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-requests"
     fi
 
