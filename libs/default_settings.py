@@ -108,7 +108,7 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
     # only send the moderation mails to that address. In practice this means that
     # a moderator sending mail to the list won't bother all the other moderators
     # with his mail.
-    # 'ifmodsendonlymodmoderate': 'ifmodsendonlymodmoderate',
+    'if_mod_send_only_mod_moderate': 'ifmodsendonlymodmoderate',
 
     # Either parameter `owner` or `moderators` is required.
     # If both exists, `moderators` has higher priority.
@@ -278,6 +278,7 @@ MLMMJ_DEFAULT_PROFILE_SETTINGS = {
     # 'disable_notify_when_access_denied': 'yes',
     # 'disable_notify_when_subscriber_only': 'yes',
     # 'disable_notify_when_moderator_only': 'yes',
+    'if_mod_send_only_mod_moderate': 'yes',
 }
 
 # Ignore values submitted from API client, always set certain parameters to
