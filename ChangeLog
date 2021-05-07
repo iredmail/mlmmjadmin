@@ -1,3 +1,6 @@
+# 3.1.2
+    - tools/maillist_admin.py: don't call `add_subscribers()` for backends.
+
 # 3.1.1:
     - tools/upgrade_mlmmjadmin.sh: Fix incorrect variable and port path for
       FreeBSD. Thanks @CiaranOMara for the contribution. #17
