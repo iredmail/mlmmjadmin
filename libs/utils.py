@@ -35,6 +35,8 @@ def str2bytes(s) -> bytes:
         for (k, v) in list(s.items()):
             new_dict[k] = str2bytes(v)  # v could be list/tuple/dict
         s = new_dict
+    elif s is None:
+        pass
     else:
         s = __str2bytes(s)
 
