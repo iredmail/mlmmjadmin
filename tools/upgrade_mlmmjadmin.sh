@@ -90,11 +90,16 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         echo "<<< ERROR >>> Please contact support@iredmail.org to solve it."
         exit 255
     fi
+
 elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
     export DISTRO='FREEBSD'
     export DIR_RC_SCRIPTS='/usr/local/etc/rc.d'
     export CMD_PYTHON3='/usr/local/bin/python3'
-    export CMD_PIP3='/usr/local/bin/pip3'
+
+    [ -x /usr/local/bin/pip-3.8 ] && export CMD_PIP3='/usr/local/bin/pip-3.8'
+    [ -x /usr/local/bin/pip3 ] && export CMD_PIP3='/usr/local/bin/pip3'
+    [ -x /usr/local/bin/pip ] && export CMD_PIP3='/usr/local/bin/pip'
+
 elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
     export DISTRO='OPENBSD'
     export DIR_RC_SCRIPTS='/etc/rc.d'

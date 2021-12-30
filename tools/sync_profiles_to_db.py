@@ -68,7 +68,7 @@ elif settings.backend_api == 'bk_iredmail_ldap' or settings.backend_cli == 'bk_i
     _wrap = LDAPWrap()
     conn = _wrap.conn
 else:
-    print("mlmmjadmin is not configured to interactive with SQL/LDAP. Abort.")
+    print("mlmmjadmin is not configured to interactive with SQL/LDAP. Exit.")
     sys.exit()
 
 # Available mailing lists.
