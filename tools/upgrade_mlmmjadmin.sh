@@ -9,6 +9,8 @@
 #       # bash upgrade_mlmmjadmin.sh
 #
 
+export LC_ALL='C'
+
 export SYS_USER_MLMMJ='mlmmj'
 export SYS_GROUP_MLMMJ='mlmmj'
 export SYS_USER_ROOT='root'
