@@ -66,6 +66,9 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         elif [ X"${DISTRO_CODENAME}" == X'bionic' ]; then
             # Ubuntu 18.04
             export UWSGI_PY3_PLUGIN_NAME='python36'
+        elif [ X"${DISTRO_CODENAME}" == X'jammy' ]; then
+            # Ubuntu 22.04
+            export UWSGI_PY3_PLUGIN_NAME='python3'
         else
             export UNSUPPORTED_RELEASE="YES"
         fi
