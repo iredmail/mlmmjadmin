@@ -1,5 +1,8 @@
+# 3.1.4
+    - tools/upgrade_mlmmjadmin.sh: mark Ubuntu 22.04 as supported release.
+
 # 3.1.3
-    - tools/upgrade_mlmmjadmin.sh: not mark Debian 11 as supported release.
+    - tools/upgrade_mlmmjadmin.sh: mark Debian 11 as supported release.
 
 # 3.1.2
     - tools/maillist_admin.py: don't call `remove_subscribers()` for backends.
