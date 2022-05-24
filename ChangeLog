@@ -1,3 +1,7 @@
+# 3.1.5
+    - Fixed: do not force moderation while access is set to moderators only.
+      Thanks to Gavin for the report.
+
 # 3.1.4
     - tools/upgrade_mlmmjadmin.sh: mark Ubuntu 22.04 as supported release.
 

@@ -319,10 +319,6 @@ def __update_boolean_param(mail,
             if param == 'modonlypost':
                 __remove_param_file(mail=mail, param='subonlypost')
 
-                # Create 'control/moderated' also
-                _f = __get_param_file(mail=mail, param='moderated')
-                open(_f, 'a', encoding='utf-8').close()
-
         except Exception as e:
             logger.error("[{0}] {1}, error while updating (boolean) parameter: {2} -> {3}, {4}".format(
                 web.ctx.ip, mail, param, value, e))
