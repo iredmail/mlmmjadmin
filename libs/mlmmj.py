@@ -721,12 +721,12 @@ def __add_subscribers_with_confirm(mail,
 
     # mlmmj-sub arguments
     #
-    # -L: Full path to list directory
-    # -a: Email address to subscribe
     # -C: Request mail confirmation
+    # -L: Full path to list directory
     # -d: Subscribe to `digest` version of the list
     # -n: Subscribe to nomail version of the list
-    _cmd = [_cmd_mlmmj_sub, '-L', _dir, '-C']
+    # -a: Email address to subscribe
+    _cmd = [_cmd_mlmmj_sub, '-C', '-L', _dir]
 
     if subscription == 'digest':
         _cmd.append('-d')
