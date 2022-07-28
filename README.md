@@ -1,5 +1,7 @@
 # mlmmjadmin
 
+> Don't forget to check out our lightweight email archiving software: https://spiderd.io/
+
 mlmmjadmin is RESTful API server used to manage mlmmj (mailing list manager).
 Check `docs/` directory for more detailed documents.
 
