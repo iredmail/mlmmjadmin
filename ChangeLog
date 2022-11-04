@@ -1,3 +1,7 @@
+# 3.1.6
+    - Ship Python module web.py (github.com/webpy/webpy, public domain).
+    - OpenBSD: Fix incorrect shell path in rc script.
+
 # 3.1.5
     - Fixed: do not force moderation while access is set to moderators only.
       Thanks to Gavin for the report.
