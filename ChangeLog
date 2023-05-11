@@ -1,3 +1,6 @@
+# 3.1.7
+    - Fixed: incorrect import order which causes tools/*.py failed.
+
 # 3.1.6
     - Ship Python module web.py (github.com/webpy/webpy, public domain).
     - OpenBSD: Fix incorrect shell path in rc script.
