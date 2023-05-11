@@ -7,11 +7,12 @@
 import sys
 import os
 import requests
-import web
-web.config.debug = False
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/..')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../backends')
+
+import web
+web.config.debug = False
 
 from libs.utils import is_email, is_domain, bytes2str, str2bytes
 import settings
