@@ -77,7 +77,10 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         export DISTRO='DEBIAN'
 
         # Set distro code name and unsupported releases.
-        if grep -i '^11' /etc/debian_version &>/dev/null; then
+        if grep -i '^12' /etc/debian_version &>/dev/null; then
+            export DISTRO_VERSION='12'
+            export UWSGI_PY3_PLUGIN_NAME='python311'
+        elif grep -i '^11' /etc/debian_version &>/dev/null; then
             export DISTRO_VERSION='11'
             export UWSGI_PY3_PLUGIN_NAME='python39'
         elif grep -i '^10' /etc/debian_version &>/dev/null; then
