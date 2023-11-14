@@ -41,7 +41,10 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         export DISTRO='RHEL'
 
         # Get distribution version
-        if grep 'release 8' /etc/redhat-release &>/dev/null; then
+        if grep 'release 9' /etc/redhat-release &>/dev/null; then
+            export DISTRO_VERSION='9'
+            export UWSGI_PY3_PLUGIN_NAME='none'
+        elif grep 'release 8' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='8'
             export UWSGI_PY3_PLUGIN_NAME='none'
         elif grep 'release 7' /etc/redhat-release &>/dev/null; then
