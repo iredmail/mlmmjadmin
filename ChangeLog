@@ -1,3 +1,6 @@
+# 3.1.9
+    - tools/upgrade_mlmmjadmin.sh: mark CentOS Stream / Rocky 9 as supported release.
+
 # 3.1.8
     - tools/upgrade_mlmmjadmin.sh: mark Debian 12 as supported release.
 
