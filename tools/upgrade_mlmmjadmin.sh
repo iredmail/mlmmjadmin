@@ -43,7 +43,7 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         # Get distribution version
         if grep 'release 9' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='9'
-            export UWSGI_PY3_PLUGIN_NAME='none'
+            export UWSGI_PY3_PLUGIN_NAME='python3'
         elif grep 'release 8' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='8'
             export UWSGI_PY3_PLUGIN_NAME='none'
@@ -231,7 +231,7 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
             DEP_PKGS="${DEP_PKGS} python36-PyMySQL openldap-devel python3-devel"
             DEP_PIP3_MODS="${DEP_PIP3_MODS} python-ldap>=3.3.1"
         fi
-    else
+    elif [ X"${DISTRO_VERSION}" == X'8' ]; then
         # CentOS 8
         DEP_PKGS="${DEP_PKGS} python36 python3-pip python3-requests"
         DEP_PIP3_MODS="${DEP_PIP3_MODS} uwsgi"
@@ -239,8 +239,14 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
         [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]  && DEP_PKGS="${DEP_PKGS} python3-ldap python3-PyMySQL"
-    fi
+    elif [ X"${DISTRO_VERSION}" == X'9' ]; then
+        # CentOS 9
+        DEP_PKGS="${DEP_PKGS} python3-pip python3-requests uwsgi-logger-syslog uwsgi-plugin-python3"
 
+        [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
+        [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
+        [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]  && DEP_PKGS="${DEP_PKGS} python3-ldap python3-PyMySQL"
+    fi
 elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
     DEP_PKGS="${DEP_PKGS} python3 python3-pip python3-requests uwsgi-plugin-python3"
 
