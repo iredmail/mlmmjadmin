@@ -370,6 +370,7 @@ def add_maillist(mail, form, conn=None):
 
         params = {
             'active': 1,
+            'is_maillist': 1,
             'address': mail,
             'domain': domain,
             'forwarding': mail,
