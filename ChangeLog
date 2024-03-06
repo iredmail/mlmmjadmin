@@ -1,3 +1,7 @@
+# 3.2.1
+    - tools/upgrade_mlmmjadmin.sh: Install uwsgi and plugins from yum repo
+      instead of pip on CentOS Stream / Rocky 8.
+
 # 3.2.0
     - [SQL backends] Fixed: not set `forwardings.is_maillist=1` while creating
       mailing list.
