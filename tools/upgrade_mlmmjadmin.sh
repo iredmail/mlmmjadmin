@@ -72,6 +72,9 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         elif [ X"${DISTRO_CODENAME}" == X'jammy' ]; then
             # Ubuntu 22.04
             export UWSGI_PY3_PLUGIN_NAME='python3'
+        elif [ X"${DISTRO_CODENAME}" == X'noble' ]; then
+            # Ubuntu 24.04. Python 3.12
+            export UWSGI_PY3_PLUGIN_NAME='python3'
         else
             export UNSUPPORTED_RELEASE="YES"
         fi
