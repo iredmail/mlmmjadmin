@@ -110,9 +110,9 @@ class Owners(object):
         if not mlmmj.is_maillist_exists(mail):
             return api_render((False, 'NO_SUCH_ACCOUNT'))
 
-        owners = mlmmj.get_owners(mail=mail)
+        qr = mlmmj.get_owners(mail=mail)
 
-        return api_render((True, owners))
+        return api_render(qr)
 
     @api_acl
     def PUT(self, mail):
@@ -157,9 +157,9 @@ class Moderators(object):
         if not mlmmj.is_maillist_exists(mail):
             return api_render((False, 'NO_SUCH_ACCOUNT'))
 
-        moderators = mlmmj.get_moderators(mail=mail)
+        qr= mlmmj.get_moderators(mail=mail)
 
-        return api_render((True, moderators))
+        return api_render(qr)
 
     @api_acl
     def PUT(self, mail):
