@@ -98,9 +98,9 @@ Parameter | Sample Usage | Default Value | Comment
 
 Parameter | Sample Usage | Comment
 ---|---|---
-`add_owners` | `add_owners=<mail>,<mail2>,<mail3>` | | Add one or multiple owners. Multiple owners must be separated by comma.
-`remove_owners` | `remove_owners=<mail>,<mail2>,<mail3>` | | Remove one or multiple owners. Multiple owners must be separated by comma.
-`owners` | `owners=<mail>,<mail2>,<mail3>` | | Reset owners. Multiple owners must be separated by comma.
+`add_owners` | `add_owners=<mail>,<mail2>,<mail3>` | Add one or multiple owners. Multiple owners must be separated by comma.
+`remove_owners` | `remove_owners=<mail>,<mail2>,<mail3>` | Remove one or multiple owners. Multiple owners must be separated by comma.
+`owners` | `owners=<mail>,<mail2>,<mail3>` | Reset owners. Multiple owners must be separated by comma.
 
 ## Moderators
 
@@ -109,9 +109,9 @@ Parameter | Sample Usage | Comment
 
 Parameter | Sample Usage | Comment
 ---|---|---
-`add_moderators` | `add_moderators=<mail>,<mail2>,<mail3>` | | Add one or multiple moderators. Multiple moderators must be separated by comma.
-`remove_moderators` | `remove_moderators=<mail>,<mail2>,<mail3>` | | Remove one or multiple moderators. Multiple moderators must be separated by comma.
-`moderators` | `moderators=<mail>,<mail2>,<mail3>` | | Reset moderators. Multiple moderators must be separated by comma.
+`add_moderators` | `add_moderators=<mail>,<mail2>,<mail3>` | Add one or multiple moderators. Multiple moderators must be separated by comma.
+`remove_moderators` | `remove_moderators=<mail>,<mail2>,<mail3>` | Remove one or multiple moderators. Multiple moderators must be separated by comma.
+`moderators` | `moderators=<mail>,<mail2>,<mail3>` | Reset moderators. Multiple moderators must be separated by comma.
 
 ## Delete mailing list account
 
