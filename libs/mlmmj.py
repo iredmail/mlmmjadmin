@@ -1159,7 +1159,7 @@ def remove_owners(mail, owners):
     """
     f = __get_param_file(mail=mail, param="owner")
 
-    return __remove_lines_in_file(f=f, lines=owners)
+    return __remove_lines_in_file(path=f, lines=owners)
 
 
 def reset_owners(mail, owners):
@@ -1200,7 +1200,7 @@ def remove_moderators(mail, moderators):
     """
     f = __get_param_file(mail=mail, param="moderators")
 
-    return __remove_lines_in_file(f=f, lines=moderators)
+    return __remove_lines_in_file(path=f, lines=moderators)
 
 def reset_moderators(mail, moderators):
     """Reset moderators to given addresses.
