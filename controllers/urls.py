@@ -2,8 +2,14 @@
 from libs.regxes import email as e
 
 urls = [
-    # Per-maillist profile
+    # Profile
     '/api/(%s)$' % e, 'controllers.profile.Profile',
+
+    # Owners.
+    '/api/(%s)/owners' % e, 'controllers.profile.Owners',
+
+    # Moderators.
+    '/api/(%s)/moderators' % e, 'controllers.profile.Moderators',
 
     #
     # Per-maillist subscribers

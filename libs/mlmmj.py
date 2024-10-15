@@ -162,7 +162,7 @@ def __get_boolean_param_value(mail, param):
         return 'no'
 
 
-def __get_list_param_value(mail, param, is_email=False, param_file=None):
+def __get_list_param_value(mail, param, is_email=False, param_file=None) -> list:
     if not param_file:
         param_file = __get_param_file(mail=mail, param=param)
 
@@ -183,6 +183,7 @@ def __get_list_param_value(mail, param, is_email=False, param_file=None):
             logger.error('Error while getting (list) parameter value: {0} -> {1}'.format(param, e))
 
     _values.sort()
+
     return _values
 
 
@@ -385,8 +386,6 @@ def __update_list_param(mail, param, value, param_file=None, is_email=False):
 
     if _values:
         try:
-            param_file = __get_param_file(mail=mail, param=param)
-
             if param == 'listaddress':
                 # Remove primary address(es)
                 _values = [v for v in _values if v != mail]
@@ -1129,3 +1128,86 @@ def subscribe_to_lists(subscriber,
             return qr
 
     return (True, )
+
+
+def get_owners(mail):
+    """Get owners of given mailing list.
+
+    :param mail: mail address of mailing list account
+    """
+    owners = __get_list_param_value(mail=mail, param="owner", is_email=True, param_file=None)
+
+    return (True, owners)
+
+
+def add_owners(mail, owners):
+    """Add owners to given mailing list.
+
+    :param mail: mail address of mailing list account
+    :param owners: a list/tuple/set of owners' mail addresses
+    """
+    f = __get_param_file(mail=mail, param="owner")
+
+    return __add_lines_in_file(f=f, lines=owners)
+
+
+def remove_owners(mail, owners):
+    """Remove owners from given mailing list.
+
+    :param mail: mail address of mailing list account
+    :param owners: a list/tuple/set of owners' mail addresses
+    """
+    f = __get_param_file(mail=mail, param="owner")
+
+    return __remove_lines_in_file(f=f, lines=owners)
+
+
+def reset_owners(mail, owners):
+    """Reset owners to given addresses.
+
+    :param mail: mail address of mailing list account
+    :param owners: a list/tuple/set of owners' mail addresses
+    """
+    return __update_list_param(mail=mail, param="owner", value=owners, is_email=True, param_file=None)
+
+
+def get_moderators(mail):
+    """Get moderators of given mailing list.
+
+    :param mail: mail address of mailing list account
+    """
+    moderators = __get_list_param_value(mail=mail, param="moderators", is_email=True, param_file=None)
+
+    return (True, moderators)
+
+
+def add_moderators(mail, moderators):
+    """Add moderators to given mailing list.
+
+    :param mail: mail address of mailing list account
+    :param moderators: a list/tuple/set of moderators' mail addresses
+    """
+    f = __get_param_file(mail=mail, param="moderators")
+
+    return __add_lines_in_file(f=f, lines=moderators)
+
+
+def remove_moderators(mail, moderators):
+    """Remove moderators from given mailing list.
+
+    :param mail: mail address of mailing list account
+    :param moderators: a list/tuple/set of moderators' mail addresses
+    """
+    f = __get_param_file(mail=mail, param="moderators")
+
+    return __remove_lines_in_file(f=f, lines=moderators)
+
+def reset_moderators(mail, moderators):
+    """Reset moderators to given addresses.
+
+    :param mail: mail address of mailing list account
+    :param moderators: a list/tuple/set of moderators' mail addresses
+    """
+    f = __get_param_file(mail=mail, param="moderators")
+
+    return __update_list_param(mail=mail, param="moderators", value=moderators, is_email=True, param_file=f)

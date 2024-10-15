@@ -63,7 +63,7 @@ Parameter | Sample Usage | Default Value | Comment
 `footer_text` | `footer_text=footer in plain text` || Append footer (in plain text format) to every email sent to the list.
 `footer_html` | `footer_text=<p>footer in html</p>` || Append footer (in html format) to every email sent to the list.
 
-## Parameters used to add subscribers
+## Add subscribers
 
 `POST /api/<mail>/subscribers`
 
@@ -73,7 +73,7 @@ Parameter | Sample Usage | Default Value | Comment
 `require_confirm` | `require_confirm=yes` | `yes` | Send an email to subscriber for confirm. Subscriber will be added as member after confirmed.
 `subscription` | `subscription=normal` | `normal` | Specify the subscription version: normal, digest, nomail.
 
-## Parameters used to remove subscribers
+## Remove subscribers
 
 `POST /api/<mail>/subscribers`
 
@@ -81,7 +81,7 @@ Parameter | Sample Usage | Default Value | Comment
 ---|---|---|---
 `remove_subscribers` | `remove_subscribers=<mail>,<mail2>,<mail3>` | | Remove multiple subscribers from mailing list. Multiple subscribers must be separated by comma. If `remove_subscribers=ALL` (all upper cases), all subscribers will be removed.
 
-## Parameters used to subscribe one subscriber to multiple mailing lists
+## Subscribe one subscriber to multiple mailing lists
 
 `POST /api/<subscriber>/subscriber`
 
@@ -91,7 +91,29 @@ Parameter | Sample Usage | Default Value | Comment
 `require_confirm` | `require_confirm=yes` | `yes` | Send an email to subscriber for confirm. Subscriber will be added as member after confirmed.
 `subscription` | `subscription=normal` | `normal` | Subscribe to specified subscription version, defaults to `normal`.
 
-## Parameters used to delete mailing list account
+## Owners
+
+- Get owners: `GET /api/<mail>/owners`
+- Add, remove, reset owners: `PUT /api/<mail>/owners`
+
+Parameter | Sample Usage | Comment
+---|---|---
+`add_owners` | `add_owners=<mail>,<mail2>,<mail3>` | | Add one or multiple owners. Multiple owners must be separated by comma.
+`remove_owners` | `remove_owners=<mail>,<mail2>,<mail3>` | | Remove one or multiple owners. Multiple owners must be separated by comma.
+`owners` | `owners=<mail>,<mail2>,<mail3>` | | Reset owners. Multiple owners must be separated by comma.
+
+## Moderators
+
+- Get moderators: `GET /api/<mail>/moderators`
+- Add, remove, reset moderators: `PUT /api/<mail>/moderators`
+
+Parameter | Sample Usage | Comment
+---|---|---
+`add_moderators` | `add_moderators=<mail>,<mail2>,<mail3>` | | Add one or multiple moderators. Multiple moderators must be separated by comma.
+`remove_moderators` | `remove_moderators=<mail>,<mail2>,<mail3>` | | Remove one or multiple moderators. Multiple moderators must be separated by comma.
+`moderators` | `moderators=<mail>,<mail2>,<mail3>` | | Reset moderators. Multiple moderators must be separated by comma.
+
+## Delete mailing list account
 
 > NOTE: Parameters used by `DELETE` http method must be appended to the URL.
 > For example:
