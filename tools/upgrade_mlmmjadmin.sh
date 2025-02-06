@@ -324,15 +324,6 @@ else
         [ X"${DISTRO}" == X'FREEBSD' ]  && DEP_PKGS="${DEP_PKGS} www/py-requests"
         [ X"${DISTRO}" == X'OPENBSD' ]  && DEP_PKGS="${DEP_PKGS} py3-requests"
     fi
-
-    echo "  + [required] web.py"
-    if [ X"$(has_python_module web)" == X'NO' ]; then
-        if [ X"${KERNEL_NAME}" == X'LINUX' -o X"${KERNEL_NAME}" == X'OPENBSD' ]; then
-            DEP_PIP3_MODS="${DEP_PIP3_MODS} web.py>=0.61"
-        elif [ X"${DISTRO}" == X'FREEBSD' ]; then
-            DEP_PKGS="${DEP_PKGS} www/webpy"
-        fi
-    fi
 fi
 
 if [ X"${DEP_PKGS}" != X'' ]; then
