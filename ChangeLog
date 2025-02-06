@@ -1,3 +1,8 @@
+# 3.3.1
+
+- tools/upgrade_mlmmjadmin.sh: do not install web.py since it's shipped
+  internally.
+
 # 3.3.0
 
 - New URI:
