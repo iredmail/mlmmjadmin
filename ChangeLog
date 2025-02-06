@@ -1,3 +1,9 @@
+# 3.3.0
+
+- New URI:
+    - `/api/<mail>/owners`: used to get, add, remove, reset mailing list owners.
+    - `/api/<mail>/moderators`: used to get, add, remove, reset mailing list moderators.
+
 # 3.2.2
 
 - tools/upgrade_mlmmjadmin.sh: mark Ubuntu 24.04 as supported release.
