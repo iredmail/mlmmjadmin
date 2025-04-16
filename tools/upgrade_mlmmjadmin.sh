@@ -448,6 +448,9 @@ restart_mlmmjadmin
 cd ${NEW_MA_ROOT_DIR}/
 rm -f settings.py{c,o} tools/settings.py{,c,o}
 
+# Sleep 2 seconds to wait for service getting up and running.
+sleep 2
+
 echo "* Sync mailing list profiles to SQL/LDAP."
 ${CMD_PYTHON3} tools/sync_profiles_to_db.py -A
 
