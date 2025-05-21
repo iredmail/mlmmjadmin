@@ -1,4 +1,4 @@
-# 3.3.2
+# 3.4.0
 
 - Always set header `Reply-To:` to mailing list address.
   Note: this reverts the change introduced in v1.7.0.
