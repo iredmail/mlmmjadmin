@@ -1,3 +1,8 @@
+# 3.3.2
+
+- Always set header `Reply-To:` to mailing list address.
+  Note: this reverts the change introduced in v1.7.0.
+
 # 3.3.1
 
 - tools/upgrade_mlmmjadmin.sh: do not install web.py since it's shipped
