@@ -314,7 +314,7 @@ MLMMJ_DEFAULT_SUB_DIRS = [
 MLMMJ_DEFAULT_CUSTOM_HEADERS = {
     'Precedence': 'bulk',
     'List-Id': '<%(mail)s>',
-    # 'Reply-To': '%(mail)s',
+    'Reply-To': '%(mail)s',
     'List-Post': '<mailto:%(mail)s>',
     'List-Subscribe': '<mailto:%(listname)s+subscribe@%(domain)s?subject=Subscribe>',
     'List-Unsubscribe': '<mailto:%(listname)s+unsubscribe@%(domain)s?subject=Unsubscribe>',
