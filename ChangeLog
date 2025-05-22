@@ -1,7 +1,10 @@
 # 3.4.0
 
-- Always set header `Reply-To:` to mailing list address.
-  Note: this reverts the change introduced in v1.7.0.
+- Always set header `Reply-To:` to mailing list address. Notes:
+    - For existing mailing list, you have to add `Reply-To: list@domain.com`
+      in file `/var/vmail/mlmmj/<domain>/<list>/control/customheaders`
+      manually.
+    - This reverts the change introduced in v1.7.0.
 
 # 3.3.1
 
