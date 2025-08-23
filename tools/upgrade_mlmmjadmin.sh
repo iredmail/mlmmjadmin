@@ -83,7 +83,10 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         export DISTRO='DEBIAN'
 
         # Set distro code name and unsupported releases.
-        if grep -i '^12' /etc/debian_version &>/dev/null; then
+        if grep -i '^13' /etc/debian_version &>/dev/null; then
+            export DISTRO_VERSION='13'
+            export UWSGI_PY3_PLUGIN_NAME='python313'
+        elif grep -i '^12' /etc/debian_version &>/dev/null; then
             export DISTRO_VERSION='12'
             export UWSGI_PY3_PLUGIN_NAME='python311'
         elif grep -i '^11' /etc/debian_version &>/dev/null; then
@@ -252,6 +255,10 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
     fi
 elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
     DEP_PKGS="${DEP_PKGS} python3 python3-pip python3-requests uwsgi-plugin-python3"
+
+    # Debian 13.
+    # `multipart` is required by web.py.
+    [[ ${DISTRO_CODENAME} == 'trixie' ]] && DEP_PKGS="${DEP_PKGS} python3-multipart"
 
     [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-pymysql"
     [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"

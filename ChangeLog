@@ -1,3 +1,7 @@
+# 3.4.1
+
+- Update embedded web.py to 0.70.
+
 # 3.4.0
 
 - Always set header `Reply-To:` to mailing list address. Notes:
