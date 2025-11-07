@@ -190,12 +190,12 @@ elif action == 'has_subscriber':
             print("[NO] Mailing list <{0}> does NOT have subscriber <{1}>.".format(mail, _subscriber))
 
 elif action == 'subscribers':
-    url = api_url + '/subscribers'
+    url = api_url + '/subscribers?email_only=true'
     r = requests.get(url, headers=api_headers, verify=verify_ssl)
     _json = r.json()
     if _json['_success']:
         for i in _json['_data']:
-            print("{0}, ({1})".format(i['mail'], i['subscription']))
+            print(f"{i}")
     else:
         print("Error: {0}".format(_json['_msg']))
 
