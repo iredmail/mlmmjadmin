@@ -20,6 +20,7 @@
 #   - iredmail_sql_db_user: SQL username. e.g. 'vmailadmin'.
 #                           Read+write privilege is required.
 #   - iredmail_sql_db_password: SQL user password.
+#   - iredmail_sql_db_use_ssl (optional): force secure connection.
 
 import uuid
 import web
@@ -40,6 +41,7 @@ class MYSQLWrap(object):
         conn = web.database(dbn='mysql',
                             host=settings.iredmail_sql_db_server,
                             port=int(settings.iredmail_sql_db_port),
+                            ssl={"ssl", settings.__dict__.get("iredmail_sql_db_use_ssl", False)},
                             db=settings.iredmail_sql_db_name,
                             user=settings.iredmail_sql_db_user,
                             pw=settings.iredmail_sql_db_password,
@@ -72,6 +74,7 @@ class PGSQLWrap(object):
             self.conn = web.database(dbn='postgres',
                                      host=settings.iredmail_sql_db_server,
                                      port=int(settings.iredmail_sql_db_port),
+                                     ssl={"ssl", settings.__dict__.get("iredmail_sql_db_use_ssl", False)},
                                      db=settings.iredmail_sql_db_name,
                                      user=settings.iredmail_sql_db_user,
                                      pw=settings.iredmail_sql_db_password)

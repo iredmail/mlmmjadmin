@@ -1,3 +1,7 @@
+# 3.6.0
+
+- Supports secure SQL connection in `backends/bk_iredmail_sql.py`.
+
 # 3.5.0
 
 - Update embedded web.py to 0.70.
