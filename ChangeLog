@@ -1,3 +1,8 @@
+# 3.6.1
+
+- Fix secure SQL connection argument in `backends/bk_iredmail_sql.py` for
+  PostgreSQL backend.
+
 # 3.6.0
 
 - Supports secure SQL connection in `backends/bk_iredmail_sql.py`.
