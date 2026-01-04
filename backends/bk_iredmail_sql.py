@@ -70,14 +70,18 @@ class PGSQLWrap(object):
 
     def __init__(self):
         # Initial DB connection and cursor.
+        kw = {}
+        if settings.__dict__.get('iredmail_sql_db_use_ssl', False):
+            kw["sslmode"] = "prefer"
+
         try:
             self.conn = web.database(dbn='postgres',
                                      host=settings.iredmail_sql_db_server,
                                      port=int(settings.iredmail_sql_db_port),
-                                     ssl={"ssl", settings.__dict__.get("iredmail_sql_db_use_ssl", False)},
                                      db=settings.iredmail_sql_db_name,
                                      user=settings.iredmail_sql_db_user,
-                                     pw=settings.iredmail_sql_db_password)
+                                     pw=settings.iredmail_sql_db_password,
+                                     **kw)
             self.conn.supports_multiple_insert = True
         except Exception as e:
             logger.error("SQL error: {0}".format(e))
