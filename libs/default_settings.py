@@ -144,6 +144,13 @@ MLMMJ_BOOLEAN_WEB_PARAMS = {
 
     'disable_archive': 'noarchive',
     'tocc': 'tocc',
+
+    # Reply to original sender instead of mailing list.
+    # When this file is present, the `From:` line of mails will be added as a
+    # `Reply-To:` header. This allows the mail to be delivered safely when
+    # DMARC protected emails are received from the list.
+    'reply_to_sender': 'replyto',
+
     #
     # Custom parameters which are not supported by mlmmj itself
     #
