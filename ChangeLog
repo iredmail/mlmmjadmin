@@ -1,3 +1,8 @@
+# 3.6.2
+
+- Fix a syntax error in backends/bk_iredmail_sql.py.
+  Thanks to Juanito.
+
 # 3.6.1
 
 - Fix secure SQL connection argument in `backends/bk_iredmail_sql.py` for

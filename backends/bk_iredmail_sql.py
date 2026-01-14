@@ -41,7 +41,7 @@ class MYSQLWrap(object):
         conn = web.database(dbn='mysql',
                             host=settings.iredmail_sql_db_server,
                             port=int(settings.iredmail_sql_db_port),
-                            ssl={"ssl", settings.__dict__.get("iredmail_sql_db_use_ssl", False)},
+                            ssl={"ssl": settings.__dict__.get("iredmail_sql_db_use_ssl", False)},
                             db=settings.iredmail_sql_db_name,
                             user=settings.iredmail_sql_db_user,
                             pw=settings.iredmail_sql_db_password,
