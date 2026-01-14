@@ -42,8 +42,9 @@ def __get_dict_for_list_params(mail, form, param):
             v.lower()
             for v in list(settings.MLMMJ_DEFAULT_CUSTOM_HEADERS.keys())
         ]
+
         for v in _values:
-            (_header, _v) = v.split(':')
+            (_header, _v) = v.split(':', 1)
             if _header.lower() not in _default_custom_header_names:
                 _new.append(v)
 
