@@ -41,7 +41,10 @@ if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
         export DISTRO='RHEL'
 
         # Get distribution version
-        if grep 'release 9' /etc/redhat-release &>/dev/null; then
+        if grep 'release 10' /etc/redhat-release &>/dev/null; then
+            export DISTRO_VERSION='10'
+            export UWSGI_PY3_PLUGIN_NAME='python3'
+        elif grep 'release 9' /etc/redhat-release &>/dev/null; then
             export DISTRO_VERSION='9'
             export UWSGI_PY3_PLUGIN_NAME='python3'
         elif grep 'release 8' /etc/redhat-release &>/dev/null; then
@@ -245,8 +248,8 @@ if [ X"${DISTRO}" == X'RHEL' ]; then
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
         [[ X"${IREDMAIL_BACKEND}" == X'PGSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-psycopg2"
         [[ X"${IREDMAIL_BACKEND}" == X'LDAP' ]]  && DEP_PKGS="${DEP_PKGS} python3-ldap python3-PyMySQL"
-    elif [ X"${DISTRO_VERSION}" == X'9' ]; then
-        # CentOS 9
+    else
+        # CentOS / Rocky / AlmaLinux 9, 10
         DEP_PKGS="${DEP_PKGS} python3-pip python3-requests uwsgi-logger-syslog uwsgi-plugin-python3"
 
         [[ X"${IREDMAIL_BACKEND}" == X'MYSQL' ]] && DEP_PKGS="${DEP_PKGS} python3-PyMySQL"
